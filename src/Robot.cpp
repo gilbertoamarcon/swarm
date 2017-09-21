@@ -16,19 +16,19 @@ Robot::Robot(){
 
 Robot::~Robot(){};
 
-int Robot::init(double x,double y,double w,double h,double t,double vel,char * filename){
-	tex.x = x;
-	tex.y = y;
-	tex.w = w;
-	tex.h = h;
-	tex.t = t;
+int Robot::init(double x,double y,double w,double h,double t,double vel,vector<pair<double, double>> shape){
+	wire.x = x;
+	wire.y = y;
+	wire.w = w;
+	wire.h = h;
+	wire.t = t;
 	this->vel = vel;
-	return tex.init(x,y,w,h,t,filename);
+	return wire.init(x,y,w,h,t,shape);
 };
 
 bool Robot::respawn(double x,double y){
-	tex.x = x;
-	tex.y = y;
+	wire.x = x;
+	wire.y = y;
 };
 
 void Robot::setRef(double gx,double gy){
@@ -39,8 +39,8 @@ void Robot::setRef(double gx,double gy){
 void Robot::update(bool col){
 
 	// Distance to target
-	double dlx = lx - tex.x;
-	double dly = ly - tex.y;
+	double dlx = lx - wire.x;
+	double dly = ly - wire.y;
 	double dl = sqrt(pow(dlx,2)+pow(dly,2));
 
 	// Direction to target
@@ -48,28 +48,28 @@ void Robot::update(bool col){
 	double ry = dly/dl;
 
 	// Stop if target was reached
-	if(dl < DEFAULT_TOL*tex.w){
+	if(dl < DEFAULT_TOL*wire.w){
 		rx = 0;
 		ry = 0;		
 	}
 
 	// Col check
 	if(col){
-		tex.x = ox;
-		tex.y = oy;
+		wire.x = ox;
+		wire.y = oy;
 	}else{
-		ox = tex.x;
-		oy = tex.y;
+		ox = wire.x;
+		oy = wire.y;
 	}
 
 	vx = vel*rx;
 	vy = vel*ry;
 
-	tex.x += vx;
-	tex.y += vy;
+	wire.x += vx;
+	wire.y += vy;
 
 };
 
 void Robot::render(){
-	tex.render(1,selected);
+	wire.render(1,selected);
 };

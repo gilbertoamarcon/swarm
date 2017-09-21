@@ -1,4 +1,5 @@
 ﻿#include "includes.hpp"
+#include "Wired.hpp"
 #include "Textured.hpp"
 #include "Robot.hpp"
 
@@ -89,6 +90,12 @@ void RenderScene();
 
 int main(int argc, char **argv){
 
+	// Agent Shape
+	vector<pair<double, double>> shape;
+	shape.push_back(pair<double, double>(0.3,0.3));
+	shape.push_back(pair<double, double>(0.0,1.0));
+	shape.push_back(pair<double, double>(0.7,0.7));
+
 	getScreenResolution(window_w,window_h);
 
 	glutInit(&argc, argv);
@@ -99,13 +106,12 @@ int main(int argc, char **argv){
 	view_y = hqY;
 
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
-
 	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 
 	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		robot.push_back(Robot());
-		robot.at(robot.size()-1).init(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,"img/robot.png");
+		robot.at(robot.size()-1).init(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
 		robot.at(robot.size()-1).respawn(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
 	}
 
@@ -153,20 +159,20 @@ void areaSelect(){
 	double minY = (selY2 > selY1)?selY1:selY2;
 	double maxY = (selY2 > selY1)?selY2:selY1;
 	for(int i = 0; i < robot.size(); i++){
-		if(robot.at(i).tex.x-robot.at(i).tex.w/2 < minX) continue;
-		if(robot.at(i).tex.x+robot.at(i).tex.w/2 > maxX) continue;
-		if(robot.at(i).tex.y-robot.at(i).tex.h/2 < minY) continue;
-		if(robot.at(i).tex.y+robot.at(i).tex.h/2 > maxY) continue;
+		if(robot.at(i).wire.x-robot.at(i).wire.w/2 < minX) continue;
+		if(robot.at(i).wire.x+robot.at(i).wire.w/2 > maxX) continue;
+		if(robot.at(i).wire.y-robot.at(i).wire.h/2 < minY) continue;
+		if(robot.at(i).wire.y+robot.at(i).wire.h/2 > maxY) continue;
 		robot.at(i).selected = true;
 	}
 }
 
 void singleSelect(){
 	for(int i = 0; i < robot.size(); i++){
-		if(robot.at(i).tex.x-robot.at(i).tex.w/2 > selX1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).tex.x+robot.at(i).tex.w/2 < selX1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).tex.y-robot.at(i).tex.h/2 > selY1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).tex.y+robot.at(i).tex.h/2 < selY1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.x-robot.at(i).wire.w/2 > selX1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.x+robot.at(i).wire.w/2 < selX1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.y-robot.at(i).wire.h/2 > selY1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.y+robot.at(i).wire.h/2 < selY1){robot.at(i).selected = false;continue;}
 		robot.at(i).selected = true;
 	}
 }
@@ -328,8 +334,8 @@ void updateValues(int n){
 	if(view_robot){
 		for(int i = 0; i < robot.size(); i++)
 			if(robot.at(i).selected){
-				view_x = robot.at(i).tex.x;
-				view_y = robot.at(i).tex.y;
+				view_x = robot.at(i).wire.x;
+				view_y = robot.at(i).wire.y;
 				break;
 			}
 	}
@@ -359,10 +365,10 @@ void updateValues(int n){
 bool checkCol(int index){
 	for(int i = 0; i < robot.size(); i++)
 		if(i != index){
-			if(robot.at(index).tex.x+robot.at(index).tex.w/2 < robot.at(i).tex.x-robot.at(i).tex.w/2) continue;
-			if(robot.at(index).tex.x-robot.at(index).tex.w/2 > robot.at(i).tex.x+robot.at(i).tex.w/2) continue;
-			if(robot.at(index).tex.y+robot.at(index).tex.h/2 < robot.at(i).tex.y-robot.at(i).tex.h/2) continue;
-			if(robot.at(index).tex.y-robot.at(index).tex.h/2 > robot.at(i).tex.y+robot.at(i).tex.h/2) continue;
+			if(robot.at(index).wire.x+robot.at(index).wire.w/2 < robot.at(i).wire.x-robot.at(i).wire.w/2) continue;
+			if(robot.at(index).wire.x-robot.at(index).wire.w/2 > robot.at(i).wire.x+robot.at(i).wire.w/2) continue;
+			if(robot.at(index).wire.y+robot.at(index).wire.h/2 < robot.at(i).wire.y-robot.at(i).wire.h/2) continue;
+			if(robot.at(index).wire.y-robot.at(index).wire.h/2 > robot.at(i).wire.y+robot.at(i).wire.h/2) continue;
 			return true;
 		}	
 	return false;	
