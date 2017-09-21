@@ -23,13 +23,8 @@ class Robot{
 
 	public:
 
-		double life;
 		bool selected;
 		Textured tex;
-
-		// Path vector
-		vector<double> *xP;
-		vector<double> *yP;
 
 		Robot();
 		virtual ~Robot();
