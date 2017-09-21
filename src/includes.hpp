@@ -15,6 +15,7 @@
 #include <sstream>
 #include <algorithm>
 #include <tuple>
+#include <cmath>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ using namespace std;
 #define DEFAULT_TOL		0.05
 #define LIFE_DEC_COL	0.001
 #define LIFE_GAIN_HQ	0.005
+#define PI				3.14159265
 
 // Search parameters
 #define INFLATION		1

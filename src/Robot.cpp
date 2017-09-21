@@ -47,10 +47,19 @@ void Robot::update(bool col){
 	double rx = dlx/dl;
 	double ry = dly/dl;
 
+	// Angle to target
+	if(dlx == 0.00)
+		wire.t = 0.00;
+	else{
+		wire.t = (180/PI)*atan(dly/dlx);
+		if(dlx < 0)
+			wire.t += 180;
+	}
+
 	// Stop if target was reached
 	if(dl < DEFAULT_TOL*wire.w){
 		rx = 0;
-		ry = 0;		
+		ry = 0;
 	}
 
 	// Col check
@@ -62,8 +71,8 @@ void Robot::update(bool col){
 		oy = wire.y;
 	}
 
-	vx = vel*rx;
-	vy = vel*ry;
+	vx = vel*cos((PI/180)*wire.t);
+	vy = vel*sin((PI/180)*wire.t);
 
 	wire.x += vx;
 	wire.y += vy;

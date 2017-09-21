@@ -92,9 +92,9 @@ int main(int argc, char **argv){
 
 	// Agent Shape
 	vector<pair<double, double>> shape;
-	shape.push_back(pair<double, double>(0.3,0.3));
-	shape.push_back(pair<double, double>(0.0,1.0));
-	shape.push_back(pair<double, double>(0.7,0.7));
+	shape.push_back(pair<double, double>(0.0,0.50));
+	shape.push_back(pair<double, double>(1.0,0.75));
+	shape.push_back(pair<double, double>(1.0,0.25));
 
 	getScreenResolution(window_w,window_h);
 
