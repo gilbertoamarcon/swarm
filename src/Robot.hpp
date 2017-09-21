@@ -7,7 +7,6 @@ class Robot{
 
 	private:
 
-
 		double vel;
 
 		double lx;
@@ -21,8 +20,6 @@ class Robot{
 		double vx;
 		double vy;
 		double vt;
-
-		int updateVector();
 
 	public:
 
@@ -41,7 +38,6 @@ class Robot{
 		void setRef(double gx,double gy);
 		void update(bool col);
 		void render();
-		void renderPath();
 };
 
 #endif

@@ -18,7 +18,7 @@
 using namespace std;
 
 // Sim Parameters
-#define MAX_ROBOTS		50
+#define NUM_ROBOTS		5
 #define TIMER			30
 #define SPAWN_RANGE		30
 #define IRON_COST		1500
@@ -41,7 +41,6 @@ using namespace std;
 
 // Camera Parameters
 #define SCN_SCALE		0.2
-#define PATH_DEBUG		1
 
 // Keyboard Commands
 #define EXIT			27
@@ -51,7 +50,6 @@ using namespace std;
 #define KEY_RIGHT		'd'
 #define KEY_ZOON_IN		'e'
 #define KEY_ZOON_OUT	'q'
-#define BUILD_NEW		'b'
 #define VIEW_HQ			'h'
 #define VIEW_ROBOT		'v'
 #define RESET_ZOOM		'z'

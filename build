@@ -1,2 +1,2 @@
-g++ Source/main.cpp Source/Textured.cpp Source/Map.cpp Source/Robot.cpp -O3 -o main -Wno-unused-result -Wno-write-strings -fpermissive -lm -w -lGL -lGLU -lglut -lX11 -lpng -std=c++11
-./main 
+g++ src/main.cpp src/Textured.cpp src/Robot.cpp -O3 -o bin/main -Wno-unused-result -Wno-write-strings -fpermissive -lm -w -lGL -lGLU -lglut -lX11 -lpng -std=c++11
+./bin/main 

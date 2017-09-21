@@ -1,9 +1,7 @@
 ﻿#include "includes.hpp"
 #include "Textured.hpp"
-#include "Map.hpp"
 #include "Robot.hpp"
 
-Map map;
 Textured cursor;
 Textured flag;
 vector<Robot> robot;
@@ -89,10 +87,7 @@ bool checkCol(int index);
 
 void RenderScene();
 
-void RenderScene();
-
 int main(int argc, char **argv){
-
 
 	getScreenResolution(window_w,window_h);
 
@@ -100,14 +95,19 @@ int main(int argc, char **argv){
 
 	iniGl();
 
-	if(map.init(12,12,"Maps/map.csv")) return 0;
-	map.getHQ(hqX,hqY);
 	view_x = hqX;
 	view_y = hqY;
 
-	if(cursor.init(0,0,64,64,0,"Images/cursor.png")) return 0;
+	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
 
-	if(flag.init(0,0,16,16,0,"Images/flag.png")) return 0;
+	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
+
+	// Spawning robots
+	for(int i = 0; i < NUM_ROBOTS; i++){
+		robot.push_back(Robot());
+		robot.at(robot.size()-1).init(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,"img/robot.png");
+		robot.at(robot.size()-1).respawn(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
+	}
 
 	glutMainLoop();
 
@@ -199,11 +199,8 @@ void mouseButton(int b,int s,int x,int y){
 				double candidateX = mouse_gnd_x;
 				double candidateY = mouse_gnd_y;
 				for(int i = 0; i < robot.size(); i++)
-					if(robot.at(i).selected){
-						map.nearestEmptyPos(&candidateX,&candidateY);
-						map.path(robot.at(i).tex.x,robot.at(i).tex.y,candidateX,candidateY,robot.at(i).xP,robot.at(i).yP);
+					if(robot.at(i).selected)
 						robot.at(i).setRef(candidateX,candidateY);
-					}
 				flag.x = mouse_gnd_x;
 				flag.y = mouse_gnd_y;
 			}
@@ -233,7 +230,6 @@ void cursorUpdate(int x,int y){
 // When mouse moves
 void mouseMove(int x,int y){
 	cursorUpdate(x,y);
-
 	old_mouse_x	= x;
 	old_mouse_y	= y;
 }
@@ -290,18 +286,6 @@ void keyPressed(unsigned char key, int x, int y){
 			break;
 		case RESET_ZOOM:
 			scn_scale = SCN_SCALE;
-			break;
-		case BUILD_NEW:
-			if(iron >= IRON_COST && power >= POWER_COST){
-				power	-= POWER_COST;
-				iron	-= IRON_COST;
-				if(robot.size() < MAX_ROBOTS){
-					robot.push_back(Robot());
-					robot.at(robot.size()-1).init(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,"Images/robot.png");
-					while(map.checkCol(robot.at(robot.size()-1).tex.x,robot.at(robot.size()-1).tex.y,robot.at(robot.size()-1).tex.w,robot.at(robot.size()-1).tex.h) | checkCol(robot.size()-1))
-						robot.at(robot.size()-1).respawn(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
-				}
-			}
 			break;
 		default:
 			break;
@@ -367,27 +351,9 @@ void updateValues(int n){
 	y_min = -view_y - scn_scale*window_h/2;
 	y_max = -view_y + scn_scale*window_h/2;
 
-	for(int i = 0; i < robot.size(); i++){
-		int auxCol = map.checkCol(robot.at(i).tex.x,robot.at(i).tex.y,robot.at(i).tex.w,robot.at(i).tex.h);
-		if(auxCol == 2)
-			iron++;
-		if(auxCol == 3)
-			power++;
-		if(auxCol == 4)
-			robot.at(i).life += LIFE_GAIN_HQ;
-		
-		if(!PATH_DEBUG)
-			robot.at(i).update(auxCol || checkCol(i));
+	for(int i = 0; i < robot.size(); i++)
+		robot.at(i).update(checkCol(i));
 
-		// Life reduction at col
-		if(checkCol(i))
-			robot.at(i).life -= LIFE_DEC_COL;
-
-		if(robot.at(i).life <= 0)
-			robot.erase(robot.begin()+i);
-	}
-
-	
 }
 
 bool checkCol(int index){
@@ -413,7 +379,6 @@ void RenderScene(){
 		gluOrtho2D(x_min,x_max,y_min,y_max);
 		glMatrixMode(GL_MODELVIEW);
 
-		map.render();
 		for(int i = 0; i < robot.size(); i++)
 			robot.at(i).render();
 		flag.render(1,0);
