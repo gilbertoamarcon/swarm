@@ -13,8 +13,8 @@ World coordinates are separate from screen coordinates.
 Simulation time is separate from visualization time. SIM_STEP_TIME defines (in ms) the similation step time. Visualization runs at its own rate, independent of simulation time. 
 
 User interface is similar to the usual real-time stratage game: 
-  - Move the mouse to the screen edges to move the camera;
-  - Hold the middle mouse button to move the camera faster;
+  - Move the mouse to the screen edges to move the camera.
+  - Hold the middle mouse button to move the camera faster.
   - Use ASDW to move the camera.
   - Use Q and E to zoom in and out.
   - Left-Click to select robot.
