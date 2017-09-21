@@ -8,55 +8,53 @@ Textured flag;
 vector<Robot> robot;
 
 // Status
-int iron			= 4500;
-int power			= 3000;
-double hqX			= 0;
-double hqY			= 0;
+double origin_x			= 0;
+double origin_y			= 0;
 
-double old_mouse_x	= 0;
-double old_mouse_y	= 0;
-double mouse_gnd_x	= 0;
-double mouse_gnd_y	= 0;
+double old_mouse_x		= 0;
+double old_mouse_y		= 0;
+double mouse_gnd_x		= 0;
+double mouse_gnd_y		= 0;
 
 // Screen Resolution
-int window_w		= 0;
-int window_h		= 0;
+int window_w			= 0;
+int window_h			= 0;
 
 // Camera position/motion
-double view_x		= 0;
-double view_y		= 0;
-double x_min		= 0;
-double x_max		= 0;
-double y_min		= 0;
-double y_max		= 0;
-double cam_speed	= 2;
-double scn_scale	= SCN_SCALE;
+double view_x			= 0;
+double view_y			= 0;
+double x_min			= 0;
+double x_max			= 0;
+double y_min			= 0;
+double y_max			= 0;
+double cam_speed		= CAM_SPEED;
+double scn_scale		= SCN_SCALE;
 
 // User input flags
-bool mouse_l		= 0;
-bool mouse_m		= 0;
-bool mouse_r		= 0;
-bool view_robot		= 0;
+bool mouse_l			= 0;
+bool mouse_m			= 0;
+bool mouse_r			= 0;
+bool lock_view_robot	= 0;
 
 // Keyboard mov flags
-bool keyLeft		= 0;
-bool keyRight		= 0;
-bool keyDown		= 0;
-bool keyUp			= 0;
-bool keyZoomIn		= 0;
-bool keyZoomOut		= 0;
+bool keyLeft			= 0;
+bool keyRight			= 0;
+bool keyDown			= 0;
+bool keyUp				= 0;
+bool keyZoomIn			= 0;
+bool keyZoomOut			= 0;
 
 // Mouse mov flags
-bool mouseLeft		= 0;
-bool mouseRight		= 0;
-bool mouseDown		= 0;
-bool mouseUp		= 0;
+bool mouseLeft			= 0;
+bool mouseRight			= 0;
+bool mouseDown			= 0;
+bool mouseUp			= 0;
 
-bool selecting		= false;
-double selX1		= 0;
-double selY1		= 0;
-double selX2		= 0;
-double selY2		= 0;
+bool selecting			= false;
+double selX1			= 0;
+double selY1			= 0;
+double selX2			= 0;
+double selY2			= 0;
 
 char statusBuffer[BUFFER_SIZE];
 
@@ -96,25 +94,26 @@ int main(int argc, char **argv){
 	shape.push_back(pair<double, double>(1.0,0.75));
 	shape.push_back(pair<double, double>(1.0,0.25));
 
+	// Initializing graphics
 	getScreenResolution(window_w,window_h);
-
 	glutInit(&argc, argv);
-
 	iniGl();
 
-	view_x = hqX;
-	view_y = hqY;
+	view_x = origin_x;
+	view_y = origin_y;
 
+	// Cursor and goal objects
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
 	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 
 	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		robot.push_back(Robot());
-		robot.at(robot.size()-1).init(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
-		robot.at(robot.size()-1).respawn(hqX-rand()%SPAWN_RANGE+SPAWN_RANGE/2,hqY-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
+		robot.at(robot.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
+		robot.at(robot.size()-1).respawn(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
 	}
 
+	// Main loop
 	glutMainLoop();
 
 	return 0;
@@ -128,6 +127,7 @@ void getScreenResolution(int& h, int& v){
 	v   = s->height;
 }
 
+// OpenGL initialization
 void iniGl(){
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(window_w,window_h);
@@ -153,6 +153,18 @@ void iniGl(){
 	glutSetCursor(GLUT_CURSOR_NONE);
 }
 
+// Mouse click selection
+void singleSelect(){
+	for(int i = 0; i < robot.size(); i++){
+		if(robot.at(i).wire.x-robot.at(i).wire.w/2 > selX1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.x+robot.at(i).wire.w/2 < selX1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.y-robot.at(i).wire.h/2 > selY1){robot.at(i).selected = false;continue;}
+		if(robot.at(i).wire.y+robot.at(i).wire.h/2 < selY1){robot.at(i).selected = false;continue;}
+		robot.at(i).selected = true;
+	}
+}
+
+// Mouse area selection
 void areaSelect(){
 	double minX = (selX2 > selX1)?selX1:selX2;
 	double maxX = (selX2 > selX1)?selX2:selX1;
@@ -167,16 +179,31 @@ void areaSelect(){
 	}
 }
 
-void singleSelect(){
-	for(int i = 0; i < robot.size(); i++){
-		if(robot.at(i).wire.x-robot.at(i).wire.w/2 > selX1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).wire.x+robot.at(i).wire.w/2 < selX1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).wire.y-robot.at(i).wire.h/2 > selY1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).wire.y+robot.at(i).wire.h/2 < selY1){robot.at(i).selected = false;continue;}
-		robot.at(i).selected = true;
-	}
+// Screen to space conversion
+double scn2space(int a){
+	return scn_scale*((double)a);
 }
 
+// Updating cursor position variables
+void cursorUpdate(int x,int y){	
+	cursor.x	= x;
+	cursor.y	= y;
+	mouseLeft	= (x == 0);
+	mouseRight	= (x == window_w-1);
+	mouseUp		= (y == 0);
+	mouseDown	= (y == window_h-1);
+	mouse_gnd_x = view_x-scn2space(x-window_w/2);
+	mouse_gnd_y = view_y+scn2space(y-window_h/2);
+}
+
+// When mouse moves
+void mouseMove(int x,int y){
+	cursorUpdate(x,y);
+	old_mouse_x	= x;
+	old_mouse_y	= y;
+}
+
+// Mouse click trigger actions
 void mouseButton(int b,int s,int x,int y){
 	switch (b){
 		case GLUT_LEFT_BUTTON:
@@ -206,7 +233,7 @@ void mouseButton(int b,int s,int x,int y){
 				double candidateY = mouse_gnd_y;
 				for(int i = 0; i < robot.size(); i++)
 					if(robot.at(i).selected)
-						robot.at(i).setRef(candidateX,candidateY);
+						robot.at(i).setGoalTargetPos(candidateX,candidateY);
 				flag.x = mouse_gnd_x;
 				flag.y = mouse_gnd_y;
 			}
@@ -218,30 +245,9 @@ void mouseButton(int b,int s,int x,int y){
 	}
 }
 
-double scn2space(int a){
-	return scn_scale*((double)a);
-}
-
-void cursorUpdate(int x,int y){	
-	cursor.x	= x;
-	cursor.y	= y;
-	mouseLeft	= (x == 0);
-	mouseRight	= (x == window_w-1);
-	mouseUp		= (y == 0);
-	mouseDown	= (y == window_h-1);
-	mouse_gnd_x = view_x-scn2space(x-window_w/2);
-	mouse_gnd_y = view_y+scn2space(y-window_h/2);
-}
-
-// When mouse moves
-void mouseMove(int x,int y){
-	cursorUpdate(x,y);
-	old_mouse_x	= x;
-	old_mouse_y	= y;
-}
-
-// When mouse clicks
+// Sustained mouse click actions
 void mouseAction(int x,int y){
+
 	cursorUpdate(x,y);
 
 	double delta_mouse_x = x-old_mouse_x;
@@ -283,15 +289,15 @@ void keyPressed(unsigned char key, int x, int y){
 		case KEY_ZOON_OUT:
 			keyZoomOut = 1;
 			break;
-		case VIEW_HQ:
-			view_x = hqX;
-			view_y = hqY;
-			break;
-		case VIEW_ROBOT:
-			view_robot = !view_robot;
-			break;
 		case RESET_ZOOM:
 			scn_scale = SCN_SCALE;
+			break;
+		case RESET_VIEW_POS:
+			view_x = origin_x;
+			view_y = origin_y;
+			break;
+		case LOCK_VIEW_ROBOT:
+			lock_view_robot = !lock_view_robot;
 			break;
 		default:
 			break;
@@ -326,12 +332,14 @@ void keyReleased(unsigned char key, int x, int y){
 
 void updateValues(int n){
 
-	sprintf(statusBuffer,"R: %02d I: %08d P: %08d V: %01d",robot.size(),iron/100,power/100,view_robot);
+	// String printed in the screen corner
+	sprintf(statusBuffer,"Number of Robots: %02d View Lock to Robot: %01d",robot.size(),lock_view_robot);
 
 	// Frame limiter
-	glutTimerFunc(FRAME_TIME,updateValues,0);
+	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 
-	if(view_robot){
+	// Camera view will track specific robot
+	if(lock_view_robot){
 		for(int i = 0; i < robot.size(); i++)
 			if(robot.at(i).selected){
 				view_x = robot.at(i).wire.x;
@@ -341,11 +349,12 @@ void updateValues(int n){
 	}
 
 	// Moving the camera given the camera speed
-	if(mouseLeft	|	keyLeft)	view_x += cam_speed;
-	if(mouseRight	|	keyRight)	view_x -= cam_speed;
-	if(mouseDown	|	keyDown)	view_y += cam_speed;
-	if(mouseUp		|	keyUp)		view_y -= cam_speed;
+	if(mouseLeft	|	keyLeft)	view_x += cam_speed*scn_scale;
+	if(mouseRight	|	keyRight)	view_x -= cam_speed*scn_scale;
+	if(mouseDown	|	keyDown)	view_y += cam_speed*scn_scale;
+	if(mouseUp		|	keyUp)		view_y -= cam_speed*scn_scale;
 
+	// Zoom
 	if(keyZoomIn)
 		scn_scale /= 1.05;
 	if(keyZoomOut)
@@ -357,11 +366,13 @@ void updateValues(int n){
 	y_min = -view_y - scn_scale*window_h/2;
 	y_max = -view_y + scn_scale*window_h/2;
 
+	// Updating robot status
 	for(int i = 0; i < robot.size(); i++)
 		robot.at(i).update(checkCol(i));
 
 }
 
+// Collision check
 bool checkCol(int index){
 	for(int i = 0; i < robot.size(); i++)
 		if(i != index){
@@ -374,7 +385,10 @@ bool checkCol(int index){
 	return false;	
 }
 
+// Scene rendering
 void RenderScene(){
+
+	// Clearing screen
 	glClearColor(0,0,0,0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -418,7 +432,6 @@ void RenderScene(){
 		gluOrtho2D(0,window_w,window_h,0);
 		glMatrixMode(GL_MODELVIEW);
 		glTranslatef(0,0,0);
-
 		cursor.render(0,0);
 	glPopMatrix();
 

@@ -20,19 +20,11 @@
 using namespace std;
 
 // Sim Parameters
-#define NUM_ROBOTS		5
-#define TIMER			30
-#define SPAWN_RANGE		50
-#define IRON_COST		1500
-#define POWER_COST		1000
-#define ROBOT_VEL		0.25
+#define NUM_ROBOTS		50
+#define SPAWN_RANGE		250
+#define ROBOT_VEL		1.00
 #define DEFAULT_TOL		0.05
-#define LIFE_DEC_COL	0.001
-#define LIFE_GAIN_HQ	0.005
 #define PI				3.14159265
-
-// Search parameters
-#define INFLATION		1
 
 // File Parameters
 #define BUFFER_SIZE		256
@@ -40,9 +32,10 @@ using namespace std;
 // Video Parameters
 #define WINDOW_TITLE	"Video"
 #define FULL_SCREEN		1
-#define FRAME_TIME		10
+#define SIM_STEP_TIME	10
 
 // Camera Parameters
+#define CAM_SPEED		10
 #define SCN_SCALE		0.2
 
 // Keyboard Commands
@@ -53,8 +46,8 @@ using namespace std;
 #define KEY_RIGHT		'd'
 #define KEY_ZOON_IN		'e'
 #define KEY_ZOON_OUT	'q'
-#define VIEW_HQ			'h'
-#define VIEW_ROBOT		'v'
 #define RESET_ZOOM		'z'
+#define RESET_VIEW_POS	'h'
+#define LOCK_VIEW_ROBOT	'v'
 
 #endif

@@ -19,14 +19,6 @@ int Wired::init(double x,double y,double w,double h,double t,vector<pair<double,
 	this->shape = shape;
 };
 
-void Wired::update(double x,double y,double w,double h,double t){
-	this->x = x;
-	this->y = y;
-	this->w = w;
-	this->h = h;
-	this->t = t;
-};
-
 void Wired::render(bool global,bool highlight){
 	glPushMatrix();
 		if(highlight){

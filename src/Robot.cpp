@@ -5,8 +5,8 @@ Robot::Robot(){
 	this->lx = 0;
 	this->ly = 0;
 	this->lt = 0;
+	this->ox = 0;
 	this->oy = 0;
-	this->ot = 0;
 	this->ot = 0;
 	this->vx = 0;
 	this->vy = 0;
@@ -31,9 +31,10 @@ bool Robot::respawn(double x,double y){
 	wire.y = y;
 };
 
-void Robot::setRef(double gx,double gy){
+void Robot::setGoalTargetPos(double gx,double gy){
 	this->lx = gx;
 	this->ly = gy;
+	this->lt = 0;
 }
 
 void Robot::update(bool col){
