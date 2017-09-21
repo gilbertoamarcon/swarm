@@ -20,7 +20,7 @@ using namespace std;
 // Sim Parameters
 #define NUM_ROBOTS		5
 #define TIMER			30
-#define SPAWN_RANGE		30
+#define SPAWN_RANGE		50
 #define IRON_COST		1500
 #define POWER_COST		1000
 #define ROBOT_VEL		0.25
