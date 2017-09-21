@@ -15,7 +15,7 @@ Simulation time is separate from visualization time. SIM_STEP_TIME defines (in m
 User interface is similar to the usual real-time stratage game: 
   - Move the mouse to the screen edges to move the camera;
   - Hold the middle mouse button to move the camera faster;
-  - USE ASDW to move the camera.
+  - Use ASDW to move the camera.
   - Use Q and E to zoom in and out.
   - Left-Click to select robot.
   - Left-Click and drag to select multiple robots.
