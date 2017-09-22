@@ -5,7 +5,7 @@
 
 Textured cursor;
 Textured flag;
-vector<Robot> robot;
+vector<Robot> flock;
 
 // Status
 double origin_x			= 0;
@@ -86,6 +86,8 @@ bool checkCol(int index);
 
 void RenderScene();
 
+void codeTestOvunc();
+
 int main(int argc, char **argv){
 
 	// Agent Shape
@@ -106,17 +108,32 @@ int main(int argc, char **argv){
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
 	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 
-	// Spawning robots
+	// Spawning flocks
 	for(int i = 0; i < NUM_ROBOTS; i++){
-		robot.push_back(Robot());
-		robot.at(robot.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
-		robot.at(robot.size()-1).respawn(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
+		flock.push_back(Robot(i));
+		flock.at(flock.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
+		flock.at(flock.size()-1).respawn(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
+		flock.at(flock.size()-1).flock = flock;
 	}
+
+	codeTestOvunc();
+
+
 
 	// Main loop
 	glutMainLoop();
 
 	return 0;
+}
+
+void codeTestOvunc(){
+	printf("Number of Agents: %d\n", flock.size());
+	for(int i = 0; i < flock.size(); i++){
+		printf("ID: %d ", flock[i].getNeighbors());
+	}
+
+
+
 }
 
 // Get the horizontal and vertical screen sizes in pixel
@@ -155,12 +172,12 @@ void iniGl(){
 
 // Mouse click selection
 void singleSelect(){
-	for(int i = 0; i < robot.size(); i++){
-		if(robot.at(i).wire.x-robot.at(i).wire.w/2 > selX1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).wire.x+robot.at(i).wire.w/2 < selX1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).wire.y-robot.at(i).wire.h/2 > selY1){robot.at(i).selected = false;continue;}
-		if(robot.at(i).wire.y+robot.at(i).wire.h/2 < selY1){robot.at(i).selected = false;continue;}
-		robot.at(i).selected = true;
+	for(int i = 0; i < flock.size(); i++){
+		if(flock.at(i).wire.x-flock.at(i).wire.w/2 > selX1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).wire.x+flock.at(i).wire.w/2 < selX1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).wire.y-flock.at(i).wire.h/2 > selY1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).wire.y+flock.at(i).wire.h/2 < selY1){flock.at(i).selected = false;continue;}
+		flock.at(i).selected = true;
 	}
 }
 
@@ -170,12 +187,12 @@ void areaSelect(){
 	double maxX = (selX2 > selX1)?selX2:selX1;
 	double minY = (selY2 > selY1)?selY1:selY2;
 	double maxY = (selY2 > selY1)?selY2:selY1;
-	for(int i = 0; i < robot.size(); i++){
-		if(robot.at(i).wire.x-robot.at(i).wire.w/2 < minX) continue;
-		if(robot.at(i).wire.x+robot.at(i).wire.w/2 > maxX) continue;
-		if(robot.at(i).wire.y-robot.at(i).wire.h/2 < minY) continue;
-		if(robot.at(i).wire.y+robot.at(i).wire.h/2 > maxY) continue;
-		robot.at(i).selected = true;
+	for(int i = 0; i < flock.size(); i++){
+		if(flock.at(i).wire.x-flock.at(i).wire.w/2 < minX) continue;
+		if(flock.at(i).wire.x+flock.at(i).wire.w/2 > maxX) continue;
+		if(flock.at(i).wire.y-flock.at(i).wire.h/2 < minY) continue;
+		if(flock.at(i).wire.y+flock.at(i).wire.h/2 > maxY) continue;
+		flock.at(i).selected = true;
 	}
 }
 
@@ -231,9 +248,9 @@ void mouseButton(int b,int s,int x,int y){
 				mouse_r = 1;
 				double candidateX = mouse_gnd_x;
 				double candidateY = mouse_gnd_y;
-				for(int i = 0; i < robot.size(); i++)
-					if(robot.at(i).selected)
-						robot.at(i).setGoalTargetPos(candidateX,candidateY);
+				for(int i = 0; i < flock.size(); i++)
+					if(flock.at(i).selected)
+						flock.at(i).setGoalTargetPos(candidateX,candidateY);
 				flag.x = mouse_gnd_x;
 				flag.y = mouse_gnd_y;
 			}
@@ -333,17 +350,17 @@ void keyReleased(unsigned char key, int x, int y){
 void updateValues(int n){
 
 	// String printed in the screen corner
-	sprintf(statusBuffer,"Number of Robots: %02d View Lock to Robot: %01d",robot.size(),lock_view_robot);
+	sprintf(statusBuffer,"Number of robots: %02d View Lock to robots: %01d",flock.size(),lock_view_robot);
 
 	// Frame limiter
 	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 
-	// Camera view will track specific robot
+	// Camera view will track specific flock
 	if(lock_view_robot){
-		for(int i = 0; i < robot.size(); i++)
-			if(robot.at(i).selected){
-				view_x = robot.at(i).wire.x;
-				view_y = robot.at(i).wire.y;
+		for(int i = 0; i < flock.size(); i++)
+			if(flock.at(i).selected){
+				view_x = flock.at(i).wire.x;
+				view_y = flock.at(i).wire.y;
 				break;
 			}
 	}
@@ -366,20 +383,20 @@ void updateValues(int n){
 	y_min = -view_y - scn_scale*window_h/2;
 	y_max = -view_y + scn_scale*window_h/2;
 
-	// Updating robot status
-	for(int i = 0; i < robot.size(); i++)
-		robot.at(i).update(checkCol(i));
+	// Updating flock status
+	for(int i = 0; i < flock.size(); i++)
+		flock.at(i).update(checkCol(i));
 
 }
 
 // Collision check
 bool checkCol(int index){
-	for(int i = 0; i < robot.size(); i++)
+	for(int i = 0; i < flock.size(); i++)
 		if(i != index){
-			if(robot.at(index).wire.x+robot.at(index).wire.w/2 < robot.at(i).wire.x-robot.at(i).wire.w/2) continue;
-			if(robot.at(index).wire.x-robot.at(index).wire.w/2 > robot.at(i).wire.x+robot.at(i).wire.w/2) continue;
-			if(robot.at(index).wire.y+robot.at(index).wire.h/2 < robot.at(i).wire.y-robot.at(i).wire.h/2) continue;
-			if(robot.at(index).wire.y-robot.at(index).wire.h/2 > robot.at(i).wire.y+robot.at(i).wire.h/2) continue;
+			if(flock.at(index).wire.x+flock.at(index).wire.w/2 < flock.at(i).wire.x-flock.at(i).wire.w/2) continue;
+			if(flock.at(index).wire.x-flock.at(index).wire.w/2 > flock.at(i).wire.x+flock.at(i).wire.w/2) continue;
+			if(flock.at(index).wire.y+flock.at(index).wire.h/2 < flock.at(i).wire.y-flock.at(i).wire.h/2) continue;
+			if(flock.at(index).wire.y-flock.at(index).wire.h/2 > flock.at(i).wire.y+flock.at(i).wire.h/2) continue;
 			return true;
 		}	
 	return false;	
@@ -399,8 +416,8 @@ void RenderScene(){
 		gluOrtho2D(x_min,x_max,y_min,y_max);
 		glMatrixMode(GL_MODELVIEW);
 
-		for(int i = 0; i < robot.size(); i++)
-			robot.at(i).render();
+		for(int i = 0; i < flock.size(); i++)
+			flock.at(i).render();
 		flag.render(1,0);
 
 		// Mouse selection

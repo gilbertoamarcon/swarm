@@ -1,4 +1,5 @@
 #include "Robot.hpp"
+#include <cmath>
 
 Robot::Robot(){
 	this->vel = 0;
@@ -12,6 +13,21 @@ Robot::Robot(){
 	this->vy = 0;
 	this->vt = 0;
 	this->selected = false;
+};
+
+Robot::Robot(int id){
+	this->vel = 0;
+	this->lx = 0;
+	this->ly = 0;
+	this->lt = 0;
+	this->ox = 0;
+	this->oy = 0;
+	this->ot = 0;
+	this->vx = 0;
+	this->vy = 0;
+	this->vt = 0;
+	this->selected = false;
+	this->id = id;
 };
 
 Robot::~Robot(){};
@@ -79,6 +95,23 @@ void Robot::update(bool col){
 	wire.y += vy;
 
 };
+
+int Robot::getNeighbors(){
+	vector <int> nbors = {};
+	for (int i = 0; i < this->flock.size(); i ++){
+		Robot current = this->flock[i];
+		printf("ID: %d ", current.id);
+	}
+	return 0;
+ }
+
+ double Robot::distanceToPoint(double x, double y){
+ 	return sqrt(pow(this->ox - x, 2) + pow(this->oy - y, 2));
+ }
+
+ double Robot::distanceToRobot(vector<Robot> flock, int id){
+ 	return this->distanceToPoint(flock[id].ox, flock[id].oy);
+ }
 
 void Robot::render(){
 	wire.render(1,selected);
