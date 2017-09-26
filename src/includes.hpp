@@ -20,7 +20,7 @@
 using namespace std;
 
 // Sim Parameters
-#define NUM_ROBOTS		5
+#define NUM_ROBOTS		10
 #define SPAWN_RANGE		250
 #define ROBOT_VEL		1.00
 #define DEFAULT_TOL		0.05
@@ -31,7 +31,7 @@ using namespace std;
 
 // Video Parameters
 #define WINDOW_TITLE	"Video"
-#define FULL_SCREEN		1
+#define FULL_SCREEN		0
 #define SIM_STEP_TIME	10
 
 // Camera Parameters

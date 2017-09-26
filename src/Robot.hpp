@@ -35,6 +35,11 @@ class Robot{
 		double rOri;
 		double rAtr;
 
+		// Neighbor Sets
+		vector<int> nRep;
+		vector<int> nOri;
+		vector<int> nAtr;
+
 		// Vector of Neighbor IDs
 		vector <int> nbors;
 		// Vector of all robots in the swarm
@@ -49,13 +54,18 @@ class Robot{
 		Robot(int id);
 		virtual ~Robot();
 		int init(double x,double y,double w,double h,double r,double vel,vector<pair<double, double>> shape);
-		bool respawn(double x,double y);
+		void respawn(double x,double y);
 		void setGoalTargetPos(double gx,double gy);
 		void update(bool col);
+		void updateNeighbors();
 		void render();
-		int getNeighbors();
+		vector<int> getNeighbors(double radius);
+		double swarm();
+		double reynoldsRules();
+		double wallRepulsion(double xlim, double ylim);
 		double distanceToPoint(double x, double y);
 		double distanceToRobot(vector<Robot> flock, int id);
+		double distanceToRobot(Robot robot);
 };
 
 #endif

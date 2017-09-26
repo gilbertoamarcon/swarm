@@ -108,32 +108,27 @@ int main(int argc, char **argv){
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
 	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 
-	// Spawning flocks
+	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		flock.push_back(Robot(i));
 		flock.at(flock.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
 		flock.at(flock.size()-1).respawn(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
-		flock.at(flock.size()-1).flock = flock;
+
 	}
 
-	codeTestOvunc();
-
-
+	for(int i = 0; i < flock.size(); i++){
+		// Set Flock
+		flock.at(i).flock = flock;
+		// Set Radii
+		flock.at(i).rRep = 75;
+		flock.at(i).rOri = 200;
+		flock.at(i).rAtr = 400;
+	}
 
 	// Main loop
 	glutMainLoop();
 
 	return 0;
-}
-
-void codeTestOvunc(){
-	printf("Number of Agents: %d\n", flock.size());
-	for(int i = 0; i < flock.size(); i++){
-		printf("ID: %d ", flock[i].getNeighbors());
-	}
-
-
-
 }
 
 // Get the horizontal and vertical screen sizes in pixel
