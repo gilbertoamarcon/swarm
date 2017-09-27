@@ -20,11 +20,16 @@
 using namespace std;
 
 // Sim Parameters
-#define NUM_ROBOTS		10
-#define SPAWN_RANGE		50
-#define ROBOT_VEL		1.00 // 1.00
+#define NUM_ROBOTS		20
+#define SPAWN_RANGE		300
+#define ROBOT_VEL		1.00
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
+
+// Flock Parameters
+#define REP_RADIUS 		20
+#define ORI_RADIUS 		50
+#define ATR_RADIUS 		100
 
 // File Parameters
 #define BUFFER_SIZE		256

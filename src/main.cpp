@@ -120,9 +120,9 @@ int main(int argc, char **argv){
 		// Set Flock
 		flock.at(i).flock = &flock;
 		// Set Radii
-		flock.at(i).rRep = 50;
-		flock.at(i).rOri = 100;
-		flock.at(i).rAtr = 200;
+		flock.at(i).rRep = REP_RADIUS;
+		flock.at(i).rOri = ORI_RADIUS;
+		flock.at(i).rAtr = ATR_RADIUS;
 	}
 
 	// Main loop

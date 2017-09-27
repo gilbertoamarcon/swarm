@@ -177,8 +177,8 @@ vector<int> Robot::getNeighbors(double radius){
  		double dx =  this->wire.x - this->flock->at(nRep[i]).wire.x;
  		double dy =  this->wire.y - this->flock->at(nRep[i]).wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
-		repX += dx/d/d;	
-		repY += dy/d/d;	
+		repX += dx/d/d;///d/d;	
+		repY += dy/d/d;///d/d;	
  	}
 
  	// double oriH = 0;
@@ -195,22 +195,25 @@ vector<int> Robot::getNeighbors(double radius){
 		// prod *= d;
  	// }
 
-  	double oriH = 0;
+  	double oriX = 0;
+  	double oriY = 0;
  	double sum = 0;
  	int cnt = 0;
  	for (int i = 0; i < this->nOri.size(); i++){
  		// cout << " i: " << i << "Robot: " << nOri[i] << endl;
  		// cout << "XY " << this->flock[nOri[i]].wire.x << " " << this->flock[nOri[i]].wire.t << endl;
- 		// double dx =  this->wire.x - this->flock[nOri[i]].wire.x;
- 		// double dy =  this->wire.y - this->flock[nOri[i]].wire.y;
- 		// double d = sqrt(pow(dx,2) + pow(dy,2));
+ 		double dx =  this->wire.x - this->flock->at(nOri[i]).wire.x;
+ 		double dy =  this->wire.y - this->flock->at(nOri[i]).wire.y;
+ 		double d = sqrt(pow(dx,2) + pow(dy,2));
  		double th = this->flock->at(nOri[i]).wire.t*PI/180;
+ 		// DO THE NORMS CORRECTLY!!
+		oriX += cos(th)/d;
+ 		oriY += sin(th)/d;
  		// cout << " th: " << th;
-		sum += th;
-		cnt++;
+		// sum += th;
+		// cnt++;
  	}
- 	if (sum != 0)
- 		oriH = sum / cnt;
+
 
  	// cout << "sum " << sum << " " << oriH << endl;
 
@@ -221,8 +224,8 @@ vector<int> Robot::getNeighbors(double radius){
  		double dx = this->flock->at(nAtr[i]).wire.x - this->wire.x;
  		double dy = this->flock->at(nAtr[i]).wire.y - this->wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
-		atrX += dx/d/d;	
-		atrY += dy/d/d;	
+		atrX += dx/d/d;///d/d;	
+		atrY += dy/d/d;///d/d;	
  	}
 
  	// cout << "Att Vel: " <<  atrX <<  " " << atrY <<  " " <<  atan2(atrY, atrX) << endl;
@@ -234,8 +237,12 @@ vector<int> Robot::getNeighbors(double radius){
  	// 	return wire.t*PI/180;
  	// else
  	//  	return atan2(repY, repX);
-
- 	return (atan2(repY, repX) + atan2(atrY, atrX)) / 2
+ 	double x = repX + atrX*0.4 + oriX;
+ 	double y = repY + atrY*0.4 + oriY;
+ 	if (x == 0 && y == 0)
+ 		return wire.t*PI/180;
+ 	else
+ 		return atan2(y, x);
  }
 
  double Robot::wallRepulsion(double xlim, double ylim){
