@@ -6,6 +6,7 @@ using namespace std;
 
 Robot::Robot(){
 	this->vel = 0;
+	this->steer = 0;
 	this->lx = 0;
 	this->ly = 0;
 	this->lt = 0;
@@ -23,6 +24,7 @@ Robot::Robot(){
 
 Robot::Robot(int id){
 	this->vel = 0;
+	this->steer = 0;
 	this->lx = 0;
 	this->ly = 0;
 	this->lt = 0;
@@ -41,13 +43,14 @@ Robot::Robot(int id){
 
 Robot::~Robot(){};
 
-int Robot::init(double x,double y,double w,double h,double t,double vel,vector<pair<double, double>> shape){
+int Robot::init(double x,double y,double w,double h,double t,double vel,double s,vector<pair<double, double>> shape){
 	wire.x = x;
 	wire.y = y;
 	wire.w = w;
 	wire.h = h;
 	wire.t = t;
 	this->vel = vel;
+	this->steer = s;
 	return wire.init(x,y,w,h,t,shape);
 }
 
@@ -64,6 +67,7 @@ void Robot::setGoalTargetPos(double gx,double gy){
 
 void Robot::update(bool col){
 
+	// GILBERTO's DEMO CODE ::::::::::::::::::::::::::::::::::::::::::
 	// Distance to target
 	// double dlx = lx - wire.x;
 	// double dly = ly - wire.y;
@@ -96,7 +100,7 @@ void Robot::update(bool col){
 	// 	ox = wire.x;
 	// 	oy = wire.y;
 	// }
-
+	// END GILBERTO's DEMO CODE ::::::::::::::::::::::::::::::::::::::
 
 	// Update neighbor sets for rRep, rOri, rAtr
 	updateNeighbors();
@@ -104,141 +108,108 @@ void Robot::update(bool col){
 	double td = swarm();
 	// Update heading and velocities
 	// Wire representation requires conversion to degrees
-	// 0.05 is the heading change rate --> TODO: Make this a parameter
-
+	// Coordinate frame corrections -> Not sure if a simpler way exists...
 	if (wire.t > 180)
 		wire.t -= 360;
-
 	if (wire.t < -180)
 		wire.t += 360;
-
-	double step = 0.05;
-	if (td*180/PI-wire.t <= 180 && td*180/PI-wire.t >= -180)
-		wire.t += step*(td*180/PI-wire.t);
+	double delta = td*180/PI-wire.t;
+	if ( delta <= 180 && delta >= -180)
+		wire.t += this->steer*(delta);
 	else{
-		if (td*180/PI-wire.t < -180)
-			wire.t += step*(td*180/PI-wire.t+360);
-		if (td*180/PI-wire.t > 180)
-			wire.t += step*(td*180/PI-wire.t-360);
+		if (delta < -180)
+			wire.t += this->steer*(delta+360);
+		if (delta > 180)
+			wire.t += this->steer*(delta-360);
 	}
-
-	// cout << "Desired: " << td*180/PI << "True: " << wire.t << endl;
-
+	// Update positions
 	vx = vel*cos(wire.t*PI/180);
 	vy = vel*sin(wire.t*PI/180);
 	// Send velocity commands
-	// cout << "ID: " << id << " " << wire.x << " " << wire.y << endl;
 	wire.x += vx;
 	wire.y += vy;
-
-
 };
 
 vector<int> Robot::getNeighbors(double radius){
-	// cout << "Getting Nbors in radius: " << radius << endl;
-	// cout << "Flock size: " << this->flock.size() << endl;
-	// cout << "My ID: " << this->id << endl;
+	// Get agents in radius
 	vector <int> nbors = {};
 	for (int i = 0; i < this->flock->size(); i++){
 		Robot current = this->flock->at(i);
 		if (current.id != this->id && distanceToRobot(current)<=radius){
 			nbors.push_back(current.id);
-			// cout << "Nbor ID: " << current.id << endl;
 		}
 	}
 	return nbors;
  }
 
+ vector<int> Robot::getNeighbors(double radiusMin, double radiusMax){
+ 	// Get agents between radii
+	vector <int> nbors = {};
+	for (int i = 0; i < this->flock->size(); i++){
+		Robot current = this->flock->at(i);
+		if (current.id != this->id && distanceToRobot(current)<=radiusMax && distanceToRobot(current)>=radiusMin){
+			nbors.push_back(current.id);
+		}
+	}
+	return nbors;
+ }
+
+
  void Robot::updateNeighbors(){
- 	// TODO: Members of nRep could not exist in nOri or nAtr
+ 	// Update flocking neighbors
  	this->nRep = this->getNeighbors(this->rRep);
  	this->nOri = this->getNeighbors(this->rOri);
- 	this->nAtr = this->getNeighbors(this->rAtr);
- 	// cout << this->nRep.size() << this->nOri.size() << this->nAtr.size() << endl;
+ 	this->nAtr = this->getNeighbors(this->rRep, this->rAtr);
  }
 
  double Robot::swarm(){
  	// Returns next heading (in radians) based on local interactions
- 	// cout << "Rules: " << this->reynoldsRules() << "Wrep: " << this->wallRepulsion(250, 250) << endl;
-
- 	double wRep = this->wallRepulsion(250, 250);
-
+ 	double wRep = this->wallRepulsion(WORLD_SIZE_X, WORLD_SIZE_Y);
  	if (wRep == wRep)
  		return wRep;
  	else
  		return this->reynoldsRules();
-
  }
 
  double Robot::reynoldsRules(){
+ 	// Returns desired heading based on swarming rules
+ 	// Repulsion Vector
  	double repX = 0;
  	double repY = 0;
  	for (int i = 0; i < this->nRep.size(); i++){
  		double dx =  this->wire.x - this->flock->at(nRep[i]).wire.x;
  		double dy =  this->wire.y - this->flock->at(nRep[i]).wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
-		repX += dx/d/d;///d/d;	
-		repY += dy/d/d;///d/d;	
+		repX += dx/d/d;	
+		repY += dy/d/d;
  	}
-
- 	// double oriH = 0;
- 	// double sum = 0;
- 	// double sumd = 0;
- 	// double prod = 1;
- 	// for (int i = 0; i < this->nOri.size(); i++){
- 	// 	double dx =  this->wire.x - this->flock[nOri[i]].wire.x;
- 	// 	double dy =  this->wire.y - this->flock[nOri[i]].wire.y;
- 	// 	double d = sqrt(pow(dx,2) + pow(dy,2));
- 	// 	double th = this->flock[nOri[i]].wire.t;
-		// sum += th/d;
-		// sumd += d;	
-		// prod *= d;
- 	// }
-
+ 	// Orientation Vector
   	double oriX = 0;
   	double oriY = 0;
  	double sum = 0;
  	int cnt = 0;
  	for (int i = 0; i < this->nOri.size(); i++){
- 		// cout << " i: " << i << "Robot: " << nOri[i] << endl;
- 		// cout << "XY " << this->flock[nOri[i]].wire.x << " " << this->flock[nOri[i]].wire.t << endl;
  		double dx =  this->wire.x - this->flock->at(nOri[i]).wire.x;
  		double dy =  this->wire.y - this->flock->at(nOri[i]).wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
  		double th = this->flock->at(nOri[i]).wire.t*PI/180;
- 		// DO THE NORMS CORRECTLY!!
 		oriX += cos(th)/d;
  		oriY += sin(th)/d;
- 		// cout << " th: " << th;
-		// sum += th;
-		// cnt++;
  	}
-
-
- 	// cout << "sum " << sum << " " << oriH << endl;
-
-
+ 	// Attraction Vector
   	double atrX = 0;
  	double atrY = 0;
  	for (int i = 0; i < this->nAtr.size(); i++){
  		double dx = this->flock->at(nAtr[i]).wire.x - this->wire.x;
  		double dy = this->flock->at(nAtr[i]).wire.y - this->wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
-		atrX += dx/d/d;///d/d;	
-		atrY += dy/d/d;///d/d;	
+		atrX += dx/d/d;	
+		atrY += dy/d/d;
  	}
-
- 	// cout << "Att Vel: " <<  atrX <<  " " << atrY <<  " " <<  atan2(atrY, atrX) << endl;
- 	// return (atan2(atrY, atrX) + atan2(repY, repX) + oriH) / 3.0;
- 	// return atan2(atrY + repY, atrX + repX);
- 	// cout >> oriH >> endl;
-
- 	// if (repY == 0 && repX == 0)
- 	// 	return wire.t*PI/180;
- 	// else
- 	//  	return atan2(repY, repX);
- 	double x = repX + atrX*0.4 + oriX;
- 	double y = repY + atrY*0.4 + oriY;
+ 	// Add up all velocities, normalized and weighted by distance
+ 	double x = repX + atrX + oriX;
+ 	double y = repY + atrY + oriY;
+ 	// Go straight in the absence of neighbors
  	if (x == 0 && y == 0)
  		return wire.t*PI/180;
  	else
@@ -250,25 +221,11 @@ vector<int> Robot::getNeighbors(double radius){
 	double wallX = 0;
  	double wallY = 0;
  	bool noWalls = true;
- 	if (wire.x >= xlim){
- 		noWalls = false;
- 		wallX = xlim - wire.x;
- 	}
- 	if (wire.x <= -xlim){
- 		noWalls = false;
- 		wallX = xlim - wire.x;
- 	}
- 	if (wire.y >= ylim){
- 		noWalls = false;
- 		wallY = ylim - wire.y;
- 	}
- 	if (wire.y <= -ylim){
- 		noWalls = false;
- 		wallY = ylim - wire.y;
- 	}
- 	if (noWalls) 
- 		return NAN;
- 	// cout << "My XY: "<< wire.x << " " << wire.y << " MY HEADING: " << wire.t << "Desired: " << atan2(wallY, wallX) << endl;
+ 	if (wire.x >= xlim){noWalls = false; wallX = xlim - wire.x;}
+ 	if (wire.x <= -xlim){noWalls = false; wallX = xlim - wire.x;}
+ 	if (wire.y >= ylim){noWalls = false; wallY = ylim - wire.y;}
+ 	if (wire.y <= -ylim){noWalls = false; wallY = ylim - wire.y;}
+ 	if (noWalls) {return NAN;}
  	return atan2(wallY, wallX);
  }
 

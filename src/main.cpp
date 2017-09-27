@@ -111,7 +111,7 @@ int main(int argc, char **argv){
 	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		flock.push_back(Robot(i));
-		flock.at(flock.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,shape);
+		flock.at(flock.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape);
 		flock.at(flock.size()-1).respawn(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
 
 	}
@@ -408,6 +408,16 @@ void RenderScene(){
 
 	// Space coordinates
 	glPushMatrix();
+
+		// TODO: DRAW WORLD BOUNDS ======================================
+		// glBegin(GL_LINE_LOOP);
+		// 	glVertex2f(view_x+,-view_y);
+		// 	glVertex2f(view_x,WORLD_SIZE_X-view_y);
+		// 	glVertex2f(WORLD_SIZE_Y+view_x,WORLD_SIZE_X-view_y);
+		// 	glVertex2f(WORLD_SIZE_Y+view_x,-view_y);
+		// glEnd();
+		// ==============================================================
+
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		gluOrtho2D(x_min,x_max,y_min,y_max);

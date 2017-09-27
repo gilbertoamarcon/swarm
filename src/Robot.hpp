@@ -10,10 +10,10 @@ Robot are represented by a wire-shaped object called 'wire'.
 
 class Robot{
 
-	//private:
-	public:
+	private:
 		int id; 	// Robot ID
 		double vel;	// Absolute linear velocity
+		double steer; // Absolute angular velocity
 
 		// Goal Target Position/Angle
 		double lx;
@@ -30,11 +30,6 @@ class Robot{
 		double vy;
 		double vt;
 
-		// Reynold's Radii
-		double rRep;
-		double rOri;
-		double rAtr;
-
 		// Neighbor Sets
 		vector<int> nRep;
 		vector<int> nOri;
@@ -42,10 +37,13 @@ class Robot{
 
 		// Vector of Neighbor IDs
 		vector <int> nbors;
+	public:
+		// Reynold's Radii
+		double rRep;
+		double rOri;
+		double rAtr;
 		// Vector of all robots in the swarm
 		vector <Robot> *flock;
-
-	// public:
 
 		bool selected; // User selected (my mouse selection)
 		Wired wire;		// Visual representation  
@@ -53,13 +51,14 @@ class Robot{
 		Robot();
 		Robot(int id);
 		virtual ~Robot();
-		int init(double x,double y,double w,double h,double r,double vel,vector<pair<double, double>> shape);
+		int init(double x,double y,double w,double h,double r,double vel,double s,vector<pair<double, double>> shape);
 		void respawn(double x,double y);
 		void setGoalTargetPos(double gx,double gy);
 		void update(bool col);
 		void updateNeighbors();
 		void render();
 		vector<int> getNeighbors(double radius);
+		vector<int> getNeighbors(double radiusMin, double radiusMax);
 		double swarm();
 		double reynoldsRules();
 		double wallRepulsion(double xlim, double ylim);
