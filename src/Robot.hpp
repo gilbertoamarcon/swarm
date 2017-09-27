@@ -43,7 +43,7 @@ class Robot{
 		// Vector of Neighbor IDs
 		vector <int> nbors;
 		// Vector of all robots in the swarm
-		vector <Robot> flock;
+		vector <Robot> *flock;
 
 	// public:
 
@@ -64,7 +64,7 @@ class Robot{
 		double reynoldsRules();
 		double wallRepulsion(double xlim, double ylim);
 		double distanceToPoint(double x, double y);
-		double distanceToRobot(vector<Robot> flock, int id);
+		double distanceToRobot(vector<Robot> *flock, int id);
 		double distanceToRobot(Robot robot);
 };
 

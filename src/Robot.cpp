@@ -131,8 +131,6 @@ void Robot::update(bool col){
 	wire.x += vx;
 	wire.y += vy;
 
-	// TODO: Make flock pointer array
-	this->flock[id].wire = wire;
 
 };
 
@@ -141,8 +139,8 @@ vector<int> Robot::getNeighbors(double radius){
 	// cout << "Flock size: " << this->flock.size() << endl;
 	// cout << "My ID: " << this->id << endl;
 	vector <int> nbors = {};
-	for (int i = 0; i < this->flock.size(); i++){
-		Robot current = this->flock[i];
+	for (int i = 0; i < this->flock->size(); i++){
+		Robot current = this->flock->at(i);
 		if (current.id != this->id && distanceToRobot(current)<=radius){
 			nbors.push_back(current.id);
 			// cout << "Nbor ID: " << current.id << endl;
@@ -161,23 +159,26 @@ vector<int> Robot::getNeighbors(double radius){
 
  double Robot::swarm(){
  	// Returns next heading (in radians) based on local interactions
- 	if (this->wallRepulsion(200, 200) != 0)
- 		return this->wallRepulsion(200, 200);
- 	else if(this->reynoldsRules() != 0)
- 		return this->reynoldsRules();
+ 	// cout << "Rules: " << this->reynoldsRules() << "Wrep: " << this->wallRepulsion(250, 250) << endl;
+
+ 	double wRep = this->wallRepulsion(250, 250);
+
+ 	if (wRep == wRep)
+ 		return wRep;
  	else
- 		return wire.t*PI/180;
+ 		return this->reynoldsRules();
+
  }
 
  double Robot::reynoldsRules(){
  	double repX = 0;
  	double repY = 0;
  	for (int i = 0; i < this->nRep.size(); i++){
- 		double dx =  this->wire.x - this->flock[nRep[i]].wire.x;
- 		double dy =  this->wire.y - this->flock[nRep[i]].wire.y;
+ 		double dx =  this->wire.x - this->flock->at(nRep[i]).wire.x;
+ 		double dy =  this->wire.y - this->flock->at(nRep[i]).wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
-		repX += dx/d;	
-		repY += dy/d;	
+		repX += dx/d/d;	
+		repY += dy/d/d;	
  	}
 
  	// double oriH = 0;
@@ -203,7 +204,7 @@ vector<int> Robot::getNeighbors(double radius){
  		// double dx =  this->wire.x - this->flock[nOri[i]].wire.x;
  		// double dy =  this->wire.y - this->flock[nOri[i]].wire.y;
  		// double d = sqrt(pow(dx,2) + pow(dy,2));
- 		double th = this->flock[nOri[i]].wire.t*PI/180;
+ 		double th = this->flock->at(nOri[i]).wire.t*PI/180;
  		// cout << " th: " << th;
 		sum += th;
 		cnt++;
@@ -217,30 +218,50 @@ vector<int> Robot::getNeighbors(double radius){
   	double atrX = 0;
  	double atrY = 0;
  	for (int i = 0; i < this->nAtr.size(); i++){
- 		double dx = this->flock[nAtr[i]].wire.x - this->wire.x;
- 		double dy = this->flock[nAtr[i]].wire.y - this->wire.y;
+ 		double dx = this->flock->at(nAtr[i]).wire.x - this->wire.x;
+ 		double dy = this->flock->at(nAtr[i]).wire.y - this->wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
-		atrX += dx/d;	
-		atrY += dy/d;	
+		atrX += dx/d/d;	
+		atrY += dy/d/d;	
  	}
+
+ 	// cout << "Att Vel: " <<  atrX <<  " " << atrY <<  " " <<  atan2(atrY, atrX) << endl;
  	// return (atan2(atrY, atrX) + atan2(repY, repX) + oriH) / 3.0;
  	// return atan2(atrY + repY, atrX + repX);
  	// cout >> oriH >> endl;
- 	// return atan2(repY, repX);
+
+ 	// if (repY == 0 && repX == 0)
+ 	// 	return wire.t*PI/180;
+ 	// else
+ 	//  	return atan2(repY, repX);
+
+ 	return (atan2(repY, repX) + atan2(atrY, atrX)) / 2
  }
 
  double Robot::wallRepulsion(double xlim, double ylim){
  	// Returns heading based on wall repulsions
 	double wallX = 0;
  	double wallY = 0;
- 	if (wire.x >= xlim)
+ 	bool noWalls = true;
+ 	if (wire.x >= xlim){
+ 		noWalls = false;
  		wallX = xlim - wire.x;
- 	if (wire.x <= -xlim)
+ 	}
+ 	if (wire.x <= -xlim){
+ 		noWalls = false;
  		wallX = xlim - wire.x;
- 	if (wire.y >= ylim)
+ 	}
+ 	if (wire.y >= ylim){
+ 		noWalls = false;
  		wallY = ylim - wire.y;
- 	if (wire.y <= -ylim)
+ 	}
+ 	if (wire.y <= -ylim){
+ 		noWalls = false;
  		wallY = ylim - wire.y;
+ 	}
+ 	if (noWalls) 
+ 		return NAN;
+ 	// cout << "My XY: "<< wire.x << " " << wire.y << " MY HEADING: " << wire.t << "Desired: " << atan2(wallY, wallX) << endl;
  	return atan2(wallY, wallX);
  }
 
@@ -248,8 +269,8 @@ vector<int> Robot::getNeighbors(double radius){
  	return sqrt(pow(this->wire.x - x, 2) + pow(this->wire.y - y, 2));
  }
 
- double Robot::distanceToRobot(vector<Robot> flock, int id){
- 	return this->distanceToPoint(flock[id].wire.x, flock[id].wire.y);
+ double Robot::distanceToRobot(vector<Robot> *flock, int id){
+ 	return this->distanceToPoint(flock->at(id).wire.x, flock->at(id).wire.y);
  }
 
  double Robot::distanceToRobot(Robot robot){

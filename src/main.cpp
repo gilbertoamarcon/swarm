@@ -17,8 +17,8 @@ double mouse_gnd_x		= 0;
 double mouse_gnd_y		= 0;
 
 // Screen Resolution
-int window_w			= 0;
-int window_h			= 0;
+int window_w			= 600;
+int window_h			= 800;
 
 // Camera position/motion
 double view_x			= 0;
@@ -118,11 +118,11 @@ int main(int argc, char **argv){
 
 	for(int i = 0; i < flock.size(); i++){
 		// Set Flock
-		flock.at(i).flock = flock;
+		flock.at(i).flock = &flock;
 		// Set Radii
-		flock.at(i).rRep = 75;
-		flock.at(i).rOri = 200;
-		flock.at(i).rAtr = 400;
+		flock.at(i).rRep = 50;
+		flock.at(i).rOri = 100;
+		flock.at(i).rAtr = 200;
 	}
 
 	// Main loop
@@ -133,10 +133,12 @@ int main(int argc, char **argv){
 
 // Get the horizontal and vertical screen sizes in pixel
 void getScreenResolution(int& h, int& v){
-	Display* d = XOpenDisplay(NULL);
-	Screen*  s = DefaultScreenOfDisplay(d);
-	h   = s->width;
-	v   = s->height;
+	if (h == 0 && v == 0){
+		Display* d = XOpenDisplay(NULL);
+		Screen*  s = DefaultScreenOfDisplay(d);
+		h   = s->width;
+		v   = s->height;
+	}
 }
 
 // OpenGL initialization
