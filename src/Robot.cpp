@@ -1,6 +1,5 @@
 #include "Robot.hpp"
 #include <cmath>
-
 #include <iostream>
 using namespace std;
 
@@ -82,16 +81,16 @@ double Robot::swarm(){
 		return this->reynolds_rules();
 }
 
-void Robot::compute_force(set<Robot*> &neighbors, double &f_x, double &f_y){
-	f_x = 0.0;
-	f_y = 0.0;
+pair<double, double> Robot::compute_force(set<Robot*> &neighbors){
+	pair<double,double> force(0.0,0.0);
 	for(auto &r : neighbors){
 		double dx = r->x - this->x;
 		double dy = r->y - this->y;
 		double d2 = pow(dx,2) + pow(dy,2);
-		f_x += dx/d2;
-		f_y += dy/d2;
+		force.first  += dx/d2;
+		force.second += dy/d2;
 	}
+	return force;
 }
 
 // Returns desired heading based on swarming rules
@@ -101,28 +100,23 @@ double Robot::reynolds_rules(){
 	update_neighbors();
 
 	// Repulsion Vector
-	double rep_x = 0;
-	double rep_y = 0;
-	compute_force(neighbor_rep,rep_x,rep_y);
+	pair<double,double> rep = compute_force(neighbor_rep);
 
 	// Attraction Vector
-	double att_x = 0;
-	double att_y = 0;
-	compute_force(neighbor_att,att_x,att_y);
+	pair<double,double> att = compute_force(neighbor_att);
 
 	// Orientation Vector
-	double ori_x = 0;
-	double ori_y = 0;
+	pair<double,double> ori(0.0,0.0);
 	for(auto &r : neighbor_ori){
 		double d = distance_to_robot(r);
 		double th = deg_to_rad(r->t);
-		ori_x += cos(th)/d;
-		ori_y += sin(th)/d;
+		ori.first  += cos(th)/d;
+		ori.second += sin(th)/d;
 	}
 
 	// Add up all velocities, normalized and weighted by distance
-	double x = - rep_x + att_x + ori_x;
-	double y = - rep_y + att_y + ori_y;
+	double x = -rep.first  +att.first  +ori.first;
+	double y = -rep.second +att.second +ori.second;
 
 	// Go straight in the absence of neighbors
 	if(x == 0 && y == 0)
