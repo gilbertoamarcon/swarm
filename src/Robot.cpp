@@ -13,7 +13,7 @@ Robot::Robot(
 				double v,
 				double a,
 				vector<pair<double, double>> shape,
-				vector <Robot> *flock,
+				vector<Robot> *flock,
 				double radius_rep,
 				double radius_ori,
 				double radius_att
@@ -57,11 +57,11 @@ void Robot::update(){
 };
 
 // Get agents between radii
-vector<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
-	vector<Robot*> nbors;
+set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
+	set<Robot*> nbors;
 	for(auto &r : *flock)
 		if(this != &r && distance_to_robot(&r) <= radiusMax && distance_to_robot(&r) >= radiusMin)
-			nbors.push_back(&r);
+			nbors.insert(&r);
 	return nbors;
 }
 
@@ -82,7 +82,7 @@ double Robot::swarm(){
 		return this->reynolds_rules();
 }
 
-void Robot::compute_force(vector<Robot*> &neighbors, double &f_x, double &f_y){
+void Robot::compute_force(set<Robot*> &neighbors, double &f_x, double &f_y){
 	f_x = 0.0;
 	f_y = 0.0;
 	for(auto &r : neighbors){

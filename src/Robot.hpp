@@ -5,7 +5,6 @@
 
 /*
 Robot representation.
-Robot are represented by a wire-shaped object called 'wire'.
 */
 
 class Robot: public Wired{
@@ -24,12 +23,12 @@ class Robot: public Wired{
 		double radius_att;
 
 		// Vector of all robots in the swarm
-		vector <Robot> *flock;
+		vector<Robot> *flock;
 
 		// Neighbor Sets
-		vector<Robot*> neighbor_rep;
-		vector<Robot*> neighbor_ori;
-		vector<Robot*> neighbor_att;
+		set<Robot*> neighbor_rep;
+		set<Robot*> neighbor_ori;
+		set<Robot*> neighbor_att;
 
 	public:
 
@@ -44,7 +43,7 @@ class Robot: public Wired{
 				double v,
 				double s,
 				vector<pair<double, double>> shape,
-				vector <Robot> *flock,
+				vector<Robot> *flock,
 				double radius_rep,
 				double radius_ori,
 				double radius_att
@@ -54,9 +53,9 @@ class Robot: public Wired{
 		void set_goal_target_pos(double gx,double gy);
 		void update();
 		void update_neighbors();
-		vector<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
+		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();
-		void compute_force(vector<Robot*> &neighbors, double &f_x, double &f_y);
+		void compute_force(set<Robot*> &neighbors, double &f_x, double &f_y);
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
 
