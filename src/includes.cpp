@@ -1,6 +1,10 @@
 #include "includes.hpp"
 
-// Angle Conversion
+// Angle Operations
+void angle_wrap(double &input){
+	if(abs(input) > 180)
+		input -= 360*(2*(input>0)-1);
+}
 double deg_to_rad(double input){
 	return PI*input/180.0;
 }

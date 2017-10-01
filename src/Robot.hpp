@@ -68,6 +68,7 @@ class Robot: public Wired{
 		void update_neighbors();
 		vector<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();
+		void compute_force(vector<Robot*> &neighbors, double &f_x, double &f_y);
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
 
