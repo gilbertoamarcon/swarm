@@ -4,53 +4,32 @@
 #include <iostream>
 using namespace std;
 
-Robot::Robot(){
-	this->vel = 0;
-	this->steer = 0;
-	this->lx = 0;
-	this->ly = 0;
-	this->lt = 0;
-	this->ox = 0;
-	this->oy = 0;
-	this->ot = 0;
-	this->vx = 0;
-	this->vy = 0;
-	this->vt = 0;
-	this->neighbor_rep;
-	this->neighbor_ori;
-	this->neighbor_att;
+Robot::Robot(
+				double x,
+				double y,
+				double w,
+				double h,
+				double r,
+				double v,
+				double a,
+				vector<pair<double, double>> shape,
+				vector <Robot> *flock,
+				double radius_rep,
+				double radius_ori,
+				double radius_att
+			):Wired(x,y,w,h,r,shape){
+	this->v				= v;
+	this->a				= a;
+	this->gx			= 0;
+	this->gy			= 0;
+	this->radius_rep	= radius_rep;
+	this->radius_ori	= radius_ori;
+	this->radius_att	= radius_att;
+	this->flock			= flock;
 	this->selected = false;
 }
 
 Robot::~Robot(){};
-
-int Robot::init(
-					double x,
-					double y,
-					double w,
-					double h,
-					double r,
-					double vel,
-					double s,
-					vector<pair<double, double>> shape,
-					vector <Robot> *flock,
-					double radius_rep,
-					double radius_ori,
-					double radius_att
-				){
-	this->x		= x;
-	this->y		= y;
-	this->w		= w;
-	this->h		= h;
-	this->t		= t;
-	this->vel	= vel;
-	this->steer	= s;
-	this->shape	= shape;
-	this->flock	= flock;
-	this->radius_rep	= radius_rep;
-	this->radius_ori	= radius_ori;
-	this->radius_att	= radius_att;
-}
 
 void Robot::respawn(double x,double y){
 	this->x = x;
@@ -58,30 +37,22 @@ void Robot::respawn(double x,double y){
 }
 
 void Robot::set_goal_target_pos(double gx,double gy){
-	this->lx = gx;
-	this->ly = gy;
-	this->lt = 0;
+	this->gx = gx;
+	this->gy = gy;
 }
 
 void Robot::update(){
 
-	// Get desired heading based on swarming interactions
-	double td = swarm();
-
 	// Update heading and velocities
-	double delta = rad_to_deg(td)-this->t;
+	double delta = rad_to_deg(swarm())-this->t;
 	angle_wrap(delta);
 
-	this->t += this->steer*delta;
+	this->t += this->a*delta;
 	angle_wrap(this->t);
 
-	// Update positions
-	vx = vel*cos(deg_to_rad(this->t));
-	vy = vel*sin(deg_to_rad(this->t));
-
 	// Send velocity commands
-	this->x += vx;
-	this->y += vy;
+	this->x += v*cos(deg_to_rad(this->t));
+	this->y += v*sin(deg_to_rad(this->t));
 
 };
 

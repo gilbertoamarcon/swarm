@@ -108,10 +108,9 @@ int main(int argc, char **argv){
 
 	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
-		Robot robot;
 		double x = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
 		double y = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		robot.init(x,y,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS);
+		Robot robot(x,y,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS);
 		flock.push_back(robot);
 	}
 

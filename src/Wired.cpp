@@ -1,16 +1,6 @@
 #include "Wired.hpp"
 
-Wired::Wired(){
-	this->x = 0;
-	this->y = 0;
-	this->w = 0;
-	this->h = 0;
-	this->t = 0;
-};
-
-Wired::~Wired(){};
-
-int Wired::init(double x,double y,double w,double h,double t,vector<pair<double, double>> shape){
+Wired::Wired(double x,double y,double w,double h,double t,vector<pair<double, double>> shape){
 	this->x = x;
 	this->y = y;
 	this->w = w;
@@ -18,6 +8,8 @@ int Wired::init(double x,double y,double w,double h,double t,vector<pair<double,
 	this->t = t;
 	this->shape = shape;
 };
+
+Wired::~Wired(){};
 
 void Wired::render(bool global,bool highlight){
 	glPushMatrix();
