@@ -16,29 +16,10 @@ Robot::Robot(){
 	this->vx = 0;
 	this->vy = 0;
 	this->vt = 0;
-	this->neighbor_rep = {};
-	this->neighbor_ori = {};
-	this->neighbor_att = {};
+	this->neighbor_rep;
+	this->neighbor_ori;
+	this->neighbor_att;
 	this->selected = false;
-}
-
-Robot::Robot(int id){
-	this->vel = 0;
-	this->steer = 0;
-	this->lx = 0;
-	this->ly = 0;
-	this->lt = 0;
-	this->ox = 0;
-	this->oy = 0;
-	this->ot = 0;
-	this->vx = 0;
-	this->vy = 0;
-	this->vt = 0;
-	this->neighbor_rep = {};
-	this->neighbor_ori = {};
-	this->neighbor_att = {};
-	this->selected = false;
-	this->id = id;
 }
 
 Robot::~Robot(){};
@@ -76,7 +57,7 @@ void Robot::respawn(double x,double y){
 	this->y = y;
 }
 
-void Robot::setGoalTargetPos(double gx,double gy){
+void Robot::set_goal_target_pos(double gx,double gy){
 	this->lx = gx;
 	this->ly = gy;
 	this->lt = 0;
@@ -85,7 +66,7 @@ void Robot::setGoalTargetPos(double gx,double gy){
 void Robot::update(){
 
 	// Update neighbor sets for radius_rep, radius_ori, radius_att
-	updateNeighbors();
+	update_neighbors();
 
 	// Get desired heading based on swarming interactions
 	double td = swarm();
@@ -119,69 +100,74 @@ void Robot::update(){
 };
 
 // Get agents between radii
- vector<int> Robot::getNeighbors(double radiusMax, double radiusMin = 0.0){
-	vector <int> nbors = {};
-	for(auto const &r : *flock)
-		if(distanceToRobot(r) < radiusMax && distanceToRobot(r) > radiusMin)
-			nbors.push_back(r.id);
+vector<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
+	vector<Robot*> nbors;
+	for(auto &r : *flock)
+		if(this != &r && distance_to_robot(&r) <= radiusMax && distance_to_robot(&r) >= radiusMin)
+			nbors.push_back(&r);
 	return nbors;
 }
 
 
 // Update flocking neighbors
- void Robot::updateNeighbors(){
-	this->neighbor_rep = this->getNeighbors(this->radius_rep);
-	this->neighbor_ori = this->getNeighbors(this->radius_ori);
-	this->neighbor_att = this->getNeighbors(this->radius_att, this->radius_rep);
+ void Robot::update_neighbors(){
+	this->neighbor_rep = this->get_neighbors(this->radius_rep);
+	this->neighbor_ori = this->get_neighbors(this->radius_ori);
+	this->neighbor_att = this->get_neighbors(this->radius_att, this->radius_rep);
 }
 
 // Returns next heading (in radians) based on local interactions
 double Robot::swarm(){
-	double wRep = this->wallRepulsion(WORLD_SIZE_X, WORLD_SIZE_Y);
+	double wRep = this->wall_repulsion(WORLD_SIZE_X, WORLD_SIZE_Y);
 	if(wRep == wRep)
 		return wRep;
 	else
-		return this->reynoldsRules();
+		return this->reynolds_rules();
 }
 
 // Returns desired heading based on swarming rules
-double Robot::reynoldsRules(){
+double Robot::reynolds_rules(){
+
 	// Repulsion Vector
 	double repX = 0;
 	double repY = 0;
-	for(int i = 0; i < this->neighbor_rep.size(); i++){
-		double dx =  this->x - this->flock->at(neighbor_rep[i]).x;
-		double dy =  this->y - this->flock->at(neighbor_rep[i]).y;
+	for(auto const &r : neighbor_rep){
+		double dx =  this->x - r->x;
+		double dy =  this->y - r->y;
 		double d = sqrt(pow(dx,2) + pow(dy,2));
 		repX += dx/d/d;	
 		repY += dy/d/d;
 	}
+
 	// Orientation Vector
 	double oriX = 0;
 	double oriY = 0;
 	double sum = 0;
 	int cnt = 0;
-	for(int i = 0; i < this->neighbor_ori.size(); i++){
-		double dx =  this->x - this->flock->at(neighbor_ori[i]).x;
-		double dy =  this->y - this->flock->at(neighbor_ori[i]).y;
+	for(auto const &r : neighbor_ori){
+		double dx =  this->x - r->x;
+		double dy =  this->y - r->y;
 		double d = sqrt(pow(dx,2) + pow(dy,2));
-		double th = deg_to_rad(this->flock->at(neighbor_ori[i]).t);
+		double th = deg_to_rad(r->t);
 		oriX += cos(th)/d;
 		oriY += sin(th)/d;
 	}
+
 	// Attraction Vector
 	double atrX = 0;
 	double atrY = 0;
-	for(int i = 0; i < this->neighbor_att.size(); i++){
-		double dx = this->flock->at(neighbor_att[i]).x - this->x;
-		double dy = this->flock->at(neighbor_att[i]).y - this->y;
+	for(auto const &r : neighbor_att){
+		double dx = r->x - this->x;
+		double dy = r->y - this->y;
 		double d = sqrt(pow(dx,2) + pow(dy,2));
 		atrX += dx/d/d;	
 		atrY += dy/d/d;
 	}
+
 	// Add up all velocities, normalized and weighted by distance
 	double x = repX + atrX + oriX;
 	double y = repY + atrY + oriY;
+
 	// Go straight in the absence of neighbors
 	if(x == 0 && y == 0)
 		return deg_to_rad(this->t);
@@ -190,7 +176,7 @@ double Robot::reynoldsRules(){
 }
 
 // Returns heading based on wall repulsions
-double Robot::wallRepulsion(double xlim, double ylim){
+double Robot::wall_repulsion(double xlim, double ylim){
 	double wallX = 0;
 	double wallY = 0;
 	bool noWalls = true;
@@ -202,21 +188,17 @@ double Robot::wallRepulsion(double xlim, double ylim){
 	return atan2(wallY, wallX);
 }
 
-double Robot::distanceToPoint(double x, double y){
+double Robot::distance_to_point(double x, double y){
 	return sqrt(pow(this->x - x, 2) + pow(this->y - y, 2));
 }
 
-double Robot::distanceToRobot(vector<Robot> *flock, int id){
-	return this->distanceToPoint(flock->at(id).x, flock->at(id).y);
+double Robot::distance_to_robot(Robot *robot){
+	return this->distance_to_point(robot->x, robot->y);
 }
 
-double Robot::distanceToRobot(Robot robot){
-	return this->distanceToPoint(robot.x, robot.y);
-}
-
- bool Robot::checkCol(){
-	for(auto r : *flock)
-		if(this->id != r.id){
+ bool Robot::check_col(){
+	for(auto const &r : *flock)
+		if(this != &r){
 			if(this->x+this->w/2 < r.x-r.w/2) continue;
 			if(this->x-this->w/2 > r.x+r.w/2) continue;
 			if(this->y+this->h/2 < r.y-r.h/2) continue;

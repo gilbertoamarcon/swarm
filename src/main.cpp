@@ -108,7 +108,7 @@ int main(int argc, char **argv){
 
 	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
-		Robot robot(i);
+		Robot robot;
 		double x = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
 		double y = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
 		robot.init(x,y,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS);
@@ -237,7 +237,7 @@ void mouseButton(int b,int s,int x,int y){
 				double candidateY = mouse_gnd_y;
 				for(auto &r : flock)
 					if(r.selected)
-						r.setGoalTargetPos(candidateX,candidateY);
+						r.set_goal_target_pos(candidateX,candidateY);
 				flag.x = mouse_gnd_x;
 				flag.y = mouse_gnd_y;
 			}

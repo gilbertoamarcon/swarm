@@ -30,15 +30,11 @@ class Robot: public Wired{
 		double vt;
 
 		// Neighbor Sets
-		vector<int> neighbor_rep;
-		vector<int> neighbor_ori;
-		vector<int> neighbor_att;
-
-		// Vector of Neighbor IDs
-		vector <int> nbors;
+		vector<Robot*> neighbor_rep;
+		vector<Robot*> neighbor_ori;
+		vector<Robot*> neighbor_att;
 
 	public:
-		int id; 	// Robot ID
 
 		// Reynold's Radii
 		double radius_rep;
@@ -51,7 +47,6 @@ class Robot: public Wired{
 		bool selected; // User selected (my mouse selection)
 
 		Robot();
-		Robot(int id);
 		virtual ~Robot();
 		int init(
 					double x,
@@ -68,18 +63,20 @@ class Robot: public Wired{
 					double radius_att
 				);
 		void respawn(double x,double y);
-		void setGoalTargetPos(double gx,double gy);
+		void set_goal_target_pos(double gx,double gy);
 		void update();
-		void updateNeighbors();
-		void render_robot();
-		vector<int> getNeighbors(double radiusMax, double radiusMin = 0.0);
+		void update_neighbors();
+		vector<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();
-		double reynoldsRules();
-		double wallRepulsion(double xlim, double ylim);
-		double distanceToPoint(double x, double y);
-		double distanceToRobot(vector<Robot> *flock, int id);
-		double distanceToRobot(Robot robot);
-		bool checkCol();
+		double reynolds_rules();
+		double wall_repulsion(double xlim, double ylim);
+
+		// Distances
+		double distance_to_point(double x, double y);
+		double distance_to_robot(Robot *robot);
+
+		bool check_col();
+		void render_robot();
 };
 
 #endif
