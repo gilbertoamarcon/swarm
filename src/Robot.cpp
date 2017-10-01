@@ -46,7 +46,7 @@ void Robot::update(){
 
 	double goal_t = this->t;
 	if(leader)
-		goal_t = atan2(gy-y, gx-x);
+		goal_t = leader_reasoning();
 	else
 		goal_t = swarm();
 
@@ -101,6 +101,24 @@ pair<double, double> Robot::compute_force(set<Robot*> &neighbors){
 		force.second += dy/d2;
 	}
 	return force;
+}
+
+pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors){
+	pair<double,double> centroid(0.0,0.0);
+	for(auto &r : neighbors){
+		centroid.first  += r->x;
+		centroid.second += r->y;
+	}
+	centroid.first  /= neighbors.size();
+	centroid.second /= neighbors.size();
+	return centroid;
+}
+
+double Robot::leader_reasoning(){
+	update_neighbors();
+	pair<double, double> neighbor_centroid = compute_centroid(neighbor_att);
+	// return atan2(neighbor_centroid.second-y, neighbor_centroid.first-x);
+	return atan2(gy-y, gx-x);
 }
 
 // Returns desired heading based on swarming rules

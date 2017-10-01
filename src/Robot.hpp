@@ -58,6 +58,8 @@ class Robot: public Wired{
 		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();
 		pair<double,double> compute_force(set<Robot*> &neighbors);
+		pair<double,double> compute_centroid(set<Robot*> &neighbors);
+		double leader_reasoning();
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
 
