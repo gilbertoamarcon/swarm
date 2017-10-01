@@ -58,9 +58,11 @@ void Robot::update(){
 // Get agents between radii
 set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
-	for(auto &r : *flock)
-		if(this != &r && distance_to_robot(&r) <= radiusMax && distance_to_robot(&r) >= radiusMin)
+	for(auto &r : *flock){
+		double d = distance_to_robot(&r);
+		if(this != &r && d <= radiusMax && d >= radiusMin)
 			nbors.insert(&r);
+	}
 	return nbors;
 }
 

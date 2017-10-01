@@ -17,8 +17,8 @@ double mouse_gnd_x		= 0;
 double mouse_gnd_y		= 0;
 
 // Screen Resolution
-int window_w			= 600;
-int window_h			= 800;
+int window_w			= 1000;
+int window_h			= 1000;
 
 // Camera position/motion
 double view_x			= 0;
@@ -58,7 +58,7 @@ double selY2			= 0;
 
 char statusBuffer[BUFFER_SIZE];
 
-void getScreenResolution(int& h, int& v);
+void getScreenResolution(int &h, int &v);
 
 void iniGl();
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv){
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		double x = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
 		double y = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		Robot robot(x,y,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS);
+		Robot robot(x,y,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS);
 		flock.push_back(robot);
 	}
 
@@ -121,12 +121,11 @@ int main(int argc, char **argv){
 }
 
 // Get the horizontal and vertical screen sizes in pixel
-void getScreenResolution(int& h, int& v){
-	if (h == 0 && v == 0){
+void getScreenResolution(int &h, int &v){
+	if(FULL_SCREEN){
 		Display* d = XOpenDisplay(NULL);
-		Screen*  s = DefaultScreenOfDisplay(d);
-		h   = s->width;
-		v   = s->height;
+		h   = DisplayWidth(d,0);
+		v   = DisplayHeight(d,0);
 	}
 }
 
@@ -151,7 +150,7 @@ void iniGl(){
 	glEnable(GL_LINE_SMOOTH);
 	glDisable(GL_ALPHA_TEST);
 	gluOrtho2D(x_min,x_max,y_min,y_max);
-	if (FULL_SCREEN)
+	if(FULL_SCREEN)
 		glutFullScreen();
 	glutSetCursor(GLUT_CURSOR_NONE);
 }

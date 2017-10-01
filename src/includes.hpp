@@ -26,14 +26,14 @@ using namespace std;
 // TODO: Add rally task
 
 // Sim Parameters
-#define NUM_ROBOTS		50
+#define NUM_ROBOTS		100
 #define SPAWN_RANGE		300
 #define ROBOT_VEL		1.00
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	100
-#define WORLD_SIZE_Y	100
+#define WORLD_SIZE_X	200
+#define WORLD_SIZE_Y	200
 
 // Flock Parameters
 #define REP_RADIUS 		20
@@ -50,7 +50,7 @@ using namespace std;
 
 // Camera Parameters
 #define CAM_SPEED		10
-#define SCN_SCALE		0.8
+#define SCN_SCALE		0.50
 
 // Keyboard Commands
 #define EXIT			27
