@@ -37,11 +37,14 @@ class Robot{
 
 		// Vector of Neighbor IDs
 		vector <int> nbors;
+
 	public:
+
 		// Reynold's Radii
 		double rRep;
 		double rOri;
 		double rAtr;
+
 		// Vector of all robots in the swarm
 		vector <Robot> *flock;
 

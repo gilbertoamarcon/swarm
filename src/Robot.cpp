@@ -67,67 +67,38 @@ void Robot::setGoalTargetPos(double gx,double gy){
 
 void Robot::update(bool col){
 
-	// GILBERTO's DEMO CODE ::::::::::::::::::::::::::::::::::::::::::
-	// Distance to target
-	// double dlx = lx - wire.x;
-	// double dly = ly - wire.y;
-	// double dl = sqrt(pow(dlx,2)+pow(dly,2));
-
-	// Direction to target
-	// double rx = dlx/dl;
-	// double ry = dly/dl;
-
-	// Angle to target
-	// if(dlx == 0.00)
-	// 	wire.t = 0.00;
-	// else{
-	// 	wire.t = (180/PI)*atan(dly/dlx);
-	// 	if(dlx < 0)
-	// 		wire.t += 180;
-	// }
-
-	// Stop if target was reached
-	// if(dl < DEFAULT_TOL*wire.w){
-	// 	rx = 0;
-	// 	ry = 0;
-	// }
-
-	// Col check
-	// if(col){
-	// 	wire.x = ox;
-	// 	wire.y = oy;
-	// }else{
-	// 	ox = wire.x;
-	// 	oy = wire.y;
-	// }
-	// END GILBERTO's DEMO CODE ::::::::::::::::::::::::::::::::::::::
-
 	// Update neighbor sets for rRep, rOri, rAtr
 	updateNeighbors();
+
 	// Get desired heading based on swarming interactions
 	double td = swarm();
+
 	// Update heading and velocities
 	// Wire representation requires conversion to degrees
 	// Coordinate frame corrections -> Not sure if a simpler way exists...
-	if (wire.t > 180)
-		wire.t -= 360;
-	if (wire.t < -180)
-		wire.t += 360;
-	double delta = td*180/PI-wire.t;
-	if ( delta <= 180 && delta >= -180)
+
+	// Angle warp around
+	if(abs(wire.t) > 180)
+		wire.t -= 360*(2*(wire.t>0)-1);
+
+	double delta = rad_to_deg(td)-wire.t;
+	if(delta <= 180 && delta >= -180)
 		wire.t += this->steer*(delta);
 	else{
-		if (delta < -180)
+		if(delta < -180)
 			wire.t += this->steer*(delta+360);
-		if (delta > 180)
+		if(delta > 180)
 			wire.t += this->steer*(delta-360);
 	}
+
 	// Update positions
-	vx = vel*cos(wire.t*PI/180);
-	vy = vel*sin(wire.t*PI/180);
+	vx = vel*cos(deg_to_rad(wire.t));
+	vy = vel*sin(deg_to_rad(wire.t));
+
 	// Send velocity commands
 	wire.x += vx;
 	wire.y += vy;
+
 };
 
 vector<int> Robot::getNeighbors(double radius){
@@ -162,8 +133,8 @@ vector<int> Robot::getNeighbors(double radius){
  	this->nAtr = this->getNeighbors(this->rRep, this->rAtr);
  }
 
+// Returns next heading (in radians) based on local interactions
  double Robot::swarm(){
- 	// Returns next heading (in radians) based on local interactions
  	double wRep = this->wallRepulsion(WORLD_SIZE_X, WORLD_SIZE_Y);
  	if (wRep == wRep)
  		return wRep;
@@ -171,8 +142,8 @@ vector<int> Robot::getNeighbors(double radius){
  		return this->reynoldsRules();
  }
 
+// Returns desired heading based on swarming rules
  double Robot::reynoldsRules(){
- 	// Returns desired heading based on swarming rules
  	// Repulsion Vector
  	double repX = 0;
  	double repY = 0;
@@ -192,7 +163,7 @@ vector<int> Robot::getNeighbors(double radius){
  		double dx =  this->wire.x - this->flock->at(nOri[i]).wire.x;
  		double dy =  this->wire.y - this->flock->at(nOri[i]).wire.y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
- 		double th = this->flock->at(nOri[i]).wire.t*PI/180;
+ 		double th = deg_to_rad(this->flock->at(nOri[i]).wire.t);
 		oriX += cos(th)/d;
  		oriY += sin(th)/d;
  	}
@@ -211,13 +182,13 @@ vector<int> Robot::getNeighbors(double radius){
  	double y = repY + atrY + oriY;
  	// Go straight in the absence of neighbors
  	if (x == 0 && y == 0)
- 		return wire.t*PI/180;
+ 		return deg_to_rad(wire.t);
  	else
  		return atan2(y, x);
  }
 
+// Returns heading based on wall repulsions
  double Robot::wallRepulsion(double xlim, double ylim){
- 	// Returns heading based on wall repulsions
 	double wallX = 0;
  	double wallY = 0;
  	bool noWalls = true;

@@ -63,4 +63,8 @@ using namespace std;
 #define RESET_VIEW_POS	'h'
 #define LOCK_VIEW_ROBOT	'v'
 
+// Angle Conversion
+double deg_to_rad(double input);
+double rad_to_deg(double input);
+
 #endif
