@@ -82,8 +82,6 @@ void keyReleased(unsigned char key, int x, int y);
 
 void updateValues(int n);
 
-bool checkCol(int index);
-
 void RenderScene();
 
 void codeTestOvunc();
@@ -110,19 +108,11 @@ int main(int argc, char **argv){
 
 	// Spawning robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
-		flock.push_back(Robot(i));
-		flock.at(flock.size()-1).init(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape);
-		flock.at(flock.size()-1).respawn(origin_x-rand()%SPAWN_RANGE+SPAWN_RANGE/2,origin_y-rand()%SPAWN_RANGE+SPAWN_RANGE/2);
-
-	}
-
-	for(int i = 0; i < flock.size(); i++){
-		// Set Flock
-		flock.at(i).flock = &flock;
-		// Set Radii
-		flock.at(i).rRep = REP_RADIUS;
-		flock.at(i).rOri = ORI_RADIUS;
-		flock.at(i).rAtr = ATR_RADIUS;
+		Robot robot(i);
+		double x = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		double y = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		robot.init(x,y,8,8,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS);
+		flock.push_back(robot);
 	}
 
 	// Main loop
@@ -169,12 +159,12 @@ void iniGl(){
 
 // Mouse click selection
 void singleSelect(){
-	for(int i = 0; i < flock.size(); i++){
-		if(flock.at(i).x-flock.at(i).w/2 > selX1){flock.at(i).selected = false;continue;}
-		if(flock.at(i).x+flock.at(i).w/2 < selX1){flock.at(i).selected = false;continue;}
-		if(flock.at(i).y-flock.at(i).h/2 > selY1){flock.at(i).selected = false;continue;}
-		if(flock.at(i).y+flock.at(i).h/2 < selY1){flock.at(i).selected = false;continue;}
-		flock.at(i).selected = true;
+	for(auto &r : flock){
+		if(r.x-r.w/2 > selX1){r.selected = false;continue;}
+		if(r.x+r.w/2 < selX1){r.selected = false;continue;}
+		if(r.y-r.h/2 > selY1){r.selected = false;continue;}
+		if(r.y+r.h/2 < selY1){r.selected = false;continue;}
+		r.selected = true;
 	}
 }
 
@@ -184,12 +174,12 @@ void areaSelect(){
 	double maxX = (selX2 > selX1)?selX2:selX1;
 	double minY = (selY2 > selY1)?selY1:selY2;
 	double maxY = (selY2 > selY1)?selY2:selY1;
-	for(int i = 0; i < flock.size(); i++){
-		if(flock.at(i).x-flock.at(i).w/2 < minX) continue;
-		if(flock.at(i).x+flock.at(i).w/2 > maxX) continue;
-		if(flock.at(i).y-flock.at(i).h/2 < minY) continue;
-		if(flock.at(i).y+flock.at(i).h/2 > maxY) continue;
-		flock.at(i).selected = true;
+	for(auto &r : flock){
+		if(r.x-r.w/2 < minX) continue;
+		if(r.x+r.w/2 > maxX) continue;
+		if(r.y-r.h/2 < minY) continue;
+		if(r.y+r.h/2 > maxY) continue;
+		r.selected = true;
 	}
 }
 
@@ -245,9 +235,9 @@ void mouseButton(int b,int s,int x,int y){
 				mouse_r = 1;
 				double candidateX = mouse_gnd_x;
 				double candidateY = mouse_gnd_y;
-				for(int i = 0; i < flock.size(); i++)
-					if(flock.at(i).selected)
-						flock.at(i).setGoalTargetPos(candidateX,candidateY);
+				for(auto &r : flock)
+					if(r.selected)
+						r.setGoalTargetPos(candidateX,candidateY);
 				flag.x = mouse_gnd_x;
 				flag.y = mouse_gnd_y;
 			}
@@ -354,10 +344,10 @@ void updateValues(int n){
 
 	// Camera view will track specific flock
 	if(lock_view_robot){
-		for(int i = 0; i < flock.size(); i++)
-			if(flock.at(i).selected){
-				view_x = flock.at(i).x;
-				view_y = flock.at(i).y;
+		for(auto const &r : flock)
+			if(r.selected){
+				view_x = r.x;
+				view_y = r.y;
 				break;
 			}
 	}
@@ -381,22 +371,9 @@ void updateValues(int n){
 	y_max = -view_y + scn_scale*window_h/2;
 
 	// Updating flock status
-	for(int i = 0; i < flock.size(); i++)
-		flock.at(i).update(checkCol(i));
+	for(auto &r : flock)
+		r.update();
 
-}
-
-// Collision check
-bool checkCol(int index){
-	for(int i = 0; i < flock.size(); i++)
-		if(i != index){
-			if(flock.at(index).x+flock.at(index).w/2 < flock.at(i).x-flock.at(i).w/2) continue;
-			if(flock.at(index).x-flock.at(index).w/2 > flock.at(i).x+flock.at(i).w/2) continue;
-			if(flock.at(index).y+flock.at(index).h/2 < flock.at(i).y-flock.at(i).h/2) continue;
-			if(flock.at(index).y-flock.at(index).h/2 > flock.at(i).y+flock.at(i).h/2) continue;
-			return true;
-		}	
-	return false;	
 }
 
 // Scene rendering
@@ -423,8 +400,8 @@ void RenderScene(){
 		gluOrtho2D(x_min,x_max,y_min,y_max);
 		glMatrixMode(GL_MODELVIEW);
 
-		for(int i = 0; i < flock.size(); i++)
-			flock.at(i).render_robot();
+		for(auto const &r : flock)
+			r.render_robot();
 		flag.render(1,0);
 
 		// Mouse selection

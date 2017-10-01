@@ -11,7 +11,6 @@ Robot are represented by a wire-shaped object called 'wire'.
 class Robot: public Wired{
 
 	private:
-		int id; 	// Robot ID
 		double vel;	// Absolute linear velocity
 		double steer; // Absolute angular velocity
 
@@ -39,6 +38,7 @@ class Robot: public Wired{
 		vector <int> nbors;
 
 	public:
+		int id; 	// Robot ID
 
 		// Reynold's Radii
 		double rRep;
@@ -53,10 +53,23 @@ class Robot: public Wired{
 		Robot();
 		Robot(int id);
 		virtual ~Robot();
-		int init(double x,double y,double w,double h,double r,double vel,double s,vector<pair<double, double>> shape);
+		int init(
+					double x,
+					double y,
+					double w,
+					double h,
+					double r,
+					double vel,
+					double s,
+					vector<pair<double, double>> shape,
+					vector <Robot> *flock,
+					double rRep,
+					double rOri,
+					double rAtr
+				);
 		void respawn(double x,double y);
 		void setGoalTargetPos(double gx,double gy);
-		void update(bool col);
+		void update();
 		void updateNeighbors();
 		void render_robot();
 		vector<int> getNeighbors(double radius);
@@ -67,6 +80,7 @@ class Robot: public Wired{
 		double distanceToPoint(double x, double y);
 		double distanceToRobot(vector<Robot> *flock, int id);
 		double distanceToRobot(Robot robot);
+		bool checkCol();
 };
 
 #endif
