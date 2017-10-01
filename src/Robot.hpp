@@ -30,9 +30,9 @@ class Robot: public Wired{
 		double vt;
 
 		// Neighbor Sets
-		vector<int> nRep;
-		vector<int> nOri;
-		vector<int> nAtr;
+		vector<int> neighbor_rep;
+		vector<int> neighbor_ori;
+		vector<int> neighbor_att;
 
 		// Vector of Neighbor IDs
 		vector <int> nbors;
@@ -41,9 +41,9 @@ class Robot: public Wired{
 		int id; 	// Robot ID
 
 		// Reynold's Radii
-		double rRep;
-		double rOri;
-		double rAtr;
+		double radius_rep;
+		double radius_ori;
+		double radius_att;
 
 		// Vector of all robots in the swarm
 		vector <Robot> *flock;
@@ -63,17 +63,16 @@ class Robot: public Wired{
 					double s,
 					vector<pair<double, double>> shape,
 					vector <Robot> *flock,
-					double rRep,
-					double rOri,
-					double rAtr
+					double radius_rep,
+					double radius_ori,
+					double radius_att
 				);
 		void respawn(double x,double y);
 		void setGoalTargetPos(double gx,double gy);
 		void update();
 		void updateNeighbors();
 		void render_robot();
-		vector<int> getNeighbors(double radius);
-		vector<int> getNeighbors(double radiusMin, double radiusMax);
+		vector<int> getNeighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();
 		double reynoldsRules();
 		double wallRepulsion(double xlim, double ylim);
