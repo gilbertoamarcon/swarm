@@ -384,22 +384,24 @@ void RenderScene(){
 	// Space coordinates
 	glPushMatrix();
 
-		// TODO: DRAW WORLD BOUNDS ======================================
-		// glBegin(GL_LINE_LOOP);
-		// 	glVertex2f(view_x+,-view_y);
-		// 	glVertex2f(view_x,WORLD_SIZE_X-view_y);
-		// 	glVertex2f(WORLD_SIZE_Y+view_x,WORLD_SIZE_X-view_y);
-		// 	glVertex2f(WORLD_SIZE_Y+view_x,-view_y);
-		// glEnd();
-		// ==============================================================
-
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		gluOrtho2D(x_min,x_max,y_min,y_max);
 		glMatrixMode(GL_MODELVIEW);
 
+		// World bounds
+		glBegin(GL_LINE_LOOP);
+			glVertex2f(-WORLD_SIZE_X,-WORLD_SIZE_Y);
+			glVertex2f( WORLD_SIZE_X,-WORLD_SIZE_Y);
+			glVertex2f( WORLD_SIZE_X, WORLD_SIZE_Y);
+			glVertex2f(-WORLD_SIZE_X, WORLD_SIZE_Y);
+		glEnd();
+
+		// Drawing robots
 		for(auto const &r : flock)
 			r.render_robot();
+
+		// Goal flag
 		flag.render(1,0);
 
 		// Mouse selection

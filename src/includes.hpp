@@ -13,14 +13,14 @@
 #include <list>
 #include <vector>
 #include <set>
+#include <map>
+#include <tuple>
 #include <sstream>
 #include <algorithm>
-#include <tuple>
 #include <cmath>
 
 using namespace std;
 
-// TODO: Draw world bounds
 // TODO: Add leaders
 // TODO: Add evolutionary learning framework
 // TODO: Add rally task
