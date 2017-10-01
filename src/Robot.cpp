@@ -44,19 +44,19 @@ Robot::Robot(int id){
 Robot::~Robot(){};
 
 int Robot::init(double x,double y,double w,double h,double t,double vel,double s,vector<pair<double, double>> shape){
-	wire.x = x;
-	wire.y = y;
-	wire.w = w;
-	wire.h = h;
-	wire.t = t;
+	this->x = x;
+	this->y = y;
+	this->w = w;
+	this->h = h;
+	this->t = t;
 	this->vel = vel;
 	this->steer = s;
-	return wire.init(x,y,w,h,t,shape);
+	this->shape = shape;
 }
 
 void Robot::respawn(double x,double y){
-	wire.x = x;
-	wire.y = y;
+	this->x = x;
+	this->y = y;
 }
 
 void Robot::setGoalTargetPos(double gx,double gy){
@@ -78,26 +78,26 @@ void Robot::update(bool col){
 	// Coordinate frame corrections -> Not sure if a simpler way exists...
 
 	// Angle warp around
-	if(abs(wire.t) > 180)
-		wire.t -= 360*(2*(wire.t>0)-1);
+	if(abs(this->t) > 180)
+		this->t -= 360*(2*(this->t>0)-1);
 
-	double delta = rad_to_deg(td)-wire.t;
+	double delta = rad_to_deg(td)-this->t;
 	if(delta <= 180 && delta >= -180)
-		wire.t += this->steer*(delta);
+		this->t += this->steer*(delta);
 	else{
 		if(delta < -180)
-			wire.t += this->steer*(delta+360);
+			this->t += this->steer*(delta+360);
 		if(delta > 180)
-			wire.t += this->steer*(delta-360);
+			this->t += this->steer*(delta-360);
 	}
 
 	// Update positions
-	vx = vel*cos(deg_to_rad(wire.t));
-	vy = vel*sin(deg_to_rad(wire.t));
+	vx = vel*cos(deg_to_rad(this->t));
+	vy = vel*sin(deg_to_rad(this->t));
 
 	// Send velocity commands
-	wire.x += vx;
-	wire.y += vy;
+	this->x += vx;
+	this->y += vy;
 
 };
 
@@ -148,8 +148,8 @@ vector<int> Robot::getNeighbors(double radius){
  	double repX = 0;
  	double repY = 0;
  	for (int i = 0; i < this->nRep.size(); i++){
- 		double dx =  this->wire.x - this->flock->at(nRep[i]).wire.x;
- 		double dy =  this->wire.y - this->flock->at(nRep[i]).wire.y;
+ 		double dx =  this->x - this->flock->at(nRep[i]).x;
+ 		double dy =  this->y - this->flock->at(nRep[i]).y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
 		repX += dx/d/d;	
 		repY += dy/d/d;
@@ -160,10 +160,10 @@ vector<int> Robot::getNeighbors(double radius){
  	double sum = 0;
  	int cnt = 0;
  	for (int i = 0; i < this->nOri.size(); i++){
- 		double dx =  this->wire.x - this->flock->at(nOri[i]).wire.x;
- 		double dy =  this->wire.y - this->flock->at(nOri[i]).wire.y;
+ 		double dx =  this->x - this->flock->at(nOri[i]).x;
+ 		double dy =  this->y - this->flock->at(nOri[i]).y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
- 		double th = deg_to_rad(this->flock->at(nOri[i]).wire.t);
+ 		double th = deg_to_rad(this->flock->at(nOri[i]).t);
 		oriX += cos(th)/d;
  		oriY += sin(th)/d;
  	}
@@ -171,8 +171,8 @@ vector<int> Robot::getNeighbors(double radius){
   	double atrX = 0;
  	double atrY = 0;
  	for (int i = 0; i < this->nAtr.size(); i++){
- 		double dx = this->flock->at(nAtr[i]).wire.x - this->wire.x;
- 		double dy = this->flock->at(nAtr[i]).wire.y - this->wire.y;
+ 		double dx = this->flock->at(nAtr[i]).x - this->x;
+ 		double dy = this->flock->at(nAtr[i]).y - this->y;
  		double d = sqrt(pow(dx,2) + pow(dy,2));
 		atrX += dx/d/d;	
 		atrY += dy/d/d;
@@ -182,7 +182,7 @@ vector<int> Robot::getNeighbors(double radius){
  	double y = repY + atrY + oriY;
  	// Go straight in the absence of neighbors
  	if (x == 0 && y == 0)
- 		return deg_to_rad(wire.t);
+ 		return deg_to_rad(this->t);
  	else
  		return atan2(y, x);
  }
@@ -192,26 +192,26 @@ vector<int> Robot::getNeighbors(double radius){
 	double wallX = 0;
  	double wallY = 0;
  	bool noWalls = true;
- 	if (wire.x >= xlim){noWalls = false; wallX = xlim - wire.x;}
- 	if (wire.x <= -xlim){noWalls = false; wallX = xlim - wire.x;}
- 	if (wire.y >= ylim){noWalls = false; wallY = ylim - wire.y;}
- 	if (wire.y <= -ylim){noWalls = false; wallY = ylim - wire.y;}
+ 	if (this->x >= xlim){noWalls = false; wallX = xlim - this->x;}
+ 	if (this->x <= -xlim){noWalls = false; wallX = xlim - this->x;}
+ 	if (this->y >= ylim){noWalls = false; wallY = ylim - this->y;}
+ 	if (this->y <= -ylim){noWalls = false; wallY = ylim - this->y;}
  	if (noWalls) {return NAN;}
  	return atan2(wallY, wallX);
  }
 
  double Robot::distanceToPoint(double x, double y){
- 	return sqrt(pow(this->wire.x - x, 2) + pow(this->wire.y - y, 2));
+ 	return sqrt(pow(this->x - x, 2) + pow(this->y - y, 2));
  }
 
  double Robot::distanceToRobot(vector<Robot> *flock, int id){
- 	return this->distanceToPoint(flock->at(id).wire.x, flock->at(id).wire.y);
+ 	return this->distanceToPoint(flock->at(id).x, flock->at(id).y);
  }
 
  double Robot::distanceToRobot(Robot robot){
- 	return this->distanceToPoint(robot.wire.x, robot.wire.y);
+ 	return this->distanceToPoint(robot.x, robot.y);
  }
 
-void Robot::render(){
-	wire.render(1,selected);
+void Robot::render_robot(){
+	render(1,selected);
 };

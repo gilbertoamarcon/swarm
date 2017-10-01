@@ -8,7 +8,7 @@ Robot representation.
 Robot are represented by a wire-shaped object called 'wire'.
 */
 
-class Robot{
+class Robot: public Wired{
 
 	private:
 		int id; 	// Robot ID
@@ -49,7 +49,6 @@ class Robot{
 		vector <Robot> *flock;
 
 		bool selected; // User selected (my mouse selection)
-		Wired wire;		// Visual representation  
 
 		Robot();
 		Robot(int id);
@@ -59,7 +58,7 @@ class Robot{
 		void setGoalTargetPos(double gx,double gy);
 		void update(bool col);
 		void updateNeighbors();
-		void render();
+		void render_robot();
 		vector<int> getNeighbors(double radius);
 		vector<int> getNeighbors(double radiusMin, double radiusMax);
 		double swarm();

@@ -170,10 +170,10 @@ void iniGl(){
 // Mouse click selection
 void singleSelect(){
 	for(int i = 0; i < flock.size(); i++){
-		if(flock.at(i).wire.x-flock.at(i).wire.w/2 > selX1){flock.at(i).selected = false;continue;}
-		if(flock.at(i).wire.x+flock.at(i).wire.w/2 < selX1){flock.at(i).selected = false;continue;}
-		if(flock.at(i).wire.y-flock.at(i).wire.h/2 > selY1){flock.at(i).selected = false;continue;}
-		if(flock.at(i).wire.y+flock.at(i).wire.h/2 < selY1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).x-flock.at(i).w/2 > selX1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).x+flock.at(i).w/2 < selX1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).y-flock.at(i).h/2 > selY1){flock.at(i).selected = false;continue;}
+		if(flock.at(i).y+flock.at(i).h/2 < selY1){flock.at(i).selected = false;continue;}
 		flock.at(i).selected = true;
 	}
 }
@@ -185,10 +185,10 @@ void areaSelect(){
 	double minY = (selY2 > selY1)?selY1:selY2;
 	double maxY = (selY2 > selY1)?selY2:selY1;
 	for(int i = 0; i < flock.size(); i++){
-		if(flock.at(i).wire.x-flock.at(i).wire.w/2 < minX) continue;
-		if(flock.at(i).wire.x+flock.at(i).wire.w/2 > maxX) continue;
-		if(flock.at(i).wire.y-flock.at(i).wire.h/2 < minY) continue;
-		if(flock.at(i).wire.y+flock.at(i).wire.h/2 > maxY) continue;
+		if(flock.at(i).x-flock.at(i).w/2 < minX) continue;
+		if(flock.at(i).x+flock.at(i).w/2 > maxX) continue;
+		if(flock.at(i).y-flock.at(i).h/2 < minY) continue;
+		if(flock.at(i).y+flock.at(i).h/2 > maxY) continue;
 		flock.at(i).selected = true;
 	}
 }
@@ -356,8 +356,8 @@ void updateValues(int n){
 	if(lock_view_robot){
 		for(int i = 0; i < flock.size(); i++)
 			if(flock.at(i).selected){
-				view_x = flock.at(i).wire.x;
-				view_y = flock.at(i).wire.y;
+				view_x = flock.at(i).x;
+				view_y = flock.at(i).y;
 				break;
 			}
 	}
@@ -390,10 +390,10 @@ void updateValues(int n){
 bool checkCol(int index){
 	for(int i = 0; i < flock.size(); i++)
 		if(i != index){
-			if(flock.at(index).wire.x+flock.at(index).wire.w/2 < flock.at(i).wire.x-flock.at(i).wire.w/2) continue;
-			if(flock.at(index).wire.x-flock.at(index).wire.w/2 > flock.at(i).wire.x+flock.at(i).wire.w/2) continue;
-			if(flock.at(index).wire.y+flock.at(index).wire.h/2 < flock.at(i).wire.y-flock.at(i).wire.h/2) continue;
-			if(flock.at(index).wire.y-flock.at(index).wire.h/2 > flock.at(i).wire.y+flock.at(i).wire.h/2) continue;
+			if(flock.at(index).x+flock.at(index).w/2 < flock.at(i).x-flock.at(i).w/2) continue;
+			if(flock.at(index).x-flock.at(index).w/2 > flock.at(i).x+flock.at(i).w/2) continue;
+			if(flock.at(index).y+flock.at(index).h/2 < flock.at(i).y-flock.at(i).h/2) continue;
+			if(flock.at(index).y-flock.at(index).h/2 > flock.at(i).y+flock.at(i).h/2) continue;
 			return true;
 		}	
 	return false;	
@@ -424,7 +424,7 @@ void RenderScene(){
 		glMatrixMode(GL_MODELVIEW);
 
 		for(int i = 0; i < flock.size(); i++)
-			flock.at(i).render();
+			flock.at(i).render_robot();
 		flag.render(1,0);
 
 		// Mouse selection
