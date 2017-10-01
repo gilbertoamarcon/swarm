@@ -11,15 +11,13 @@ Wired::Wired(double x,double y,double w,double h,double t,vector<pair<double, do
 
 Wired::~Wired(){};
 
-void Wired::render(bool global,bool highlight){
+void Wired::render(bool global,bool highlight, float r=1.0, float g=1.0, float b=1.0){
 	glPushMatrix();
-		if(highlight){
+		if(highlight)
 			glLineWidth(3);
-			glColor3f(1.0,0.0,0.0);
-		}else{
+		else
 			glLineWidth(1);
-			glColor3f(1.0,1.0,1.0);
-		}
+		glColor3f(r,g,b);
 		if(global){
 			glTranslatef(-x,-y,0);
 			glScalef(w,h,1);

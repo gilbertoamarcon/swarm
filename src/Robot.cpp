@@ -15,7 +15,8 @@ Robot::Robot(
 				vector<Robot> *flock,
 				double radius_rep,
 				double radius_ori,
-				double radius_att
+				double radius_att,
+				bool leader
 			):Wired(x,y,w,h,r,shape){
 	this->v				= v;
 	this->a				= a;
@@ -25,7 +26,8 @@ Robot::Robot(
 	this->radius_ori	= radius_ori;
 	this->radius_att	= radius_att;
 	this->flock			= flock;
-	this->selected = false;
+	this->leader		= leader;
+	this->selected		= false;
 }
 
 Robot::~Robot(){};
@@ -42,8 +44,14 @@ void Robot::set_goal_target_pos(double gx,double gy){
 
 void Robot::update(){
 
+	double goal_t = this->t;
+	if(leader)
+		goal_t = atan2(gy-y, gx-x);
+	else
+		goal_t = swarm();
+
 	// Update heading and velocities
-	double delta = rad_to_deg(swarm())-this->t;
+	double delta = rad_to_deg(goal_t)-this->t;
 	angle_wrap(delta);
 
 	this->t += this->a*delta;
@@ -155,5 +163,8 @@ double Robot::distance_to_robot(Robot *robot){
 }
 
 void Robot::render_robot(){
-	render(1,selected);
+	if(leader)
+		render(1,selected,1.0,0.0,0.0);
+	else
+		render(1,selected);
 };

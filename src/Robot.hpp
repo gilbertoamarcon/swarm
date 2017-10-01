@@ -33,6 +33,7 @@ class Robot: public Wired{
 	public:
 
 		bool selected; // User selected (my mouse selection)
+		bool leader;
 
 		Robot(
 				double x,
@@ -46,7 +47,8 @@ class Robot: public Wired{
 				vector<Robot> *flock,
 				double radius_rep,
 				double radius_ori,
-				double radius_att
+				double radius_att,
+				bool leader
 			);
 		virtual ~Robot();
 		void respawn(double x,double y);

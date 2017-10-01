@@ -17,7 +17,7 @@ class Wired{
 		vector<pair<double, double>> shape; // Object visual shape (List of points for polygon)
 		Wired(double x,double y,double w,double h,double r,vector<pair<double, double>> shape);
 		virtual ~Wired();
-		void render(bool global,bool highlight);
+		void render(bool global,bool highlight, float r=1.0, float g=1.0, float b=1.0);
 };
 
 #endif
