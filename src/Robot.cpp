@@ -20,8 +20,8 @@ Robot::Robot(
 			):Wired(x,y,w,h,r,shape){
 	this->v				= v;
 	this->a				= a;
-	this->gx			= 0;
-	this->gy			= 0;
+	goal.first			= 0;
+	goal.second		= 0;
 	this->radius_rep	= radius_rep;
 	this->radius_ori	= radius_ori;
 	this->radius_att	= radius_att;
@@ -38,8 +38,8 @@ void Robot::respawn(double x,double y){
 }
 
 void Robot::set_goal_target_pos(double gx,double gy){
-	this->gx = gx;
-	this->gy = gy;
+	this->goal.first	= gx;
+	this->goal.second	= gy;
 }
 
 void Robot::update(){
@@ -51,7 +51,7 @@ void Robot::update(){
 		goal_t = swarm();
 
 	// Update heading and velocities
-	double delta = rad_to_deg(goal_t)-this->t;
+	double delta = goal_t-this->t;
 	angle_wrap(delta);
 
 	this->t += this->a*delta;
@@ -115,10 +115,26 @@ pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors){
 }
 
 double Robot::leader_reasoning(){
+
+	// Update neighbor sets
 	update_neighbors();
-	pair<double, double> neighbor_centroid = compute_centroid(neighbor_att);
-	// return atan2(neighbor_centroid.second-y, neighbor_centroid.first-x);
-	return atan2(gy-y, gx-x);
+
+	// Neighbor centroid
+	pair<double,double> neighbor_centroid	= compute_centroid(neighbor_att);
+
+	// Distance to centroids
+	double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
+	double distance_to_goal					= distance_to_point(goal);
+
+	// Angle to centroids
+	double angle_to_neighbor_centroid		= rad_to_deg(angle_to_point(neighbor_centroid))	- this->t;
+	double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
+	angle_wrap(angle_to_neighbor_centroid);
+	angle_wrap(angle_to_goal);
+
+	double goal_direction = angle_to_goal;
+
+	return goal_direction + this->t;
 }
 
 // Returns desired heading based on swarming rules
@@ -148,16 +164,24 @@ double Robot::reynolds_rules(){
 
 	// Go straight in the absence of neighbors
 	if(x == 0 && y == 0)
-		return deg_to_rad(this->t);
+		return this->t;
 	else
-		return atan2(y, x);
+		return rad_to_deg(atan2(y, x));
 }
 
 // Returns heading based on wall repulsions
 double Robot::wall_repulsion(double xlim, double ylim){
-	if(abs(x) >= xlim) return atan2(0.0, xlim-x);
-	if(abs(y) >= ylim) return atan2(ylim-y, 0.0);
+	if(abs(x) >= xlim) return rad_to_deg(atan2(0.0, xlim-x));
+	if(abs(y) >= ylim) return rad_to_deg(atan2(ylim-y, 0.0));
 	return NAN;
+}
+
+double Robot::angle_to_point(pair<double,double> &input){
+	return atan2(input.second-this->y, input.first-this->x);
+}
+
+double Robot::distance_to_point(pair<double,double> &input){
+	return sqrt(pow(this->x-input.first, 2) + pow(this->y-input.second, 2));
 }
 
 double Robot::distance_to_point(double x, double y){

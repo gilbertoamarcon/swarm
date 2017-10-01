@@ -14,8 +14,7 @@ class Robot: public Wired{
 		double a; // Absolute angular velocity
 
 		// Goal Target Position
-		double gx;
-		double gy;
+		pair<double,double> goal;
 
 		// Reynold's Radii
 		double radius_rep;
@@ -64,6 +63,8 @@ class Robot: public Wired{
 		double wall_repulsion(double xlim, double ylim);
 
 		// Distances
+		double angle_to_point(pair<double,double> &input);
+		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);
 
