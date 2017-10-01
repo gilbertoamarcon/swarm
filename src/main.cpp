@@ -74,6 +74,8 @@ void mouseMove(int x, int y);
 
 void mouseAction(int x, int y);
 
+void set_goal(int x, int y);
+
 void glutMouseFunc(int button, int state, int x, int y);
 
 void keyPressed(unsigned char key, int x, int y);
@@ -88,16 +90,18 @@ void codeTestOvunc();
 
 int main(int argc, char **argv){
 
-	// Agent Shape
-	vector<pair<double, double>> shape;
-	shape.push_back(pair<double, double>(0.0,0.50));
-	shape.push_back(pair<double, double>(1.0,0.75));
-	shape.push_back(pair<double, double>(1.0,0.25));
+	srand(clock());
 
 	// Initializing graphics
 	getScreenResolution(window_w,window_h);
 	glutInit(&argc, argv);
 	iniGl();
+
+	// Agent Shape
+	vector<pair<double, double>> shape;
+	shape.push_back(pair<double, double>(0.0,0.50));
+	shape.push_back(pair<double, double>(1.0,0.75));
+	shape.push_back(pair<double, double>(1.0,0.25));
 
 	view_x = origin_x;
 	view_y = origin_y;
@@ -111,11 +115,16 @@ int main(int argc, char **argv){
 		bool leader = false;
 		if(i < NUM_LEADERS)
 			leader = true;
-		double x = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		double y = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		Robot robot(x,y,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
+		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		Robot robot(rx,ry,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
 		flock.push_back(robot);
 	}
+
+	// Initial Goal Rally Point
+	double gx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
+	double gy = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
+	set_goal(gx, gy);
 
 	// Main loop
 	glutMainLoop();
@@ -234,13 +243,7 @@ void mouseButton(int b,int s,int x,int y){
 		case GLUT_RIGHT_BUTTON:
 			if(s == GLUT_DOWN){
 				mouse_r = 1;
-				double candidateX = mouse_gnd_x;
-				double candidateY = mouse_gnd_y;
-				for(auto &r : flock)
-					if(r.selected)
-						r.set_goal_target_pos(candidateX,candidateY);
-				flag.x = mouse_gnd_x;
-				flag.y = mouse_gnd_y;
+				set_goal(mouse_gnd_x, mouse_gnd_y);
 			}
 			else
 				mouse_r = 0;
@@ -268,6 +271,15 @@ void mouseAction(int x,int y){
 	}
 	old_mouse_x = x;
 	old_mouse_y = y;
+}
+
+// Set rally goal position
+void set_goal(int x, int y){
+	for(auto &r : flock)
+		if(r.selected)
+			r.set_goal_target_pos(x,y);
+	flag.x = x;
+	flag.y = y;
 }
 
 // When keyboard pressed

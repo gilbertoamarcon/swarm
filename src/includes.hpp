@@ -21,14 +21,13 @@
 
 using namespace std;
 
-// TODO: Add leaders
 // TODO: Add evolutionary learning framework
 // TODO: Add rally task
 
 // Sim Parameters
 #define NUM_LEADERS		10
 #define NUM_ROBOTS		100
-#define SPAWN_RANGE		300
+#define SPAWN_RANGE		100
 #define ROBOT_VEL		1.00
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05

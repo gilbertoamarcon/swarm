@@ -27,7 +27,7 @@ Robot::Robot(
 	this->radius_att	= radius_att;
 	this->flock			= flock;
 	this->leader		= leader;
-	this->selected		= false;
+	this->selected		= true;
 }
 
 Robot::~Robot(){};
