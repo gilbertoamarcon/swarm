@@ -32,10 +32,9 @@ class Mlp{
 		Weights *weights;	// weights
 
 		// Internal variables
-		double *u;
+		double *u0;
+		double *u1;
 		double *y;
-		double *delta_o;
-		double *delta_h;
 
 		default_random_engine generator;
 

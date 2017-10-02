@@ -131,7 +131,7 @@ double Robot::leader_reasoning(){
 	update_neighbors();
 
 	// Neighbor centroid
-	neighbor_centroid	= compute_centroid(neighbor_att,neighbor_centroid);
+	neighbor_centroid	= compute_centroid(neighbor_att,pair<double,double>(this->x,this->y));
 
 	// Distance to centroids
 	double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
@@ -148,6 +148,8 @@ double Robot::leader_reasoning(){
 	mlp->x[1] = angle_to_goal;
 	mlp->x[2] = distance_to_neighbor_centroid;
 	mlp->x[3] = distance_to_goal;
+	// mlp->x[0] = angle_to_goal;
+	// printf("%d %9.3f\n", neighbor_att.size(),  distance_to_neighbor_centroid);
 	mlp->eval();
 	double goal_direction = mlp->o[0];
 

@@ -23,18 +23,24 @@
 
 using namespace std;
 
-// Evol
-#define NUM_EPOCHS		50000
-#define EPOCH_STEPS		300
-#define POP_SIZE		15
-#define PARENTS			5
-#define NUM_HIDLR_UTS	5
-#define MUTATION_RANGE	0.01
+// MLP Parameters
+#define MLP_I			4 // Number of inputs
+#define MLP_J			5 // Number of HL units
+#define MLP_K			1 // Number of outputs
 #define MLP_INIT_RANGES	100.0
 
+// Simulation Parameters
+#define EPOCH_STEPS		300
+
+// Evolution Parameters
+#define POP_SIZE		15
+#define NUM_PARENTS		5
+#define NUM_EPOCHS		50000
+#define MUTATION_RANGE	0.01
+
 // Sim Parameters
-#define NUM_LEADERS		10
-#define NUM_ROBOTS		100
+#define NUM_LEADERS		1
+#define NUM_ROBOTS		1
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
@@ -55,7 +61,7 @@ using namespace std;
 // Video Parameters
 #define WINDOW_TITLE	"Video"
 #define FULL_SCREEN		0
-#define SIM_STEP_TIME	1
+#define SIM_STEP_TIME	0.001
 
 // Camera Parameters
 #define CAM_SPEED		10

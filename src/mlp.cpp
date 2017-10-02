@@ -14,10 +14,9 @@ void Mlp::init(int I,int J,int K,double iniRange){
 	weights = new Weights(I,J,K);
 
 	// Internal variables
-	u = new double[J];
+	u0 = new double[J];
+	u1 = new double[K];
 	y = new double[J+1];
-	delta_o = new double[K];
-	delta_h = new double[J];
 
 	// Inputs
 	x = new double[I+1];
@@ -61,18 +60,19 @@ void Mlp::eval(){
 
 	// Computing HL output 
 	for(int i = 0; i < J; i++){
-		u[i] = 0;
+		u0[i] = 0;
 		for(int j = 0; j < I+1; j++)
-			u[i] += weights->V[(I+1)*i+j]*x[j];
-		y[i] = 1.0/(1+exp(-u[i]));
+			u0[i] += weights->V[(I+1)*i+j]*x[j];
+		y[i] = atan(u0[i]);
 	}
 
 	// Computing OL output 
 	y[J] = 1;
 	for(int i = 0; i < K; i++){
-		o[i] = 0;
+		u1[i] = 0;
 		for(int j = 0; j < J+1; j++)
-			o[i] += weights->W[(J+1)*i+j]*y[j];
+			u1[i] += weights->W[(J+1)*i+j]*y[j];
+		o[i] = atan(u1[i]);
 	}
 
 }

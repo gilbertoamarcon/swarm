@@ -123,7 +123,7 @@ int main(int argc, char **argv){
 	// Initializing mlps
 	for(int i = 0; i < POP_SIZE; i++){
 		Mlp mlp;
-		mlp.init(4,NUM_HIDLR_UTS,1,MLP_INIT_RANGES);
+		mlp.init(MLP_I,MLP_J,MLP_K,MLP_INIT_RANGES);
 		mlp.randomize();
 		mlps.push_back(mlp);
 	}
@@ -431,13 +431,13 @@ void updateValues(int n){
 			printf("B%8.3f\n", mlps.begin()->error);
 
 			// Erasing the worst mlps
-			mlps.erase(mlps.begin()+PARENTS,mlps.end());
+			mlps.erase(mlps.begin()+NUM_PARENTS,mlps.end());
 
 			// Reproducing the best mlps
-			for(int i = 0; i < POP_SIZE-PARENTS; i++){
+			for(int i = 0; i < POP_SIZE-NUM_PARENTS; i++){
 
 				// Copying best
-				Mlp mlp = mlps.at(rand()%PARENTS);
+				Mlp mlp = mlps.at(rand()%NUM_PARENTS);
 
 				// Mutation
 				mlp.mutate(MUTATION_RANGE);
