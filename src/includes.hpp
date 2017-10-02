@@ -20,12 +20,13 @@
 #include <algorithm>
 #include <cstdio>
 #include <random>
+#include <chrono>
 
 using namespace std;
 
 // MLP Parameters
-#define MLP_I			4 // Number of inputs
-#define MLP_J			5 // Number of HL units
+#define MLP_I			1 // Number of inputs
+#define MLP_J			1 // Number of HL units
 #define MLP_K			1 // Number of outputs
 #define MLP_INIT_RANGES	1.0
 
@@ -61,7 +62,8 @@ using namespace std;
 // Video Parameters
 #define WINDOW_TITLE	"Video"
 #define FULL_SCREEN		0
-#define SIM_STEP_TIME	0.001
+#define SIM_STEP_TIME	1.000
+// #define SIM_STEP_TIME	0.001
 
 // Camera Parameters
 #define CAM_SPEED		10

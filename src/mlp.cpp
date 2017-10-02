@@ -27,9 +27,13 @@ void Mlp::init(int I,int J,int K,double iniRange){
 }
 
 void Mlp::randomize(){
-	
-	normal_distribution<double> distV(0,iniRange);
-	normal_distribution<double> distW(0,iniRange);
+
+	// Time-based seed
+	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+	default_random_engine generator(seed);
+
+	normal_distribution<double> distV(0.0,iniRange);
+	normal_distribution<double> distW(0.0,iniRange);
 
 	// Initializing weights V
 	for(int i = 0; i < J*(I+1); i++)
@@ -41,6 +45,10 @@ void Mlp::randomize(){
 }
 
 void Mlp::mutate(double range){
+
+	// Time-based seed
+	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+	default_random_engine generator(seed);
 	
 	normal_distribution<double> distV(0,range);
 	normal_distribution<double> distW(0,range);
@@ -67,7 +75,7 @@ void Mlp::eval(){
 	}
 
 	// Computing OL output 
-	y[J] = 1;
+	y[J] = 1.0;
 	for(int k = 0; k < K; k++){
 		u1[k] = 0.0;
 		for(int j = 0; j < J+1; j++)

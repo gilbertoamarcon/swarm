@@ -36,8 +36,6 @@ class Mlp{
 		double *u1;
 		double *y;
 
-		default_random_engine generator;
-
 	public:
 
 		double error;
