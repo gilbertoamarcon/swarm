@@ -29,6 +29,10 @@ using namespace std;
 // Evol
 #define NUM_EPOCHS		5
 #define EPOCH_STEPS		500
+#define POP_SIZE		20
+#define NUM_HIDLR_UTS	5
+#define LEARN_RATE		0.01
+#define MLP_INIT_RANGES	100.0
 
 
 // Sim Parameters

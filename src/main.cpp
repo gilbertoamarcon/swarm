@@ -10,6 +10,7 @@ vector<Mlp> mlps;
 
 // Steps
 int num_steps			= 0;
+int current_mlp			= 0;
 
 // Status
 double origin_x			= 0;
@@ -118,6 +119,14 @@ int main(int argc, char **argv){
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
 	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 
+	// Initializing mlps
+	for(int i = 0; i < POP_SIZE; i++){
+		Mlp mlp;
+		mlp.init(4,NUM_HIDLR_UTS,1,MLP_INIT_RANGES);
+		mlp.randomize();
+		mlps.push_back(mlp);		
+	}
+
 	// Initializing robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		bool leader = false;
@@ -142,7 +151,7 @@ void spawn_world(){
 		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
 		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
 		double rt = ((double)rand()/RAND_MAX-0.5)*360.0;
-		r.respawn(rx, ry, rt);
+		r.respawn(rx, ry, rt, &(mlps.at(current_mlp)));
 	}
 
 	// New Goal Rally Point
@@ -390,7 +399,6 @@ void updateValues(int n){
 	sprintf(statusBuffer,"Number of robots: %02d Steps: %d",flock.size(),num_steps);
 
 	// Frame limiter
-	// if(num_steps < EPOCH_STEPS)
 	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 
 	// Camera view will track specific flock

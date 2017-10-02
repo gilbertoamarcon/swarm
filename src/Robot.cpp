@@ -18,26 +18,30 @@ Robot::Robot(
 				double radius_att,
 				bool leader
 			):Wired(x,y,w,h,r,shape){
-	this->v				= v;
-	this->a				= a;
-	goal.first			= 0;
-	goal.second			= 0;
-	this->radius_rep	= radius_rep;
-	this->radius_ori	= radius_ori;
-	this->radius_att	= radius_att;
-	this->flock			= flock;
-	this->leader		= leader;
-	this->selected		= true;
-	this->acc_dist		= 0.0;
+	this->v					= v;
+	this->a					= a;
+	goal.first				= 0;
+	goal.second				= 0;
+	this->radius_rep		= radius_rep;
+	this->radius_ori		= radius_ori;
+	this->radius_att		= radius_att;
+	this->flock				= flock;
+	this->leader			= leader;
+	this->selected			= true;
+	this->acc_dist			= 0.0;
+	this->mlp				= NULL;
+	this->goal				= pair<double,double>(0.0,0.0);
+	this->neighbor_centroid	= pair<double,double>(0.0,0.0);
 }
 
 Robot::~Robot(){};
 
-void Robot::respawn(double x,double y,double t){
-	this->x = x;
-	this->y = y;
-	this->t = t;
+void Robot::respawn(double x,double y,double t,Mlp *mlp){
+	this->x				= x;
+	this->y				= y;
+	this->t				= t;
 	this->acc_dist		= 0.0;
+	this->mlp			= mlp;
 }
 
 void Robot::set_goal_target_pos(double gx,double gy){
@@ -108,7 +112,9 @@ pair<double, double> Robot::compute_force(set<Robot*> &neighbors){
 	return force;
 }
 
-pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors){
+pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors, pair<double,double> prev){
+	if(neighbors.size() == 0)
+		return prev;
 	pair<double,double> centroid(0.0,0.0);
 	for(auto &r : neighbors){
 		centroid.first  += r->x;
@@ -125,7 +131,7 @@ double Robot::leader_reasoning(){
 	update_neighbors();
 
 	// Neighbor centroid
-	pair<double,double> neighbor_centroid	= compute_centroid(neighbor_att);
+	neighbor_centroid	= compute_centroid(neighbor_att,neighbor_centroid);
 
 	// Distance to centroids
 	double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
@@ -137,7 +143,15 @@ double Robot::leader_reasoning(){
 	angle_wrap(angle_to_neighbor_centroid);
 	angle_wrap(angle_to_goal);
 
-	double goal_direction = angle_to_goal;
+	// Loading inputs
+	mlp->x[0] = angle_to_neighbor_centroid;
+	mlp->x[1] = angle_to_goal;
+	mlp->x[2] = distance_to_neighbor_centroid;
+	mlp->x[3] = distance_to_goal;
+	mlp->eval();
+	double goal_direction = mlp->o[0];
+
+	// double goal_direction = angle_to_goal;
 
 	return goal_direction + this->t;
 }

@@ -16,6 +16,7 @@ class Robot: public Wired{
 
 		// Goal Target Position
 		pair<double,double> goal;
+		pair<double,double> neighbor_centroid;
 
 		// Reynold's Radii
 		double radius_rep;
@@ -54,14 +55,14 @@ class Robot: public Wired{
 				bool leader
 			);
 		virtual ~Robot();
-		void respawn(double x,double y,double t);
+		void respawn(double x,double y,double t,Mlp *mlp);
 		void set_goal_target_pos(double gx,double gy);
 		void update();
 		void update_neighbors();
 		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();
 		pair<double,double> compute_force(set<Robot*> &neighbors);
-		pair<double,double> compute_centroid(set<Robot*> &neighbors);
+		pair<double,double> compute_centroid(set<Robot*> &neighbors, pair<double,double> prev);
 		double leader_reasoning();
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
