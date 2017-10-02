@@ -49,9 +49,9 @@ void Robot::set_goal_target_pos(double gx,double gy){
 	this->goal.second	= gy;
 }
 
-void Robot::update(){
+void Robot::update(double weight){
 
-	acc_dist += distance_to_point(goal);
+	acc_dist += weight*distance_to_point(goal);
 
 	double goal_t = this->t;
 	if(leader)

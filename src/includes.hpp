@@ -35,7 +35,8 @@ using namespace std;
 // Sim Parameters
 #define NUM_LEADERS		10
 #define NUM_ROBOTS		100
-#define SPAWN_RANGE		100
+#define ROBOT_SPAWN_RNG	100
+#define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
@@ -76,5 +77,8 @@ using namespace std;
 void angle_wrap(double &input);
 double deg_to_rad(double input);
 double rad_to_deg(double input);
+
+// Random number generation
+double gen_rand_range(double begin_range, double end_range);
 
 #endif

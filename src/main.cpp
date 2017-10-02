@@ -125,7 +125,7 @@ int main(int argc, char **argv){
 		Mlp mlp;
 		mlp.init(4,NUM_HIDLR_UTS,1,MLP_INIT_RANGES);
 		mlp.randomize();
-		mlps.push_back(mlp);		
+		mlps.push_back(mlp);
 	}
 
 	// Initializing robots
@@ -149,15 +149,32 @@ void spawn_world(){
 
 	// Positioning robots
 	for(auto const &r : flock){
-		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*ROBOT_SPAWN_RNG;
+		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*ROBOT_SPAWN_RNG;
 		double rt = ((double)rand()/RAND_MAX-0.5)*360.0;
 		r.respawn(rx, ry, rt, &(mlps.at(current_mlp)));
 	}
 
 	// New Goal Rally Point
-	double gx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
-	double gy = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
+	double gx = origin_x;
+	double gy = origin_y;
+	int spawn_location = rand()%4;
+	if(spawn_location == 0){
+		gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+	}
+	if(spawn_location == 1){
+		gx -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+	}
+	if(spawn_location == 2){
+		gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		gy += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+	}
+	if(spawn_location == 3){
+		gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+	}
 	set_goal(gx, gy);
 
 }
@@ -388,6 +405,9 @@ void keyReleased(unsigned char key, int x, int y){
 
 void updateValues(int n){
 
+	// Frame limiter
+	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
+
 	num_steps++;
 	if(num_steps == EPOCH_STEPS){
 		num_steps = 0;
@@ -432,13 +452,8 @@ void updateValues(int n){
 		}
 
 		spawn_world();
+
 	}
-
-	// String printed in the screen corner
-	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS);
-
-	// Frame limiter
-	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 
 	// Camera view will track specific flock
 	if(lock_view_robot){
@@ -469,8 +484,12 @@ void updateValues(int n){
 	y_max = -view_y + scn_scale*window_h/2;
 
 	// Updating flock status
+	double weight = 1-cos(PI*((double)num_steps/EPOCH_STEPS));
 	for(auto &r : flock)
-		r.update();
+		r.update(weight);
+
+	// String printed in the screen corner
+	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
 
 }
 

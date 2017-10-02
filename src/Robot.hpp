@@ -57,7 +57,7 @@ class Robot: public Wired{
 		virtual ~Robot();
 		void respawn(double x,double y,double t,Mlp *mlp);
 		void set_goal_target_pos(double gx,double gy);
-		void update();
+		void update(double weight);
 		void update_neighbors();
 		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
 		double swarm();

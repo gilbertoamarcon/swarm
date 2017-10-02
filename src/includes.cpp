@@ -11,3 +11,6 @@ double deg_to_rad(double input){
 double rad_to_deg(double input){
 	return 180.0*input/PI;
 }
+double gen_rand_range(double begin_range, double end_range){
+	return begin_range + ((double)rand()/RAND_MAX)*(end_range-begin_range);
+}
