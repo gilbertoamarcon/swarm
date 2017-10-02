@@ -144,14 +144,14 @@ double Robot::leader_reasoning(){
 	angle_wrap(angle_to_goal);
 
 	// Loading inputs
-	mlp->x[0] = angle_to_neighbor_centroid;
-	mlp->x[1] = angle_to_goal;
-	mlp->x[2] = distance_to_neighbor_centroid;
-	mlp->x[3] = distance_to_goal;
+	mlp->x[0] = deg_to_rad(angle_to_neighbor_centroid);
+	mlp->x[1] = deg_to_rad(angle_to_goal);
+	mlp->x[2] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+	mlp->x[3] = distance_to_goal/WORLD_SIZE_X;
 	// mlp->x[0] = angle_to_goal;
 	// printf("%d %9.3f\n", neighbor_att.size(),  distance_to_neighbor_centroid);
 	mlp->eval();
-	double goal_direction = mlp->o[0];
+	double goal_direction = rad_to_deg(2*mlp->o[0]);
 
 	// double goal_direction = angle_to_goal;
 

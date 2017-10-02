@@ -27,7 +27,7 @@ using namespace std;
 #define MLP_I			4 // Number of inputs
 #define MLP_J			5 // Number of HL units
 #define MLP_K			1 // Number of outputs
-#define MLP_INIT_RANGES	100.0
+#define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
 #define EPOCH_STEPS		300
