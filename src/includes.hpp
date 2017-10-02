@@ -4,6 +4,7 @@
 #include "GL/gl.h"
 #include <X11/Xlib.h>
 #include <png.h>
+#include <cstdlib>
 #include <cstdio>
 #include <string>
 #include <stdlib.h>
@@ -17,12 +18,18 @@
 #include <tuple>
 #include <sstream>
 #include <algorithm>
-#include <cmath>
+#include <cstdio>
+#include <random>
 
 using namespace std;
 
 // TODO: Add evolutionary learning framework
 // TODO: Add rally task
+
+// Evol
+#define NUM_EPOCHS		5
+#define EPOCH_STEPS		500
+
 
 // Sim Parameters
 #define NUM_LEADERS		1

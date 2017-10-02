@@ -2,6 +2,7 @@
 #define ROBOT_H
 #include "includes.hpp"
 #include "Wired.hpp"
+#include "mlp.hpp"
 
 /*
 Robot representation.
@@ -31,8 +32,11 @@ class Robot: public Wired{
 
 	public:
 
+		Mlp *mlp;
+
 		bool selected; // User selected (my mouse selection)
 		bool leader;
+		double acc_dist;
 
 		Robot(
 				double x,
@@ -50,7 +54,7 @@ class Robot: public Wired{
 				bool leader
 			);
 		virtual ~Robot();
-		void respawn(double x,double y);
+		void respawn(double x,double y,double t);
 		void set_goal_target_pos(double gx,double gy);
 		void update();
 		void update_neighbors();

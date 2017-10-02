@@ -6,6 +6,10 @@
 Textured cursor;
 Textured flag;
 vector<Robot> flock;
+vector<Mlp> mlps;
+
+// Steps
+int num_steps			= 0;
 
 // Status
 double origin_x			= 0;
@@ -57,6 +61,10 @@ double selX2			= 0;
 double selY2			= 0;
 
 char statusBuffer[BUFFER_SIZE];
+
+void spawn_world();
+
+double compute_error();
 
 void getScreenResolution(int &h, int &v);
 
@@ -110,26 +118,47 @@ int main(int argc, char **argv){
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
 	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 
-	// Spawning robots
+	// Initializing robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		bool leader = false;
 		if(i < NUM_LEADERS)
 			leader = true;
-		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
-		Robot robot(rx,ry,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
+		Robot robot(0.0,0.0,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
 		flock.push_back(robot);
 	}
 
-	// Initial Goal Rally Point
-	double gx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
-	double gy = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
-	set_goal(gx, gy);
+	spawn_world();
 
 	// Main loop
 	glutMainLoop();
 
 	return 0;
+}
+
+void spawn_world(){
+
+	// Positioning robots
+	for(auto const &r : flock){
+		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE;
+		double rt = ((double)rand()/RAND_MAX-0.5)*360.0;
+		r.respawn(rx, ry, rt);
+	}
+
+	// New Goal Rally Point
+	double gx = origin_x + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
+	double gy = origin_y + ((double)rand()/RAND_MAX-0.5)*SPAWN_RANGE*3;
+	set_goal(gx, gy);
+
+}
+
+double compute_error(){
+	double error = 0.0;
+	for(auto const &r : flock)
+		error += r.acc_dist;
+	error /= flock.size();
+	error /= EPOCH_STEPS;
+	return error;
 }
 
 // Get the horizontal and vertical screen sizes in pixel
@@ -349,10 +378,19 @@ void keyReleased(unsigned char key, int x, int y){
 
 void updateValues(int n){
 
+	num_steps++;
+	if(num_steps == EPOCH_STEPS){
+		num_steps = 0;
+		double error = compute_error();
+		printf("%9.3f\n", error);
+		spawn_world();
+	}
+
 	// String printed in the screen corner
-	sprintf(statusBuffer,"Number of robots: %02d View Lock to robots: %01d",flock.size(),lock_view_robot);
+	sprintf(statusBuffer,"Number of robots: %02d Steps: %d",flock.size(),num_steps);
 
 	// Frame limiter
+	// if(num_steps < EPOCH_STEPS)
 	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 
 	// Camera view will track specific flock

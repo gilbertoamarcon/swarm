@@ -21,20 +21,23 @@ Robot::Robot(
 	this->v				= v;
 	this->a				= a;
 	goal.first			= 0;
-	goal.second		= 0;
+	goal.second			= 0;
 	this->radius_rep	= radius_rep;
 	this->radius_ori	= radius_ori;
 	this->radius_att	= radius_att;
 	this->flock			= flock;
 	this->leader		= leader;
 	this->selected		= true;
+	this->acc_dist		= 0.0;
 }
 
 Robot::~Robot(){};
 
-void Robot::respawn(double x,double y){
+void Robot::respawn(double x,double y,double t){
 	this->x = x;
 	this->y = y;
+	this->t = t;
+	this->acc_dist		= 0.0;
 }
 
 void Robot::set_goal_target_pos(double gx,double gy){
@@ -43,6 +46,8 @@ void Robot::set_goal_target_pos(double gx,double gy){
 }
 
 void Robot::update(){
+
+	acc_dist += distance_to_point(goal);
 
 	double goal_t = this->t;
 	if(leader)
