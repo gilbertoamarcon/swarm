@@ -36,7 +36,7 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		50000
+#define NUM_EPOCHS		500
 #define MUTATION_RANGE	0.01
 
 // Sim Parameters

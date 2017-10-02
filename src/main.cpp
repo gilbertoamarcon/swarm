@@ -406,7 +406,10 @@ void keyReleased(unsigned char key, int x, int y){
 void updateValues(int n){
 
 	// Frame limiter
-	glutTimerFunc(SIM_STEP_TIME,updateValues,0);
+	if(current_epoch < NUM_EPOCHS)
+		glutTimerFunc(0.001,updateValues,0);
+	else
+		glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 
 	num_steps++;
 	if(num_steps == EPOCH_STEPS){
@@ -424,11 +427,23 @@ void updateValues(int n){
 
 			sort(mlps.begin(),mlps.end());
 
-			printf("---\n");
-			for(auto const &mlp : mlps)
-				printf("%9.3f\n", mlp.error);
-			printf("---\n");
-			printf("B%8.3f\n", mlps.begin()->error);
+			// printf("---\n");
+			// for(auto const &mlp : mlps)
+			// 	printf("%9.3f\n", mlp.error);
+			// printf("---\n");
+			// printf("B%8.3f\n", mlps.begin()->error);
+			// for(int i = 0; i < MLP_J*(MLP_I+1); i++)
+			// 	printf("%8.3f ", mlps.begin()->weights->V[i]);
+			// for(int i = 0; i < MLP_K*(MLP_J+1); i++)
+			// 	printf("%8.3f ", mlps.begin()->weights->W[i]);
+			// printf("\n");
+			char str[BUFFER_SIZE];
+			for(int i = 0; i < NUM_PARENTS; i++){
+  				strcpy (str,"");
+				mlps.at(i).print_weights(str);
+				printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
+			}
+			printf("\n");
 
 			// Erasing the worst mlps
 			mlps.erase(mlps.begin()+NUM_PARENTS,mlps.end());

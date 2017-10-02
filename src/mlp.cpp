@@ -26,6 +26,13 @@ void Mlp::init(int I,int J,int K,double iniRange){
 
 }
 
+void Mlp::print_weights(char* str){
+	for(int i = 0; i < J*(I+1); i++)
+		sprintf(str,"%s%6.3f ", str, this->weights->V[i]);
+	for(int i = 0; i < K*(J+1); i++)
+		sprintf(str,"%s%6.3f ", str, this->weights->W[i]);
+}
+
 void Mlp::randomize(){
 
 	// Time-based seed

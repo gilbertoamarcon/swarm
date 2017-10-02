@@ -28,15 +28,15 @@ class Mlp{
 		int K;		// Number of outputs
 		double iniRange;
 
-		// Weights
-		Weights *weights;	// weights
-
 		// Internal variables
 		double *u0;
 		double *u1;
 		double *y;
 
 	public:
+
+		// Weights
+		Weights *weights;	// weights
 
 		double error;
 
@@ -50,6 +50,8 @@ class Mlp{
 		Mlp();
 
 		void init(int I,int J,int K,double iniRange);
+
+		void print_weights(char* str);
 
 		// Weight initialization
 		void randomize();
