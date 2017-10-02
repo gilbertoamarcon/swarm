@@ -59,20 +59,20 @@ void Mlp::eval(){
 	x[I] = 1.0;
 
 	// Computing HL output 
-	for(int i = 0; i < J; i++){
-		u0[i] = 0;
-		for(int j = 0; j < I+1; j++)
-			u0[i] += weights->V[(I+1)*i+j]*x[j];
-		y[i] = atan(u0[i]);
+	for(int j = 0; j < J; j++){
+		u0[j] = 0.0;
+		for(int i = 0; i < I+1; i++)
+			u0[j] += weights->V[(I+1)*j+i]*x[i];
+		y[j] = atan(u0[j]);
 	}
 
 	// Computing OL output 
 	y[J] = 1;
-	for(int i = 0; i < K; i++){
-		u1[i] = 0;
+	for(int k = 0; k < K; k++){
+		u1[k] = 0.0;
 		for(int j = 0; j < J+1; j++)
-			u1[i] += weights->W[(J+1)*i+j]*y[j];
-		o[i] = atan(u1[i]);
+			u1[k] += weights->W[(J+1)*k+j]*y[j];
+		o[k] = atan(u1[k]);
 	}
 
 }
