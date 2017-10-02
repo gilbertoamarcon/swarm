@@ -29,7 +29,7 @@ void Mlp::init(int I,int J,int K,double iniRange){
 void Mlp::randomize(){
 	
 	normal_distribution<double> distV(0,iniRange);
-	normal_distribution<double> distW(0,iniRange/(J+1));
+	normal_distribution<double> distW(0,iniRange);
 
 	// Initializing weights V
 	for(int i = 0; i < J*(I+1); i++)
@@ -43,7 +43,7 @@ void Mlp::randomize(){
 void Mlp::mutate(double range){
 	
 	normal_distribution<double> distV(0,range);
-	normal_distribution<double> distW(0,range/(J+1));
+	normal_distribution<double> distW(0,range);
 
 	// Mutating weights V
 	for(int i = 0; i < J*(I+1); i++)
