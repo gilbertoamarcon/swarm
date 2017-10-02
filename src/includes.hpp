@@ -23,20 +23,17 @@
 
 using namespace std;
 
-// TODO: Add evolutionary learning framework
-// TODO: Add rally task
-
 // Evol
-#define NUM_EPOCHS		5
-#define EPOCH_STEPS		500
-#define POP_SIZE		20
+#define NUM_EPOCHS		50000
+#define EPOCH_STEPS		300
+#define POP_SIZE		15
+#define PARENTS			5
 #define NUM_HIDLR_UTS	5
-#define LEARN_RATE		0.01
+#define MUTATION_RANGE	0.01
 #define MLP_INIT_RANGES	100.0
 
-
 // Sim Parameters
-#define NUM_LEADERS		1
+#define NUM_LEADERS		10
 #define NUM_ROBOTS		100
 #define SPAWN_RANGE		100
 #define ROBOT_VEL		1.00

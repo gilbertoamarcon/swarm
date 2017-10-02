@@ -41,6 +41,8 @@ class Mlp{
 
 	public:
 
+		double error;
+
 		// Inputs
 		double *x;
 
@@ -55,6 +57,9 @@ class Mlp{
 		// Weight initialization
 		void randomize();
 
+		// Weight mutation
+		void mutate(double range);
+
 		// Feedforward
 		void eval();
 
@@ -63,6 +68,10 @@ class Mlp{
 
 		// Loading weights
 		int load(char *mlp_weights);
+
+		bool operator < (const Mlp& mlp) const{
+			return (error < mlp.error);
+		}
 };
 
 

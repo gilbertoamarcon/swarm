@@ -10,6 +10,7 @@ vector<Mlp> mlps;
 
 // Steps
 int num_steps			= 0;
+int current_epoch		= 0;
 int current_mlp			= 0;
 
 // Status
@@ -390,13 +391,51 @@ void updateValues(int n){
 	num_steps++;
 	if(num_steps == EPOCH_STEPS){
 		num_steps = 0;
-		double error = compute_error();
-		printf("%9.3f\n", error);
+
+		// Error evaluation
+		mlps.at(current_mlp).error = compute_error();
+
+		// Swapping MLP
+		current_mlp++;
+
+		// All MLPs evaluated, mutation and selection
+		if(current_mlp == POP_SIZE){
+			current_mlp = 0;
+
+			sort(mlps.begin(),mlps.end());
+
+			printf("---\n");
+			for(auto const &mlp : mlps)
+				printf("%9.3f\n", mlp.error);
+			printf("---\n");
+			printf("B%8.3f\n", mlps.begin()->error);
+
+			// Erasing the worst mlps
+			mlps.erase(mlps.begin()+PARENTS,mlps.end());
+
+			// Reproducing the best mlps
+			for(int i = 0; i < POP_SIZE-PARENTS; i++){
+
+				// Copying best
+				Mlp mlp = mlps.at(rand()%PARENTS);
+
+				// Mutation
+				mlp.mutate(MUTATION_RANGE);
+
+				// Inserting into population
+				mlps.push_back(mlp);
+
+			}
+
+
+			current_epoch++;
+		}
+
 		spawn_world();
 	}
 
 	// String printed in the screen corner
-	sprintf(statusBuffer,"Number of robots: %02d Steps: %d",flock.size(),num_steps);
+	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS);
 
 	// Frame limiter
 	glutTimerFunc(SIM_STEP_TIME,updateValues,0);

@@ -8,6 +8,7 @@ void Mlp::init(int I,int J,int K,double iniRange){
 	this->J = J;
 	this->K = K;
 	this->iniRange = iniRange;
+	this->error = 0.0;
 
 	// Weights
 	weights = new Weights(I,J,K);
@@ -38,6 +39,20 @@ void Mlp::randomize(){
 	// Initializing weights W
 	for(int i = 0; i < K*(J+1); i++)
 		weights->W[i] = distW(generator);
+}
+
+void Mlp::mutate(double range){
+	
+	normal_distribution<double> distV(0,range);
+	normal_distribution<double> distW(0,range/(J+1));
+
+	// Mutating weights V
+	for(int i = 0; i < J*(I+1); i++)
+		weights->V[i] += distV(generator);
+
+	// Mutating weights W
+	for(int i = 0; i < K*(J+1); i++)
+		weights->W[i] += distW(generator);
 }
 
 void Mlp::eval(){
