@@ -523,13 +523,13 @@ void RenderScene(){
 		// Light Trail
 		#if ENABLE_TRAIL
 		for(auto const &r : flock){
-			for (int i=0; i < r.prevx.size()-1; i++){
+			for (int i=0; i < r.prevCoords.size()-1; i++){
 				if(r.leader || SWARM_TRAIL){
 					glLineWidth(2.5*i/TRAIL_LENGTH); 
 					glBegin(GL_LINES);
 					glColor3f(i/TRAIL_LENGTH, !r.leader*SWARM_TRAIL*i/TRAIL_LENGTH, !r.leader*SWARM_TRAIL*i/TRAIL_LENGTH);
-					glVertex3f(-r.prevx[i], -r.prevy[i], 0);
-					glVertex3f(-r.prevx[i+1], -r.prevy[i+1], 0);
+					glVertex3f(-r.prevCoords[i].first, -r.prevCoords[i].second, 0);
+					glVertex3f(-r.prevCoords[i+1].first, -r.prevCoords[i+1].second, 0);
 					glEnd();
 					}
 				}

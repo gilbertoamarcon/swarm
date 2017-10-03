@@ -36,11 +36,11 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		100
+#define NUM_EPOCHS		1000
 #define MUTATION_RANGE	0.1
 
 // Sim Parameters
-#define NUM_LEADERS		2
+#define NUM_LEADERS		3
 #define NUM_ROBOTS		8
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300

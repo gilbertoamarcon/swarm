@@ -38,8 +38,7 @@ class Robot: public Wired{
 		bool selected; // User selected (my mouse selection)
 		bool leader;
 		double acc_dist;
-		vector<double> prevx;
-		vector<double> prevy;
+		vector<pair<double, double>> prevCoords;
 		Robot(
 				double x,
 				double y,
