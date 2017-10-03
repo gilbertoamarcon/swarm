@@ -427,16 +427,6 @@ void updateValues(int n){
 
 			sort(mlps.begin(),mlps.end());
 
-			// printf("---\n");
-			// for(auto const &mlp : mlps)
-			// 	printf("%9.3f\n", mlp.error);
-			// printf("---\n");
-			// printf("B%8.3f\n", mlps.begin()->error);
-			// for(int i = 0; i < MLP_J*(MLP_I+1); i++)
-			// 	printf("%8.3f ", mlps.begin()->weights->V[i]);
-			// for(int i = 0; i < MLP_K*(MLP_J+1); i++)
-			// 	printf("%8.3f ", mlps.begin()->weights->W[i]);
-			// printf("\n");
 			char str[BUFFER_SIZE];
 			for(int i = 0; i < NUM_PARENTS; i++){
   				strcpy (str,"");
@@ -451,17 +441,17 @@ void updateValues(int n){
 			// Reproducing the best mlps
 			for(int i = 0; i < POP_SIZE-NUM_PARENTS; i++){
 
-				// Copying best
-				Mlp mlp = mlps.at(rand()%NUM_PARENTS);
+				// Parent selection
+				Mlp mlp;
+				mlp.copy_weights(&mlps.at(rand()%NUM_PARENTS));
 
 				// Mutation
 				mlp.mutate(MUTATION_RANGE);
 
 				// Inserting into population
-				mlps.push_back(mlp);
+				mlps.insert(mlps.end(), mlp);
 
 			}
-
 
 			current_epoch++;
 		}

@@ -53,6 +53,8 @@ class Mlp{
 
 		void print_weights(char* str);
 
+		void copy_weights(Mlp* mlp);
+
 		// Weight initialization
 		void randomize();
 

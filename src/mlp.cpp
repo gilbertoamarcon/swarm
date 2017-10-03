@@ -33,6 +33,14 @@ void Mlp::print_weights(char* str){
 		sprintf(str,"%s%6.3f ", str, this->weights->W[i]);
 }
 
+void Mlp::copy_weights(Mlp* mlp){
+	this->init(mlp->I,mlp->J,mlp->K,mlp->iniRange);
+	for(int i = 0; i < J*(I+1); i++)
+		this->weights->V[i] = mlp->weights->V[i];
+	for(int i = 0; i < K*(J+1); i++)
+		this->weights->W[i] = mlp->weights->W[i];
+}
+
 void Mlp::randomize(){
 
 	// Time-based seed
