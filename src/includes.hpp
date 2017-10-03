@@ -31,7 +31,7 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		300
+#define EPOCH_STEPS		400
 
 // Evolution Parameters
 #define POP_SIZE		15
@@ -40,8 +40,8 @@ using namespace std;
 #define MUTATION_RANGE	0.1
 
 // Sim Parameters
-#define NUM_LEADERS		3
-#define NUM_ROBOTS		9
+#define NUM_LEADERS		2
+#define NUM_ROBOTS		8
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
@@ -63,6 +63,12 @@ using namespace std;
 #define WINDOW_TITLE	"Video"
 #define FULL_SCREEN		0
 #define SIM_STEP_TIME	1.000
+
+// Light trail for the lulz
+#define ENABLE_TRAIL 	1
+#define SWARM_TRAIL 	1
+#define TRAIL_LENGTH	100.0
+
 // #define SIM_STEP_TIME	0.001
 
 // Camera Parameters

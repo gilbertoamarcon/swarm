@@ -520,6 +520,22 @@ void RenderScene(){
 			glVertex2f(-WORLD_SIZE_X, WORLD_SIZE_Y);
 		glEnd();
 
+		// Light Trail
+		#if ENABLE_TRAIL
+		for(auto const &r : flock){
+			for (int i=0; i < r.prevx.size()-1; i++){
+				if(r.leader || SWARM_TRAIL){
+					glLineWidth(2.5*i/TRAIL_LENGTH); 
+					glBegin(GL_LINES);
+					glColor3f(i/TRAIL_LENGTH, !r.leader*SWARM_TRAIL*i/TRAIL_LENGTH, !r.leader*SWARM_TRAIL*i/TRAIL_LENGTH);
+					glVertex3f(-r.prevx[i], -r.prevy[i], 0);
+					glVertex3f(-r.prevx[i+1], -r.prevy[i+1], 0);
+					glEnd();
+					}
+				}
+			}
+		#endif 
+
 		// Drawing robots
 		for(auto const &r : flock)
 			r.render_robot();

@@ -38,7 +38,8 @@ class Robot: public Wired{
 		bool selected; // User selected (my mouse selection)
 		bool leader;
 		double acc_dist;
-
+		vector<double> prevx;
+		vector<double> prevy;
 		Robot(
 				double x,
 				double y,
@@ -66,7 +67,7 @@ class Robot: public Wired{
 		double leader_reasoning();
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
-
+		void update_trail();
 		// Distances
 		double angle_to_point(pair<double,double> &input);
 		double distance_to_point(pair<double,double> &input);

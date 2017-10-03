@@ -32,6 +32,11 @@ Robot::Robot(
 	this->mlp				= NULL;
 	this->goal				= pair<double,double>(0.0,0.0);
 	this->neighbor_centroid	= pair<double,double>(0.0,0.0);
+
+	#if ENABLE_TRAIL
+		this->prevx 		= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevx.push_back(x);
+		this->prevy 		= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevy.push_back(y);
+	#endif
 }
 
 Robot::~Robot(){};
@@ -42,6 +47,11 @@ void Robot::respawn(double x,double y,double t,Mlp *mlp){
 	this->t				= t;
 	this->acc_dist		= 0.0;
 	this->mlp			= mlp;
+
+	#if ENABLE_TRAIL
+		this->prevx 		= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevx.push_back(x);
+		this->prevy 		= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevy.push_back(y);
+	#endif
 }
 
 void Robot::set_goal_target_pos(double gx,double gy){
@@ -50,6 +60,9 @@ void Robot::set_goal_target_pos(double gx,double gy){
 }
 
 void Robot::update(double weight){
+	#if ENABLE_TRAIL 
+		update_trail();
+	#endif
 
 	acc_dist += weight*distance_to_point(goal);
 
@@ -71,6 +84,15 @@ void Robot::update(double weight){
 	this->y += v*sin(deg_to_rad(this->t));
 
 };
+
+void Robot::update_trail(){
+		for (int i=0; i<prevx.size()-1; i++)
+			prevx[i] = prevx[i+1];
+		prevx.back() = x;
+		for (int i=0; i<prevy.size()-1; i++)
+			prevy[i] = prevy[i+1];
+		prevy.back() = y;
+}
 
 // Get agents between radii
 set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
