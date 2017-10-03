@@ -46,14 +46,13 @@ class Mlp{
 		// Outputs
 		double *o;
 
-		// Constructor
-		Mlp();
+		// Constructors
+		Mlp(int I,int J,int K,double iniRange);
+		Mlp(Mlp* mlp);
 
 		void init(int I,int J,int K,double iniRange);
 
 		void print_weights(char* str);
-
-		void copy_weights(Mlp* mlp);
 
 		// Weight initialization
 		void randomize();

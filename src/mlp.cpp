@@ -1,6 +1,22 @@
 #include "mlp.hpp"
 
-Mlp::Mlp(){}
+Mlp::Mlp(int I,int J,int K,double iniRange){
+	this->init(I,J,K,iniRange);
+}
+
+Mlp::Mlp(Mlp* mlp) : Mlp(mlp->I,mlp->J,mlp->K,mlp->iniRange){
+	for(int i = 0; i < J*(I+1); i++)
+		this->weights->V[i] = mlp->weights->V[i];
+	for(int i = 0; i < K*(J+1); i++)
+		this->weights->W[i] = mlp->weights->W[i];
+}
+
+void Mlp::print_weights(char* str){
+	for(int i = 0; i < J*(I+1); i++)
+		sprintf(str,"%s%6.3f ", str, this->weights->V[i]);
+	for(int i = 0; i < K*(J+1); i++)
+		sprintf(str,"%s%6.3f ", str, this->weights->W[i]);
+}
 
 void Mlp::init(int I,int J,int K,double iniRange){
 
@@ -24,21 +40,6 @@ void Mlp::init(int I,int J,int K,double iniRange){
 	// Outputs
 	o = new double[K];
 
-}
-
-void Mlp::print_weights(char* str){
-	for(int i = 0; i < J*(I+1); i++)
-		sprintf(str,"%s%6.3f ", str, this->weights->V[i]);
-	for(int i = 0; i < K*(J+1); i++)
-		sprintf(str,"%s%6.3f ", str, this->weights->W[i]);
-}
-
-void Mlp::copy_weights(Mlp* mlp){
-	this->init(mlp->I,mlp->J,mlp->K,mlp->iniRange);
-	for(int i = 0; i < J*(I+1); i++)
-		this->weights->V[i] = mlp->weights->V[i];
-	for(int i = 0; i < K*(J+1); i++)
-		this->weights->W[i] = mlp->weights->W[i];
 }
 
 void Mlp::randomize(){
@@ -176,7 +177,7 @@ int Mlp::load(char *mlp_weights){
 	while(fileBuffer[aux++] != ':');
 	K = atoi(fileBuffer+aux);
 
-	init(I,J,K,1.0);
+	this->init(I,J,K,1.0);
 
 	// Loading weights V
 	if(fgets(fileBuffer, BUFFER_SIZE, file) == NULL){

@@ -122,8 +122,7 @@ int main(int argc, char **argv){
 
 	// Initializing mlps
 	for(int i = 0; i < POP_SIZE; i++){
-		Mlp mlp;
-		mlp.init(MLP_I,MLP_J,MLP_K,MLP_INIT_RANGES);
+		Mlp mlp(MLP_I,MLP_J,MLP_K,MLP_INIT_RANGES);
 		mlp.randomize();
 		mlps.push_back(mlp);
 	}
@@ -182,8 +181,9 @@ void spawn_world(){
 double compute_error(){
 	double error = 0.0;
 	for(auto const &r : flock)
-		error += r.acc_dist;
-	error /= flock.size();
+		if(!(r.leader))
+			error += r.acc_dist;
+	error /= (NUM_ROBOTS-NUM_LEADERS);
 	error /= EPOCH_STEPS;
 	return error;
 }
@@ -430,7 +430,7 @@ void updateValues(int n){
 			char str[BUFFER_SIZE];
 			for(int i = 0; i < NUM_PARENTS; i++){
   				strcpy (str,"");
-				mlps.at(i).print_weights(str);
+				// mlps.at(i).print_weights(str);
 				printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
 			}
 			printf("\n");
@@ -442,8 +442,7 @@ void updateValues(int n){
 			for(int i = 0; i < POP_SIZE-NUM_PARENTS; i++){
 
 				// Parent selection
-				Mlp mlp;
-				mlp.copy_weights(&mlps.at(rand()%NUM_PARENTS));
+				Mlp mlp(&mlps.at(rand()%NUM_PARENTS));
 
 				// Mutation
 				mlp.mutate(MUTATION_RANGE);

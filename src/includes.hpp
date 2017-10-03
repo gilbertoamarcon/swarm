@@ -25,8 +25,8 @@
 using namespace std;
 
 // MLP Parameters
-#define MLP_I			1 // Number of inputs
-#define MLP_J			1 // Number of HL units
+#define MLP_I			4 // Number of inputs
+#define MLP_J			5 // Number of HL units
 #define MLP_K			1 // Number of outputs
 #define MLP_INIT_RANGES	1.0
 
@@ -40,8 +40,8 @@ using namespace std;
 #define MUTATION_RANGE	0.1
 
 // Sim Parameters
-#define NUM_LEADERS		1
-#define NUM_ROBOTS		1
+#define NUM_LEADERS		3
+#define NUM_ROBOTS		9
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00

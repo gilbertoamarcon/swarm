@@ -127,11 +127,14 @@ pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors, pair<double
 
 double Robot::leader_reasoning(){
 
-	// Update neighbor sets
-	update_neighbors();
+	// Leader neighbors
+	set<Robot*> neighbor_leader;
+	for(auto &r : *flock)
+		if(!(r.leader))
+			neighbor_leader.insert(&r);
 
 	// Neighbor centroid
-	neighbor_centroid	= compute_centroid(neighbor_att,pair<double,double>(this->x,this->y));
+	neighbor_centroid	= compute_centroid(neighbor_leader,pair<double,double>(this->x,this->y));
 
 	// Distance to centroids
 	double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
@@ -145,10 +148,9 @@ double Robot::leader_reasoning(){
 
 	// Loading inputs
 	mlp->x[0] = deg_to_rad(angle_to_goal);
-	// mlp->x[1] = deg_to_rad(angle_to_neighbor_centroid);
-	// mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
-	// mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
-	// printf("%9.3f\n", angle_to_goal);
+	mlp->x[1] = deg_to_rad(angle_to_neighbor_centroid);
+	mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
+	mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 	mlp->eval();
 	double goal_direction = rad_to_deg(2*mlp->o[0]);
 
