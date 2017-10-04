@@ -1,10 +1,8 @@
-cd data
 errors = csvread('MLP_errors.txt');
 errors = errors(:,1:size(errors,2)-1);
 f = figure();
 plot(min(errors'), 'Color', [0.2 0.6 0.5]);
 saveas(f,'plot.svg');
-cd ..
 
 
 % plot(mean(errors'), 'Color', [0.2 0.6 0.5])
