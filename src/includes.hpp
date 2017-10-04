@@ -9,6 +9,7 @@
 #include <string>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <cmath>
 #include <list>
@@ -23,6 +24,9 @@
 #include <chrono>
 
 using namespace std;
+
+// Data Collection
+#define COLLECT_DATA 	1
 
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
@@ -90,7 +94,8 @@ using namespace std;
 #define LOAD_WEIGHTS	'v'
 
 // I/O Parameters
-#define WEIGHTS_FILE	"NN_weights.txt"
+#define WEIGHTS_FILE	"data/MLP_weights.txt"
+#define DATA_FILE		"data/MLP_errors.txt"
 
 // Angle Operations
 void angle_wrap(double &input);

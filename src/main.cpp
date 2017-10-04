@@ -64,6 +64,8 @@ double selY1			= 0;
 double selX2			= 0;
 double selY2			= 0;
 
+// I/O
+ofstream datafile;
 char statusBuffer[BUFFER_SIZE];
 
 void spawn_world();
@@ -137,6 +139,9 @@ int main(int argc, char **argv){
 		Robot robot(0.0,0.0,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
 		flock.push_back(robot);
 	}
+
+	// Open data file
+  	datafile.open(DATA_FILE);
 
 	spawn_world();
 
@@ -426,6 +431,11 @@ void updateValues(int n){
 		// Error evaluation
 		mlps.at(current_mlp).error = compute_error();
 
+		// Write error to data file
+		#if COLLECT_DATA
+			datafile << mlps.at(current_mlp).error << ",";
+		#endif
+
 		// Swapping MLP
 		current_mlp++;
 
@@ -462,7 +472,9 @@ void updateValues(int n){
 				mlps.insert(mlps.end(), mlp);
 
 			}
-
+			#if COLLECT_DATA
+				datafile << endl;
+			#endif
 			current_epoch++;
 		}
 
