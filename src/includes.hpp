@@ -31,17 +31,17 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		400
+#define EPOCH_STEPS		300
 
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		1000
-#define MUTATION_RANGE	0.1
+#define NUM_EPOCHS		50
+#define MUTATION_RANGE	0.01
 
 // Sim Parameters
-#define NUM_LEADERS		3
-#define NUM_ROBOTS		8
+#define NUM_LEADERS		2
+#define NUM_ROBOTS		3
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
@@ -85,7 +85,9 @@ using namespace std;
 #define KEY_ZOON_OUT	'q'
 #define RESET_ZOOM		'z'
 #define RESET_VIEW_POS	'h'
-#define LOCK_VIEW_ROBOT	'v'
+#define LOCK_VIEW_ROBOT	'l'
+#define SAVE_WEIGHTS	'c'
+#define LOAD_WEIGHTS	'v'
 
 // Angle Operations
 void angle_wrap(double &input);

@@ -46,7 +46,7 @@ void Robot::respawn(double x,double y,double t,Mlp *mlp){
 	this->t				= t;
 	this->acc_dist		= 0.0;
 	this->mlp			= mlp;
-
+	this->selected 		= true;
 	#if ENABLE_TRAIL
 		this->prevCoords 	= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevCoords.push_back(pair<double, double>(x, y));
 	#endif

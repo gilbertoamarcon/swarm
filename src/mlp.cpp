@@ -201,6 +201,7 @@ int Mlp::load(char *mlp_weights){
 		weights->W[i] = atof(fileBuffer);
 	}
 	
+	printf("Weights loaded.\n");
 	fclose(file);
 	return 0;
 }

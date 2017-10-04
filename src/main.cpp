@@ -49,6 +49,8 @@ bool keyDown			= 0;
 bool keyUp				= 0;
 bool keyZoomIn			= 0;
 bool keyZoomOut			= 0;
+bool saveWeights		= 0;
+bool loadWeights		= 0;
 
 // Mouse mov flags
 bool mouseLeft			= 0;
@@ -372,6 +374,12 @@ void keyPressed(unsigned char key, int x, int y){
 		case LOCK_VIEW_ROBOT:
 			lock_view_robot = !lock_view_robot;
 			break;
+		case SAVE_WEIGHTS:
+			saveWeights = 1;
+			break;
+		case LOAD_WEIGHTS:
+			loadWeights = 1;
+			break;
 		default:
 			break;
 	}
@@ -428,11 +436,14 @@ void updateValues(int n){
 			sort(mlps.begin(),mlps.end());
 
 			char str[BUFFER_SIZE];
+			double sum = 0;
 			for(int i = 0; i < NUM_PARENTS; i++){
   				strcpy (str,"");
 				// mlps.at(i).print_weights(str);
+				sum += mlps.at(i).error;
 				printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
 			}
+			printf("\nAVG: %f", sum/NUM_PARENTS);
 			printf("\n");
 
 			// Erasing the worst mlps
@@ -480,6 +491,18 @@ void updateValues(int n){
 		scn_scale /= 1.05;
 	if(keyZoomOut)
 		scn_scale *= 1.05;
+
+	// Save NN weights
+	if(saveWeights){
+		mlps.at(current_mlp).store("TEST.txt");
+		saveWeights = 0;
+	}
+
+	if(loadWeights){
+		for(auto &mlp: mlps)
+			mlp.load("TEST.txt");
+		loadWeights = 0;
+	}
 
 	// Updating camera projection parameters
 	x_min = -view_x - scn_scale*window_w/2;
