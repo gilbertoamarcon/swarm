@@ -494,13 +494,13 @@ void updateValues(int n){
 
 	// Save NN weights
 	if(saveWeights){
-		mlps.at(current_mlp).store("TEST.txt");
+		mlps.at(current_mlp).store(WEIGHTS_FILE);
 		saveWeights = 0;
 	}
 
 	if(loadWeights){
 		for(auto &mlp: mlps)
-			mlp.load("TEST.txt");
+			mlp.load(WEIGHTS_FILE);
 		loadWeights = 0;
 	}
 

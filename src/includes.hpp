@@ -89,6 +89,9 @@ using namespace std;
 #define SAVE_WEIGHTS	'c'
 #define LOAD_WEIGHTS	'v'
 
+// I/O Parameters
+#define WEIGHTS_FILE	"NN_weights.txt"
+
 // Angle Operations
 void angle_wrap(double &input);
 double deg_to_rad(double input);
