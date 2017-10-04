@@ -106,6 +106,8 @@ int main(int argc, char **argv){
 
 	srand(clock());
 
+
+
 	// Initializing graphics
 	getScreenResolution(window_w,window_h);
 	glutInit(&argc, argv);
@@ -142,9 +144,8 @@ int main(int argc, char **argv){
 
 	// Open data file
   	datafile.open(DATA_FILE);
-
+  	
 	spawn_world();
-
 	// Main loop
 	glutMainLoop();
 

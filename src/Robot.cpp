@@ -106,7 +106,7 @@ set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
 // Update flocking neighbors
  void Robot::update_neighbors(){
 	this->neighbor_rep = this->get_neighbors(this->radius_rep);
-	this->neighbor_ori = this->get_neighbors(this->radius_ori);
+	this->neighbor_ori = this->get_neighbors(this->radius_ori, this->radius_rep);
 	this->neighbor_att = this->get_neighbors(this->radius_att, this->radius_rep);
 }
 
@@ -172,7 +172,12 @@ double Robot::leader_reasoning(){
 	mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 	mlp->eval();
 	double goal_direction = rad_to_deg(2*mlp->o[0]);
-
+	// New R_ori between 20-100
+	double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
+	// cout << new_rad_ori << endl;
+	// Make everyone adhere to the leaders decision, very crude implementation
+	for(auto &r : *this->flock)
+		r.radius_ori = new_rad_ori;
 	// double goal_direction = angle_to_goal;
 
 	return goal_direction + this->t;
