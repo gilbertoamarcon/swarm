@@ -1,4 +1,6 @@
 # swarm
+Radii-Manipulation Branch
+This branch is an experimental addition to the C++ Swarm Simulator. The hypothesis is giving the ability to manipulate the coordination radii of the swarm to the leaders gives them greater control over the swarm. Radii manipulation is achieved by adding swarm repulsion orientation and attraction radii as MLP outputs. 
 
 Fast Swarm simulator. C++ and OpenGL for speed. Simulation is simple for learning purposes. Code has been kept simple and minimal. There is a simple (Bounding box based) collision detector. No fancy external libraries other than OpenGL. Build is done with the one-liner build script. 
 

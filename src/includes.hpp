@@ -35,25 +35,25 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		300
+#define EPOCH_STEPS		800
 
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		500
+#define NUM_EPOCHS		5000
 #define MUTATION_RANGE	0.01
 
 // Sim Parameters
 #define NUM_LEADERS		3
 #define NUM_ROBOTS		6
 #define ROBOT_SPAWN_RNG	100
-#define GOAL_SPAWN_RNG	300
+#define GOAL_SPAWN_RNG	500
 #define ROBOT_VEL		1.00
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	200
-#define WORLD_SIZE_Y	200
+#define WORLD_SIZE_X	600
+#define WORLD_SIZE_Y	600
 
 // Flock Parameters
 #define REP_RADIUS 		20
