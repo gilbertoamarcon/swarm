@@ -45,8 +45,8 @@ using namespace std;
 #define MUTATION_RANGE	0.05
 
 // Sim Parameters
-#define NUM_LEADERS		3
-#define NUM_ROBOTS		10
+#define NUM_LEADERS		8
+#define NUM_ROBOTS		50
 #define ROBOT_SPAWN_RNG	50
 #define GOAL_SPAWN_RNG	600
 #define ROBOT_VEL		1.00
@@ -95,8 +95,8 @@ using namespace std;
 #define LOAD_WEIGHTS	'v'
 
 // I/O Parameters
-#define WEIGHTS_FILE	"data/MLP_weights1.txt"
-#define DATA_FILE		"data/MLP_errors1.txt"
+#define WEIGHTS_FILE	"data/MLP_weights_50-6Leaders.txt"
+#define DATA_FILE		"data/MLP_errors_50-6Leaders.txt"
 
 // Angle Operations
 void angle_wrap(double &input);
