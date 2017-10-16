@@ -44,8 +44,8 @@ using namespace std;
 #define MUTATION_RANGE	0.01
 
 // Sim Parameters
-#define NUM_LEADERS		3
-#define NUM_ROBOTS		6
+#define NUM_LEADERS		4
+#define NUM_ROBOTS		8
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00

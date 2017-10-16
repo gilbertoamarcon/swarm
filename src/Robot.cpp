@@ -16,7 +16,8 @@ Robot::Robot(
 				double radius_rep,
 				double radius_ori,
 				double radius_att,
-				bool leader
+				bool leader,
+				int goal_group
 			):Wired(x,y,w,h,r,shape){
 	this->v					= v;
 	this->a					= a;
@@ -32,6 +33,7 @@ Robot::Robot(
 	this->mlp				= NULL;
 	this->goal				= pair<double,double>(0.0,0.0);
 	this->neighbor_centroid	= pair<double,double>(0.0,0.0);
+	this->goal_group 		= goal_group;
 
 	#if ENABLE_TRAIL
 		this->prevCoords 	= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevCoords.push_back(pair<double, double>(x, y));

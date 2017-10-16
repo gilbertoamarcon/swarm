@@ -39,6 +39,7 @@ class Robot: public Wired{
 		bool leader;
 		double acc_dist;
 		vector<pair<double, double>> prevCoords;
+		int goal_group;
 		Robot(
 				double x,
 				double y,
@@ -52,7 +53,8 @@ class Robot: public Wired{
 				double radius_rep,
 				double radius_ori,
 				double radius_att,
-				bool leader
+				bool leader,
+				int goal_group
 			);
 		virtual ~Robot();
 		void respawn(double x,double y,double t,Mlp *mlp);
