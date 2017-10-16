@@ -6,6 +6,7 @@
 Textured cursor;
 Textured flag;
 vector<Robot> flock;
+vector<Robot> adversaries;
 vector<Mlp> mlps;
 
 // Steps
@@ -133,12 +134,20 @@ int main(int argc, char **argv){
 		mlps.push_back(mlp);
 	}
 
+	// Initialize adversary
+	for(int i = 0; i < NUM_ADVERSARIES; i++){
+		Robot robot(i, 0.0, 10, 10, 0, ROBOT_VEL, ROBOT_STEERING, shape, &adversaries, 25, 0, 0, false);
+		robot.adversary = true;
+		adversaries.push_back(robot);
+	}
+
 	// Initializing robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		bool leader = false;
 		if(i < NUM_LEADERS)
 			leader = true;
 		Robot robot(0.0,0.0,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
+		robot.adversaries = &adversaries;
 		flock.push_back(robot);
 	}
 
@@ -188,11 +197,17 @@ void spawn_world(){
 
 double compute_error(){
 	double error = 0.0;
-	for(auto const &r : flock)
-		if(!(r.leader))
-			error += r.acc_dist;
+	int num_eaten = 0;
+	for(auto const &r : flock){
+		// if(!(r.leader))
+		// 	error += r.acc_dist;
+		if(r.eaten)
+			num_eaten += 1;
+	}
 	error /= (NUM_ROBOTS-NUM_LEADERS);
 	error /= EPOCH_STEPS;
+	error += 100*num_eaten;
+
 	return error;
 }
 
@@ -527,6 +542,8 @@ void updateValues(int n){
 	double weight = 1-cos(PI*((double)num_steps/EPOCH_STEPS));
 	for(auto &r : flock)
 		r.update(weight);
+	for(auto &r : adversaries)
+		r.adv_update();
 
 	// String printed in the screen corner
 	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
@@ -570,10 +587,25 @@ void RenderScene(){
 					}
 				}
 			}
+		for(auto const &r : adversaries){
+			for (int i=0; i < r.prevCoords.size()-1; i++){
+				if(r.adversary || SWARM_TRAIL){
+					glLineWidth(2.5*i/TRAIL_LENGTH); 
+					glBegin(GL_LINES);
+					glColor3f(!r.adversary*SWARM_TRAIL*i/TRAIL_LENGTH, !r.adversary*SWARM_TRAIL*i/TRAIL_LENGTH, i/TRAIL_LENGTH);
+					glVertex3f(-r.prevCoords[i].first, -r.prevCoords[i].second, 0);
+					glVertex3f(-r.prevCoords[i+1].first, -r.prevCoords[i+1].second, 0);
+					glEnd();
+					}
+				}
+			}
 		#endif 
 
 		// Drawing robots
 		for(auto const &r : flock)
+			r.render_robot();
+		// Drawing adversaries
+		for(auto const &r : adversaries)
 			r.render_robot();
 
 		// Goal flag

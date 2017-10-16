@@ -37,7 +37,10 @@ class Robot: public Wired{
 
 		bool selected; // User selected (my mouse selection)
 		bool leader;
+		bool adversary;
+		vector<Robot> *adversaries;
 		double acc_dist;
+		bool eaten;
 		vector<pair<double, double>> prevCoords;
 		Robot(
 				double x,
@@ -57,6 +60,7 @@ class Robot: public Wired{
 		virtual ~Robot();
 		void respawn(double x,double y,double t,Mlp *mlp);
 		void set_goal_target_pos(double gx,double gy);
+		void adv_update();
 		void update(double weight);
 		void update_neighbors();
 		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
@@ -72,6 +76,7 @@ class Robot: public Wired{
 		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);
+		pair<double, double> nearest_adv_dist_angle();
 
 		bool check_col();
 		void render_robot();

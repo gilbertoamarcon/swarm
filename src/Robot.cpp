@@ -32,6 +32,8 @@ Robot::Robot(
 	this->mlp				= NULL;
 	this->goal				= pair<double,double>(0.0,0.0);
 	this->neighbor_centroid	= pair<double,double>(0.0,0.0);
+	this->adversary 		= false;
+	this->eaten 			= false;
 
 	#if ENABLE_TRAIL
 		this->prevCoords 	= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevCoords.push_back(pair<double, double>(x, y));
@@ -47,6 +49,7 @@ void Robot::respawn(double x,double y,double t,Mlp *mlp){
 	this->acc_dist		= 0.0;
 	this->mlp			= mlp;
 	this->selected 		= true;
+	this->eaten 		= false;
 	#if ENABLE_TRAIL
 		this->prevCoords 	= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevCoords.push_back(pair<double, double>(x, y));
 	#endif
@@ -61,6 +64,10 @@ void Robot::update(double weight){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
+
+	for(auto &a : *adversaries)
+		if (distance_to_robot(&a) < 5)
+			eaten = 1;
 
 	acc_dist += weight*distance_to_point(goal);
 
@@ -82,6 +89,21 @@ void Robot::update(double weight){
 	this->y += v*sin(deg_to_rad(this->t));
 
 };
+
+void Robot::adv_update(){
+	#if ENABLE_TRAIL 
+		update_trail();
+	#endif
+	double g = swarm();
+	// Update heading and velocities
+	double delta = g-this->t;
+	angle_wrap(delta);
+	this->t += this->a*delta;
+	angle_wrap(this->t);
+	// Send velocity commands
+	this->x += v*cos(deg_to_rad(this->t));
+	this->y += v*sin(deg_to_rad(this->t));
+}
 
 void Robot::update_trail(){
 		for (int i=0; i<prevCoords.size()-1; i++){
@@ -165,19 +187,23 @@ double Robot::leader_reasoning(){
 	angle_wrap(angle_to_neighbor_centroid);
 	angle_wrap(angle_to_goal);
 
+	// cout << nearest_adv_dist_angle().first << " " << nearest_adv_dist_angle().second << endl;
 	// Loading inputs
-	mlp->x[0] = deg_to_rad(angle_to_goal);
-	mlp->x[1] = deg_to_rad(angle_to_neighbor_centroid);
-	mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
-	mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+	// mlp->x[0] = deg_to_rad(angle_to_goal);
+	mlp->x[0] = deg_to_rad(angle_to_neighbor_centroid);
+	// mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
+	mlp->x[1] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+	pair <double, double> adv_vec = nearest_adv_dist_angle();
+	mlp->x[2] = adv_vec.first/WORLD_SIZE_X;
+	mlp->x[3] = adv_vec.second/WORLD_SIZE_X;
 	mlp->eval();
 	double goal_direction = rad_to_deg(2*mlp->o[0]);
 	// New R_ori between 20-100
-	double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
+	// double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
 	// cout << new_rad_ori << endl;
 	// Make everyone adhere to the leaders decision, very crude implementation
-	for(auto &r : *this->flock)
-		r.radius_ori = new_rad_ori;
+	// for(auto &r : *this->flock)
+		// r.radius_ori = new_rad_ori;
 	// double goal_direction = angle_to_goal;
 
 	return goal_direction + this->t;
@@ -222,6 +248,24 @@ double Robot::wall_repulsion(double xlim, double ylim){
 	return NAN;
 }
 
+pair<double, double> Robot::nearest_adv_dist_angle(){
+	double nearest_dist = 10e5;
+	int nearest_id;
+	int id = 0;
+	for (auto &a : *adversaries){
+		double dist = distance_to_robot(&a);
+		if (dist < nearest_dist){
+			nearest_dist = dist;
+			nearest_id = id;
+		}
+		id += 1;
+	}
+	pair <double, double> nearest_pos (adversaries->at(nearest_id).x, adversaries->at(nearest_id).y);
+	pair <double, double> p (nearest_dist, angle_to_point(nearest_pos));
+	return p;
+}
+
+
 double Robot::angle_to_point(pair<double,double> &input){
 	return atan2(input.second-this->y, input.first-this->x);
 }
@@ -253,6 +297,10 @@ double Robot::distance_to_robot(Robot *robot){
 void Robot::render_robot(){
 	if(leader)
 		render(1,selected,1.0,0.0,0.0);
+	else if(adversary)
+		render(1,selected,0.5,0.2,0.8);
+	else if(eaten)
+		render(1,selected,0.3,0.3,0.3);
 	else
 		render(1,selected);
 };

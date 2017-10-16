@@ -32,7 +32,7 @@ using namespace std;
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
 #define MLP_J			6 // Number of HL units
-#define MLP_K			2 // Number of outputs
+#define MLP_K			1 // Number of outputs
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
@@ -41,20 +41,21 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		300
+#define NUM_EPOCHS		500
 #define MUTATION_RANGE	0.05
 
 // Sim Parameters
-#define NUM_LEADERS		8
-#define NUM_ROBOTS		50
+#define NUM_LEADERS		4
+#define NUM_ROBOTS		24
 #define ROBOT_SPAWN_RNG	50
-#define GOAL_SPAWN_RNG	600
+#define GOAL_SPAWN_RNG	200
 #define ROBOT_VEL		1.00
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	600
-#define WORLD_SIZE_Y	600
+#define WORLD_SIZE_X	200
+#define WORLD_SIZE_Y	200
+#define NUM_ADVERSARIES 2
 
 // Flock Parameters
 #define REP_RADIUS 		20
