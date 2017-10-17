@@ -41,12 +41,12 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		500
-#define MUTATION_RANGE	0.05
+#define NUM_EPOCHS		350
+#define MUTATION_RANGE	0.2
 
 // Sim Parameters
-#define NUM_LEADERS		4
-#define NUM_ROBOTS		24
+#define NUM_LEADERS		5
+#define NUM_ROBOTS		5
 #define ROBOT_SPAWN_RNG	50
 #define GOAL_SPAWN_RNG	200
 #define ROBOT_VEL		1.00
@@ -55,7 +55,9 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	200
 #define WORLD_SIZE_Y	200
-#define NUM_ADVERSARIES 2
+#define NUM_ADVERSARIES 1
+#define ADV_VEL			1.2
+#define ADV_STEERING 	0.025
 
 // Flock Parameters
 #define REP_RADIUS 		20
@@ -71,8 +73,8 @@ using namespace std;
 #define SIM_STEP_TIME	1.000
 
 // Light trail for the lulz
-#define ENABLE_TRAIL 	1
-#define SWARM_TRAIL 	1
+#define ENABLE_TRAIL 	0
+#define SWARM_TRAIL 	0
 #define TRAIL_LENGTH	100.0
 
 // #define SIM_STEP_TIME	0.001

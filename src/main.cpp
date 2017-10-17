@@ -136,8 +136,10 @@ int main(int argc, char **argv){
 
 	// Initialize adversary
 	for(int i = 0; i < NUM_ADVERSARIES; i++){
-		Robot robot(i, 0.0, 10, 10, 0, ROBOT_VEL, ROBOT_STEERING, shape, &adversaries, 25, 0, 0, false);
+		Robot robot(i, 0.0, 10, 10, 0, ADV_VEL, ADV_STEERING, shape, &adversaries, 50, 0, 0, false);
 		robot.adversary = true;
+		robot.t = rand() * 3.14 * 2;
+		robot.adversaries = &flock;
 		adversaries.push_back(robot);
 	}
 
@@ -170,6 +172,13 @@ void spawn_world(){
 		double rt = ((double)rand()/RAND_MAX-0.5)*360.0;
 		r.respawn(rx, ry, rt, &(mlps.at(current_mlp)));
 	}
+	for(auto const &r : adversaries){
+		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*ROBOT_SPAWN_RNG*10;
+		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*ROBOT_SPAWN_RNG*10;
+		double rt = ((double)rand()/RAND_MAX-0.5)*360.0;
+		r.respawn(rx, ry, rt, &(mlps.at(current_mlp)));
+	}
+
 
 	// New Goal Rally Point
 	double gx = origin_x;
@@ -204,8 +213,8 @@ double compute_error(){
 		if(r.eaten)
 			num_eaten += 1;
 	}
-	error /= (NUM_ROBOTS-NUM_LEADERS);
-	error /= EPOCH_STEPS;
+	// error /= (NUM_ROBOTS-NUM_LEADERS);
+	// error /= EPOCH_STEPS;
 	error += 100*num_eaten;
 
 	return error;

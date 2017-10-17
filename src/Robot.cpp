@@ -66,8 +66,8 @@ void Robot::update(double weight){
 	#endif
 
 	for(auto &a : *adversaries)
-		if (distance_to_robot(&a) < 5)
-			eaten = 1;
+		if (distance_to_robot(&a) < 20)
+			eaten = true;
 
 	acc_dist += weight*distance_to_point(goal);
 
@@ -94,7 +94,8 @@ void Robot::adv_update(){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
-	double g = swarm();
+	// double g = swarm();
+	double g = atan2(-y + adversaries->at(0).y, -x + adversaries->at(0).x)*180/PI;
 	// Update heading and velocities
 	double delta = g-this->t;
 	angle_wrap(delta);
@@ -175,7 +176,7 @@ double Robot::leader_reasoning(){
 			neighbor_leader.insert(&r);
 
 	// Neighbor centroid
-	neighbor_centroid	= compute_centroid(neighbor_leader,pair<double,double>(this->x,this->y));
+	neighbor_centroid	= compute_centroid(neighbor_leader, pair<double,double>(this->x,this->y));
 
 	// Distance to centroids
 	double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
@@ -195,7 +196,7 @@ double Robot::leader_reasoning(){
 	mlp->x[1] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 	pair <double, double> adv_vec = nearest_adv_dist_angle();
 	mlp->x[2] = adv_vec.first/WORLD_SIZE_X;
-	mlp->x[3] = adv_vec.second/WORLD_SIZE_X;
+	mlp->x[3] = adv_vec.second;
 	mlp->eval();
 	double goal_direction = rad_to_deg(2*mlp->o[0]);
 	// New R_ori between 20-100
