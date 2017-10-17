@@ -4,7 +4,7 @@
 #include "Robot.hpp"
 
 Textured cursor;
-Textured flag1, flag2;
+vector<Textured> flags;
 vector<Robot> flock;
 vector<Mlp> mlps;
 
@@ -23,8 +23,8 @@ double mouse_gnd_x		= 0;
 double mouse_gnd_y		= 0;
 
 // Screen Resolution
-int window_w			= 1000;
-int window_h			= 1000;
+int window_w			= 2000;
+int window_h			= 2000;
 
 // Camera position/motion
 double view_x			= 0;
@@ -88,9 +88,7 @@ void mouseMove(int x, int y);
 
 void mouseAction(int x, int y);
 
-void set_goal(int x, int y);
-
-void set_goals(int x1, int y1, int x2, int y2);
+void set_goals(vector<pair<int, int>> points);
 
 void glutMouseFunc(int button, int state, int x, int y);
 
@@ -124,8 +122,11 @@ int main(int argc, char **argv){
 
 	// Cursor and goal objects
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
-	if(flag1.init(0,0,16,16,0,"img/flag.png")) return 0;
-	if(flag2.init(0,0,16,16,0,"img/flag.png")) return 0;
+	for (int i = 0; i < NUM_GOALS; i++){
+		Textured flag;
+		if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
+		flags.push_back(flag);
+	}
 
 	// Initializing mlps
 	for(int i = 0; i < POP_SIZE; i++){
@@ -136,7 +137,7 @@ int main(int argc, char **argv){
 
 	// Initializing robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
-		bool leader = false, group = i % 2;
+		bool leader = false, group = i % NUM_GOALS;
 		if(i < NUM_LEADERS)
 			leader = true;
 
@@ -166,34 +167,31 @@ void spawn_world(){
 	}
 
 	// New Goal Rally Point
-	double gx = origin_x, gx2 = origin_x;
-	double gy = origin_y, gy2 = origin_y;
-	int spawn_location = rand()%4;
-	if(spawn_location == 0){
-		gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gx2 += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy2 += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+	vector<pair<int, int>> points;
+	double gx = origin_x;
+	double gy = origin_y;
+
+	for (int i = 0; i < NUM_GOALS; i++){
+		int spawn_location = rand()%4;
+		if(spawn_location == 0){
+			gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		if(spawn_location == 1){
+			gx -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		if(spawn_location == 2){
+			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		if(spawn_location == 3){
+			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		points.push_back(pair<int, int>(gx, gy));
 	}
-	if(spawn_location == 1){
-		gx -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gx2 -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy2 += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-	}
-	if(spawn_location == 2){
-		gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gx2 += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy2 += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-	}
-	if(spawn_location == 3){
-		gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gx2 += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy2 -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-	}
-	set_goals(gx, gy, gx2, gy2);
+	set_goals(points);
 
 }
 
@@ -316,9 +314,11 @@ void mouseButton(int b,int s,int x,int y){
 				mouse_m = 0;
 			break;
 		case GLUT_RIGHT_BUTTON:
-			if(s == GLUT_DOWN){
+			if(s == GLUT_DOWN && NUM_GOALS == 1){
 				mouse_r = 1;
-				set_goal(mouse_gnd_x, mouse_gnd_y);
+				vector<pair<int, int>> points;
+				points.push_back(pair<int, int>(mouse_gnd_x, mouse_gnd_y));
+				set_goals(points);
 			}
 			else
 				mouse_r = 0;
@@ -349,25 +349,15 @@ void mouseAction(int x,int y){
 }
 
 // Set rally goal position
-void set_goal(int x, int y){
-	for(auto &r : flock)
-		if(r.selected)
-			r.set_goal_target_pos(x,y);
-	flag1.x = x;
-	flag1.y = y;
-}
+void set_goals(vector<pair<int, int>> points){
+	for (int i = 0; i < NUM_GOALS; i++){
+		flags[i].x = points[i].first;
+		flags[i].y = points[i].second;
+	}
 
-void set_goals(int x1, int y1, int x2, int y2){
 	for(auto &r : flock)
-		if(r.goal_group == 0)
-			r.set_goal_target_pos(x1,y1);
-		else
-			r.set_goal_target_pos(x2,y2);
-
-	flag1.x = x1;
-	flag1.y = y1;
-	flag2.x = x2;
-	flag2.y = y2;
+		if (r.selected)
+			r.set_goal_target_pos(flags[r.goal_group].x, flags[r.goal_group].y);
 }
 
 // When keyboard pressed
@@ -601,8 +591,8 @@ void RenderScene(){
 			r.render_robot();
 
 		// Goal flag
-		flag1.render(1,0);
-		flag2.render(1,0);
+		for (auto const f : flags)
+			f.render(1,0);
 
 		// Mouse selection
 		if(mouse_l){
