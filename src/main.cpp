@@ -7,6 +7,7 @@ Textured cursor;
 vector<Textured> flags;
 vector<Robot> flock;
 vector<Mlp> mlps;
+vector<pair<int, int>> goals;
 
 // Steps
 int num_steps			= 0;
@@ -88,7 +89,7 @@ void mouseMove(int x, int y);
 
 void mouseAction(int x, int y);
 
-void set_goals(vector<pair<int, int>> points);
+void set_goals(vector<pair<int, int>> &points);
 
 void glutMouseFunc(int button, int state, int x, int y);
 
@@ -167,10 +168,9 @@ void spawn_world(){
 	}
 
 	// New Goal Rally Point
-	vector<pair<int, int>> points;
 	double gx = origin_x;
 	double gy = origin_y;
-
+	goals.clear();
 	for (int i = 0; i < NUM_GOALS; i++){
 		int spawn_location = rand()%4;
 		if(spawn_location == 0){
@@ -189,9 +189,9 @@ void spawn_world(){
 			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
 			gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
 		}
-		points.push_back(pair<int, int>(gx, gy));
+		goals.push_back(pair<int, int>(gx, gy));
 	}
-	set_goals(points);
+	set_goals(goals);
 
 }
 
@@ -349,7 +349,7 @@ void mouseAction(int x,int y){
 }
 
 // Set rally goal position
-void set_goals(vector<pair<int, int>> points){
+void set_goals(vector<pair<int, int>> &points){
 	for (int i = 0; i < NUM_GOALS; i++){
 		flags[i].x = points[i].first;
 		flags[i].y = points[i].second;
@@ -540,7 +540,7 @@ void updateValues(int n){
 	// Updating flock status
 	double weight = 1-cos(PI*((double)num_steps/EPOCH_STEPS));
 	for(auto &r : flock)
-		r.update(weight);
+		r.update(weight, goals);
 
 	// String printed in the screen corner
 	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);

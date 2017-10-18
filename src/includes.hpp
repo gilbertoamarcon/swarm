@@ -54,7 +54,7 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	1000
 #define WORLD_SIZE_Y	1000
-#define NUM_GOALS		1
+#define NUM_GOALS		2
 #define SWARM_PULL		0.3
 
 // Flock Parameters

@@ -1,4 +1,5 @@
 #include "Robot.hpp"
+#include <float.h>
 #include <cmath>
 #include <iostream>
 using namespace std;
@@ -59,12 +60,12 @@ void Robot::set_goal_target_pos(double gx,double gy){
 	this->goal.second	= gy;
 }
 
-void Robot::update(double weight){
+void Robot::update(double weight, vector<pair<int, int>> &goals){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
 
-	acc_dist += weight*distance_to_point(goal);
+	acc_dist += weight*sq_distance_to_closest_goal(goals);
 
 	double goal_t = this->t;
 	if(leader)
@@ -225,6 +226,18 @@ double Robot::angle_to_point(pair<double,double> &input){
 
 double Robot::sq_distance_to_point(pair<double,double> &input){
 	return pow(this->x-input.first, 2) + pow(this->y-input.second, 2);
+}
+
+double Robot::sq_distance_to_closest_goal(vector<pair<int,int>> &input){
+	
+	double min_distance = DBL_MAX;
+	for (auto &goal : input)
+	{
+		double distance = pow(this->x-goal.first, 2) + pow(this->y-goal.second, 2);
+		if (distance < min_distance)
+			min_distance = distance;
+	}
+	return min_distance;
 }
 
 double Robot::sq_distance_to_point(double x, double y){
