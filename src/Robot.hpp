@@ -74,6 +74,9 @@ class Robot: public Wired{
 		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);
+		double sq_distance_to_point(pair<double,double> &input);
+		double sq_distance_to_point(double x, double y);
+		double sq_distance_to_robot(Robot *robot);
 
 		bool check_col();
 		void render_robot();

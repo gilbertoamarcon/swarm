@@ -68,7 +68,7 @@ void Robot::update(double weight){
 
 	double goal_t = this->t;
 	if(leader)
-		goal_t = leader_reasoning();
+		goal_t = (1 - SWARM_PULL)*leader_reasoning() + SWARM_PULL*swarm();
 	else
 		goal_t = swarm();
 
@@ -97,7 +97,7 @@ void Robot::update_trail(){
 set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
 	for(auto &r : *flock){
-		double d = distance_to_robot(&r);
+		double d = sq_distance_to_robot(&r);
 		if(this != &r && d <= radiusMax && d >= radiusMin)
 			nbors.insert(&r);
 	}
@@ -221,6 +221,18 @@ double Robot::wall_repulsion(double xlim, double ylim){
 
 double Robot::angle_to_point(pair<double,double> &input){
 	return atan2(input.second-this->y, input.first-this->x);
+}
+
+double Robot::sq_distance_to_point(pair<double,double> &input){
+	return pow(this->x-input.first, 2) + pow(this->y-input.second, 2);
+}
+
+double Robot::sq_distance_to_point(double x, double y){
+	return pow(this->x-x, 2) + pow(this->y-y, 2);
+}
+
+double Robot::sq_distance_to_robot(Robot *robot){
+	return this->sq_distance_to_point(robot->x, robot->y);
 }
 
 double Robot::distance_to_point(pair<double,double> &input){

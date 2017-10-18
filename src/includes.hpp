@@ -35,7 +35,7 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		1000
+#define EPOCH_STEPS		700
 
 // Evolution Parameters
 #define POP_SIZE		15
@@ -45,7 +45,7 @@ using namespace std;
 
 // Sim Parameters
 #define NUM_LEADERS		4
-#define NUM_ROBOTS		8
+#define NUM_ROBOTS		12
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	800
 #define ROBOT_VEL		1.00
@@ -54,12 +54,13 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	1000
 #define WORLD_SIZE_Y	1000
-#define NUM_GOALS		2
+#define NUM_GOALS		1
+#define SWARM_PULL		0.3
 
 // Flock Parameters
-#define REP_RADIUS 		20
-#define ORI_RADIUS 		50
-#define ATR_RADIUS 		100
+#define REP_RADIUS 		400
+#define ORI_RADIUS 		2500
+#define ATR_RADIUS 		10000
 
 // File Parameters
 #define BUFFER_SIZE		256
