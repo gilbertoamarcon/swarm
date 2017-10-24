@@ -60,6 +60,7 @@ class Robot: public Wired{
 		void update(double weight);
 		void update_neighbors();
 		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
+		set<Robot*> get_k_nearest(set<Robot*>, int);
 		double swarm();
 		pair<double,double> compute_force(set<Robot*> &neighbors);
 		pair<double,double> compute_centroid(set<Robot*> &neighbors, pair<double,double> prev);

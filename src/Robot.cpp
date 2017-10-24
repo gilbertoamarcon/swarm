@@ -61,7 +61,6 @@ void Robot::update(double weight){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
-
 	acc_dist += weight*distance_to_point(goal);
 
 	double goal_t = this->t;
@@ -84,11 +83,11 @@ void Robot::update(double weight){
 };
 
 void Robot::update_trail(){
-		for (int i=0; i<prevCoords.size()-1; i++){
-			prevCoords[i].first = prevCoords[i+1].first;
-			prevCoords[i].second = prevCoords[i+1].second;
-		}
-		prevCoords.back() = {x, y};
+	for (int i=0; i<prevCoords.size()-1; i++){
+		prevCoords[i].first = prevCoords[i+1].first;
+		prevCoords[i].second = prevCoords[i+1].second;
+	}
+	prevCoords.back() = {x, y};
 }
 
 // Get agents between radii
@@ -102,12 +101,46 @@ set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
 	return nbors;
 }
 
+// vector<Robot*> Robot::get_neighbors_T(int nTop, double radiusMax, double radiusMin = 0.0){
+// 	vector<Robot*> nbors;
+// 	for(auto &r : *flock){
+// 		double d = distance_to_robot(&r);
+// 		if(this != &r && d <= radiusMax && d >= radiusMin)
+// 			nbors.push_back(&r);
+// 	}
+// 	sort(nbors.begin(), nbors.end(), [this](Robot* r1, Robot* r2) {
+// 		return r1->distance_to_robot(this) < r2->distance_to_robot(this);
+// 	});
+// 	// set<Robot*> nborset;
+// 	// for(int i=0; i<nbors.size() && i<nTop ; i++)
+// 	// 	nborset.insert(nbors.at(i));
+// 	return nbors;
+// }
+
+set<Robot*> Robot::get_k_nearest(set<Robot*> nbors, int k){
+	vector<Robot*> nborsv;
+	for(auto &r : nbors) 
+		nborsv.push_back(r);
+	sort(nborsv.begin(), nborsv.end(), [this](Robot* r1, Robot* r2) {
+		return r1->distance_to_robot(this) < r2->distance_to_robot(this);
+	});
+	set<Robot*> nborset;
+	for(int i=0; i<nborsv.size() && i<k ; i++)
+		nborset.insert(nborsv.at(i));
+	return nborset;
+}
+
 
 // Update flocking neighbors
  void Robot::update_neighbors(){
 	this->neighbor_rep = this->get_neighbors(this->radius_rep);
 	this->neighbor_ori = this->get_neighbors(this->radius_ori);
 	this->neighbor_att = this->get_neighbors(this->radius_att, this->radius_rep);
+	if (COMM_MODEL == 'T'){
+		this->neighbor_rep = get_k_nearest(this->neighbor_rep, N_TOP);
+		this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP);
+		this->neighbor_att = get_k_nearest(this->neighbor_att, N_TOP-this->neighbor_rep.size());
+	}
 }
 
 // Returns next heading (in radians) based on local interactions

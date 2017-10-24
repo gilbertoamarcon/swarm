@@ -45,7 +45,7 @@ using namespace std;
 
 // Sim Parameters
 #define NUM_LEADERS		3
-#define NUM_ROBOTS		6
+#define NUM_ROBOTS		20
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
@@ -54,6 +54,8 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	200
 #define WORLD_SIZE_Y	200
+#define COMM_MODEL 		'T'
+#define N_TOP 			6
 
 // Flock Parameters
 #define REP_RADIUS 		20
