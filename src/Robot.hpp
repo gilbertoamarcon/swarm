@@ -59,7 +59,8 @@ class Robot: public Wired{
 		void set_goal_target_pos(double gx,double gy);
 		void update(double weight);
 		void update_neighbors();
-		set<Robot*> get_neighbors(double radiusMax, double radiusMin = 0.0);
+		set<Robot*> get_neighbors_M(double radiusMax, double radiusMin = 0.0);
+		set<Robot*> get_neighbors_V(double radiusMax, double radiusMin = 0.0);
 		set<Robot*> get_k_nearest(set<Robot*>, int);
 		double swarm();
 		pair<double,double> compute_force(set<Robot*> &neighbors);

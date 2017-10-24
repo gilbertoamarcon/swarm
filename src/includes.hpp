@@ -54,8 +54,9 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	200
 #define WORLD_SIZE_Y	200
-#define COMM_MODEL 		'T'
+#define COMM_MODEL 		'V'
 #define N_TOP 			6
+#define VIS_ANGLE 		2*PI/3
 
 // Flock Parameters
 #define REP_RADIUS 		20

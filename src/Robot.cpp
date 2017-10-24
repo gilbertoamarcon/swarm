@@ -91,12 +91,28 @@ void Robot::update_trail(){
 }
 
 // Get agents between radii
-set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
+set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
 	for(auto &r : *flock){
 		double d = distance_to_robot(&r);
 		if(this != &r && d <= radiusMax && d >= radiusMin)
 			nbors.insert(&r);
+	}
+	return nbors;
+}
+
+set<Robot*> Robot::get_neighbors_V(double radiusMax, double radiusMin = 0.0){
+	set<Robot*> nbors;
+	for(auto &r : *flock){
+		double d = distance_to_robot(&r);
+		if(this != &r && d <= radiusMax && d >= radiusMin){
+			pair<double, double> rxy(r.x, r.y);
+			double angle = rad_to_deg(angle_to_point(rxy)) - this->t;
+ 			angle_wrap(angle);
+ 			angle = deg_to_rad(angle);
+ 			if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE)
+				nbors.insert(&r);
+		}
 	}
 	return nbors;
 }
@@ -133,13 +149,20 @@ set<Robot*> Robot::get_k_nearest(set<Robot*> nbors, int k){
 
 // Update flocking neighbors
  void Robot::update_neighbors(){
-	this->neighbor_rep = this->get_neighbors(this->radius_rep);
-	this->neighbor_ori = this->get_neighbors(this->radius_ori);
-	this->neighbor_att = this->get_neighbors(this->radius_att, this->radius_rep);
-	if (COMM_MODEL == 'T'){
-		this->neighbor_rep = get_k_nearest(this->neighbor_rep, N_TOP);
-		this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP);
-		this->neighbor_att = get_k_nearest(this->neighbor_att, N_TOP-this->neighbor_rep.size());
+ 	if (COMM_MODEL == 'T' || COMM_MODEL == 'M'){
+		this->neighbor_rep = this->get_neighbors_M(this->radius_rep);
+		this->neighbor_ori = this->get_neighbors_M(this->radius_ori);
+		this->neighbor_att = this->get_neighbors_M(this->radius_att, this->radius_rep);
+		if (COMM_MODEL == 'T'){
+			this->neighbor_rep = get_k_nearest(this->neighbor_rep, N_TOP);
+			this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP);
+			this->neighbor_att = get_k_nearest(this->neighbor_att, N_TOP-this->neighbor_rep.size());
+		}
+	}
+	else if (COMM_MODEL == 'V'){
+		this->neighbor_rep = this->get_neighbors_V(this->radius_rep);
+		this->neighbor_ori = this->get_neighbors_V(this->radius_ori);
+		this->neighbor_att = this->get_neighbors_V(this->radius_att, this->radius_rep);
 	}
 }
 
