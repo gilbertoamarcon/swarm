@@ -191,12 +191,12 @@ double Robot::leader_reasoning(){
 	// cout << nearest_adv_dist_angle().first << " " << nearest_adv_dist_angle().second << endl;
 	// Loading inputs
 	// mlp->x[0] = deg_to_rad(angle_to_goal);
-	mlp->x[0] = deg_to_rad(angle_to_neighbor_centroid);
+	//mlp->x[0] = deg_to_rad(angle_to_neighbor_centroid);
 	// mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
-	mlp->x[1] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+	//mlp->x[1] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 	pair <double, double> adv_vec = nearest_adv_dist_angle();
-	mlp->x[2] = adv_vec.first/WORLD_SIZE_X;
-	mlp->x[3] = adv_vec.second;
+	mlp->x[0] = adv_vec.first/WORLD_SIZE_X;
+	mlp->x[1] = adv_vec.second/6.28;
 	mlp->eval();
 	double goal_direction = rad_to_deg(2*mlp->o[0]);
 	// New R_ori between 20-100
