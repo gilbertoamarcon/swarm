@@ -98,9 +98,18 @@ void Robot::update_trail(){
 set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
 	for(auto &r : *flock){
-		double d = sq_distance_to_robot(&r);
-		if(this != &r && d <= radiusMax && d >= radiusMin)
-			nbors.insert(&r);
+		if(this != &r){
+			double d = sq_distance_to_robot(&r);
+			if (d <= radiusMax && d >= radiusMin){
+#ifdef VISUAL
+				double angle = rad_to_deg(angle_to_point(r.x, r.y)) - this->t;
+				angle_wrap(angle);
+				angle = deg_to_rad(angle);
+				if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE)
+#endif
+					nbors.insert(&r);
+			}
+		}
 	}
 	return nbors;
 }
@@ -222,6 +231,10 @@ double Robot::wall_repulsion(double xlim, double ylim){
 
 double Robot::angle_to_point(pair<double,double> &input){
 	return atan2(input.second-this->y, input.first-this->x);
+}
+
+double Robot::angle_to_point(double x, double y){
+	return atan2(y-this->y, x-this->x);
 }
 
 double Robot::sq_distance_to_point(pair<double,double> &input){

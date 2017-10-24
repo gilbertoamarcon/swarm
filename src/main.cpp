@@ -138,11 +138,16 @@ int main(int argc, char **argv){
 
 	// Initializing robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
-		bool leader = false, group = i % NUM_GOALS;
-		if(i < NUM_LEADERS)
-			leader = true;
+		bool leader = false;
+		int group = i % NUM_GOALS;
+		float velocity = ROBOT_VEL;
 
-		Robot robot(0.0,0.0,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader, group);
+		if(i < NUM_LEADERS){
+			leader = true;
+			velocity = LEADER_VEL;
+		}
+
+		Robot robot(0.0,0.0,2,2,0,velocity,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader, group);
 		flock.push_back(robot);
 	}
 

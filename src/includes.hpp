@@ -44,23 +44,26 @@ using namespace std;
 #define MUTATION_RANGE	0.01
 
 // Sim Parameters
-#define NUM_LEADERS		4
+#define NUM_LEADERS		2
 #define NUM_ROBOTS		12
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	800
 #define ROBOT_VEL		1.00
+#define LEADER_VEL		1.20
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
 #define WORLD_SIZE_X	1000
 #define WORLD_SIZE_Y	1000
-#define NUM_GOALS		2
-#define SWARM_PULL		0.3
+#define NUM_GOALS		1
 
 // Flock Parameters
+#define VISUAL			// change this to METRIC or TOPOLOGICAL to change communication model
 #define REP_RADIUS 		400
 #define ORI_RADIUS 		2500
 #define ATR_RADIUS 		10000
+#define VIS_ANGLE		(2 * PI / 3)
+#define SWARM_PULL		0 // amount of influence agents have on leaders on [0, 1] scale
 
 // File Parameters
 #define BUFFER_SIZE		256

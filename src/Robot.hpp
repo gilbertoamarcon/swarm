@@ -71,6 +71,7 @@ class Robot: public Wired{
 		void update_trail();
 		// Distances
 		double angle_to_point(pair<double,double> &input);
+		double Robot::angle_to_point(double x, double y);
 		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);
