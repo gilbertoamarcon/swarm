@@ -505,12 +505,12 @@ void updateValues(int n){
 		scn_scale *= 1.05;
 
 	// Save NN weights
-	if(saveWeights){
+	if(saveWeights || (AUTOSAVE && current_epoch == NUM_EPOCHS && current_mlp == 0 &&  num_steps == 1)){
 		mlps.at(current_mlp).store(WEIGHTS_FILE);
 		saveWeights = 0;
 	}
 
-	if(loadWeights){
+	if(loadWeights || (AUTOLOAD && current_epoch == 0 && current_mlp == 0 &&  num_steps == 1)){
 		for(auto &mlp: mlps)
 			mlp.load(WEIGHTS_FILE);
 		loadWeights = 0;

@@ -27,6 +27,8 @@ using namespace std;
 
 // Data Collection
 #define COLLECT_DATA 	1
+#define AUTOSAVE 		0 // For training, save weights to file when num_epocs reached
+#define AUTOLOAD		1 // For evaluation of a trained network, start with loaded weights
 
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
@@ -35,17 +37,17 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		300
+#define EPOCH_STEPS		100
 
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		500
+#define NUM_EPOCHS		0
 #define MUTATION_RANGE	0.01
 
 // Sim Parameters
-#define NUM_LEADERS		3
-#define NUM_ROBOTS		20
+#define NUM_LEADERS		2//8//16
+#define NUM_ROBOTS		4//20//40
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
@@ -54,7 +56,7 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	200
 #define WORLD_SIZE_Y	200
-#define COMM_MODEL 		'V'
+#define COMM_MODEL 		'M'
 #define N_TOP 			6
 #define VIS_ANGLE 		2*PI/3
 
