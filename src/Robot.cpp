@@ -64,8 +64,13 @@ void Robot::update(double weight, vector<pair<int, int>> &goals){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
-
-	acc_dist += weight*sq_distance_to_closest_goal(goals);
+	#if CLASSIC_REW
+		acc_dist += weight*sq_distance_to_closest_goal(goals);
+	#endif
+	#if ALTERNATE_REW
+		double d = distance_to_point(goal);
+		acc_dist = (d > acc_dist && acc_dist!=0) ? acc_dist : d;
+	#endif
 
 	double goal_t = this->t;
 	if(leader)
@@ -87,15 +92,15 @@ void Robot::update(double weight, vector<pair<int, int>> &goals){
 };
 
 void Robot::update_trail(){
-		for (int i=0; i<prevCoords.size()-1; i++){
-			prevCoords[i].first = prevCoords[i+1].first;
-			prevCoords[i].second = prevCoords[i+1].second;
-		}
-		prevCoords.back() = {x, y};
+	for (int i=0; i<prevCoords.size()-1; i++){
+		prevCoords[i].first = prevCoords[i+1].first;
+		prevCoords[i].second = prevCoords[i+1].second;
+	}
+	prevCoords.back() = {x, y};
 }
 
 // Get agents between radii
-set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
+set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
 	for(auto &r : *flock){
 		if(this != &r){
@@ -114,12 +119,69 @@ set<Robot*> Robot::get_neighbors(double radiusMax, double radiusMin = 0.0){
 	return nbors;
 }
 
+set<Robot*> Robot::get_neighbors_V(double radiusMax, double radiusMin = 0.0){
+	set<Robot*> nbors;
+	for(auto &r : *flock){
+		double d = distance_to_robot(&r);
+		if(this != &r && d <= radiusMax && d >= radiusMin){
+			pair<double, double> rxy(r.x, r.y);
+			double angle = rad_to_deg(angle_to_point(rxy)) - this->t;
+ 			angle_wrap(angle);
+ 			angle = deg_to_rad(angle);
+ 			if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE)
+				nbors.insert(&r);
+		}
+	}
+	return nbors;
+}
+
+// vector<Robot*> Robot::get_neighbors_T(int nTop, double radiusMax, double radiusMin = 0.0){
+// 	vector<Robot*> nbors;
+// 	for(auto &r : *flock){
+// 		double d = distance_to_robot(&r);
+// 		if(this != &r && d <= radiusMax && d >= radiusMin)
+// 			nbors.push_back(&r);
+// 	}
+// 	sort(nbors.begin(), nbors.end(), [this](Robot* r1, Robot* r2) {
+// 		return r1->distance_to_robot(this) < r2->distance_to_robot(this);
+// 	});
+// 	// set<Robot*> nborset;
+// 	// for(int i=0; i<nbors.size() && i<nTop ; i++)
+// 	// 	nborset.insert(nbors.at(i));
+// 	return nbors;
+// }
+
+set<Robot*> Robot::get_k_nearest(set<Robot*> nbors, int k){
+	vector<Robot*> nborsv;
+	for(auto &r : nbors) 
+		nborsv.push_back(r);
+	sort(nborsv.begin(), nborsv.end(), [this](Robot* r1, Robot* r2) {
+		return r1->distance_to_robot(this) < r2->distance_to_robot(this);
+	});
+	set<Robot*> nborset;
+	for(int i=0; i<nborsv.size() && i<k ; i++)
+		nborset.insert(nborsv.at(i));
+	return nborset;
+}
+
 
 // Update flocking neighbors
  void Robot::update_neighbors(){
-	this->neighbor_rep = this->get_neighbors(this->radius_rep);
-	this->neighbor_ori = this->get_neighbors(this->radius_ori);
-	this->neighbor_att = this->get_neighbors(this->radius_att, this->radius_rep);
+ 	if (COMM_MODEL == 'T' || COMM_MODEL == 'M'){
+		this->neighbor_rep = this->get_neighbors_M(this->radius_rep);
+		this->neighbor_ori = this->get_neighbors_M(this->radius_ori);
+		this->neighbor_att = this->get_neighbors_M(this->radius_att, this->radius_rep);
+		if (COMM_MODEL == 'T'){
+			this->neighbor_rep = get_k_nearest(this->neighbor_rep, N_TOP);
+			this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP);
+			this->neighbor_att = get_k_nearest(this->neighbor_att, N_TOP-this->neighbor_rep.size());
+		}
+	}
+	else if (COMM_MODEL == 'V'){
+		this->neighbor_rep = this->get_neighbors_V(this->radius_rep);
+		this->neighbor_ori = this->get_neighbors_V(this->radius_ori);
+		this->neighbor_att = this->get_neighbors_V(this->radius_att, this->radius_rep);
+	}
 }
 
 // Returns next heading (in radians) based on local interactions
@@ -157,35 +219,37 @@ pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors, pair<double
 }
 
 double Robot::leader_reasoning(){
+	#if LEARNING
+		// Leader neighbors
+		set<Robot*> neighbor_leader;
+		for(auto &r : *flock)
+			if(!(r.leader))
+				neighbor_leader.insert(&r);
 
-	// Leader neighbors
-	set<Robot*> neighbor_leader;
-	for(auto &r : *flock)
-		if(!(r.leader))
-			neighbor_leader.insert(&r);
+		// Neighbor centroid
+		neighbor_centroid	= compute_centroid(neighbor_leader,pair<double,double>(this->x,this->y));
 
-	// Neighbor centroid
-	neighbor_centroid	= compute_centroid(neighbor_leader,pair<double,double>(this->x,this->y));
+		// Distance to centroids
+		double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
+		double distance_to_goal					= distance_to_point(goal);
 
-	// Distance to centroids
-	double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
-	double distance_to_goal					= distance_to_point(goal);
+		// Angle to centroids
+		double angle_to_neighbor_centroid		= rad_to_deg(angle_to_point(neighbor_centroid))	- this->t;
+		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
+		angle_wrap(angle_to_neighbor_centroid);
+		angle_wrap(angle_to_goal);
 
-	// Angle to centroids
-	double angle_to_neighbor_centroid		= rad_to_deg(angle_to_point(neighbor_centroid))	- this->t;
-	double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
-	angle_wrap(angle_to_neighbor_centroid);
-	angle_wrap(angle_to_goal);
-
-	// Loading inputs
-	mlp->x[0] = deg_to_rad(angle_to_goal);
-	mlp->x[1] = deg_to_rad(angle_to_neighbor_centroid);
-	mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
-	mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
-	mlp->eval();
-	double goal_direction = rad_to_deg(2*mlp->o[0]);
-
-	// double goal_direction = angle_to_goal;
+		// Loading inputs
+		mlp->x[0] = deg_to_rad(angle_to_goal);
+		mlp->x[1] = deg_to_rad(angle_to_neighbor_centroid);
+		mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
+		mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+		mlp->eval();
+		double goal_direction = rad_to_deg(2*mlp->o[0]);
+	#else
+		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
+		double goal_direction = angle_to_goal;
+	#endif
 
 	return goal_direction + this->t;
 }

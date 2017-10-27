@@ -25,8 +25,18 @@
 
 using namespace std;
 
+// Learning Switch
+#define LEARNING 		1
+
 // Data Collection
-#define COLLECT_DATA 	1
+#define COLLECT_DATA 	0
+#define NUM_SAMPLES 	20 // Number of epochs data is collected (-1 for infinity)
+#define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
+#define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
+
+// I/O Parameters
+#define WEIGHTS_FILE	"data/MLP_weights_BASE_24R_16L_M.txt"
+#define DATA_FILE		"data/MLP_BASE_12R_8L_M.txt"
 
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
@@ -37,15 +47,19 @@ using namespace std;
 // Simulation Parameters
 #define EPOCH_STEPS		700
 
+// Reward Function			// Choose one
+#define CLASSIC_REW		1 	// Distance to goal weighted by time
+#define ALTERNATE_REW	0 	// Minimum Dist - Reaching the goal is rewarded, not staying there
+
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		100
-#define MUTATION_RANGE	0.01
+#define NUM_EPOCHS		500
+#define MUTATION_RANGE	0.0 // Set to zero when testing
 
 // Sim Parameters
-#define NUM_LEADERS		2
-#define NUM_ROBOTS		12
+#define NUM_LEADERS		16//16
+#define NUM_ROBOTS		40//40
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	800
 #define ROBOT_VEL		1.00
@@ -56,6 +70,10 @@ using namespace std;
 #define WORLD_SIZE_X	1000
 #define WORLD_SIZE_Y	1000
 #define NUM_GOALS		1
+#define COMM_MODEL 		'M'
+#define N_TOP 			6
+#define VIS_ANGLE 		2*PI/3
+
 
 // Flock Parameters
 #define VISUAL			// change this to METRIC or TOPOLOGICAL to change communication model
@@ -74,7 +92,7 @@ using namespace std;
 #define SIM_STEP_TIME	1.000
 
 // Light trail for the lulz
-#define ENABLE_TRAIL 	1
+#define ENABLE_TRAIL 	0
 #define SWARM_TRAIL 	1
 #define TRAIL_LENGTH	100.0
 
@@ -97,10 +115,6 @@ using namespace std;
 #define LOCK_VIEW_ROBOT	'l'
 #define SAVE_WEIGHTS	'c'
 #define LOAD_WEIGHTS	'v'
-
-// I/O Parameters
-#define WEIGHTS_FILE	"data/MLP_weights.txt"
-#define DATA_FILE		"data/MLP_errors.txt"
 
 // Angle Operations
 void angle_wrap(double &input);
