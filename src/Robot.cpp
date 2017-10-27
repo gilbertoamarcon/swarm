@@ -106,13 +106,7 @@ set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
 		if(this != &r){
 			double d = sq_distance_to_robot(&r);
 			if (d <= radiusMax && d >= radiusMin){
-#ifdef VISUAL
-				double angle = rad_to_deg(angle_to_point(r.x, r.y)) - this->t;
-				angle_wrap(angle);
-				angle = deg_to_rad(angle);
-				if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE)
-#endif
-					nbors.insert(&r);
+				nbors.insert(&r);
 			}
 		}
 	}

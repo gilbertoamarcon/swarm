@@ -72,11 +72,8 @@ using namespace std;
 #define NUM_GOALS		1
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
-#define VIS_ANGLE 		2*PI/3
-
 
 // Flock Parameters
-#define VISUAL			// change this to METRIC or TOPOLOGICAL to change communication model
 #define REP_RADIUS 		400
 #define ORI_RADIUS 		2500
 #define ATR_RADIUS 		10000
