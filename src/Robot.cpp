@@ -1,4 +1,5 @@
 #include "Robot.hpp"
+#include <float.h>
 #include <cmath>
 #include <iostream>
 using namespace std;
@@ -16,7 +17,8 @@ Robot::Robot(
 				double radius_rep,
 				double radius_ori,
 				double radius_att,
-				bool leader
+				bool leader,
+				int goal_group
 			):Wired(x,y,w,h,r,shape){
 	this->v					= v;
 	this->a					= a;
@@ -32,6 +34,7 @@ Robot::Robot(
 	this->mlp				= NULL;
 	this->goal				= pair<double,double>(0.0,0.0);
 	this->neighbor_centroid	= pair<double,double>(0.0,0.0);
+	this->goal_group 		= goal_group;
 
 	#if ENABLE_TRAIL
 		this->prevCoords 	= {};	for (int i=0; i<TRAIL_LENGTH; i++) prevCoords.push_back(pair<double, double>(x, y));
@@ -57,20 +60,21 @@ void Robot::set_goal_target_pos(double gx,double gy){
 	this->goal.second	= gy;
 }
 
-void Robot::update(double weight){
+void Robot::update(double weight, vector<pair<int, int>> &goals){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
 	#if CLASSIC_REW
-		acc_dist += weight*distance_to_point(goal);
+		acc_dist += weight*sq_distance_to_closest_goal(goals);
 	#endif
 	#if ALTERNATE_REW
 		double d = distance_to_point(goal);
 		acc_dist = (d > acc_dist && acc_dist!=0) ? acc_dist : d;
 	#endif
+
 	double goal_t = this->t;
 	if(leader)
-		goal_t = leader_reasoning();
+		goal_t = (1 - SWARM_PULL)*leader_reasoning() + SWARM_PULL*swarm();
 	else
 		goal_t = swarm();
 
@@ -99,9 +103,18 @@ void Robot::update_trail(){
 set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
 	for(auto &r : *flock){
-		double d = distance_to_robot(&r);
-		if(this != &r && d <= radiusMax && d >= radiusMin)
-			nbors.insert(&r);
+		if(this != &r){
+			double d = sq_distance_to_robot(&r);
+			if (d <= radiusMax && d >= radiusMin){
+#ifdef VISUAL
+				double angle = rad_to_deg(angle_to_point(r.x, r.y)) - this->t;
+				angle_wrap(angle);
+				angle = deg_to_rad(angle);
+				if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE)
+#endif
+					nbors.insert(&r);
+			}
+		}
 	}
 	return nbors;
 }
@@ -282,6 +295,34 @@ double Robot::wall_repulsion(double xlim, double ylim){
 
 double Robot::angle_to_point(pair<double,double> &input){
 	return atan2(input.second-this->y, input.first-this->x);
+}
+
+double Robot::angle_to_point(double x, double y){
+	return atan2(y-this->y, x-this->x);
+}
+
+double Robot::sq_distance_to_point(pair<double,double> &input){
+	return pow(this->x-input.first, 2) + pow(this->y-input.second, 2);
+}
+
+double Robot::sq_distance_to_closest_goal(vector<pair<int,int>> &input){
+	
+	double min_distance = DBL_MAX;
+	for (auto &goal : input)
+	{
+		double distance = pow(this->x-goal.first, 2) + pow(this->y-goal.second, 2);
+		if (distance < min_distance)
+			min_distance = distance;
+	}
+	return min_distance;
+}
+
+double Robot::sq_distance_to_point(double x, double y){
+	return pow(this->x-x, 2) + pow(this->y-y, 2);
+}
+
+double Robot::sq_distance_to_robot(Robot *robot){
+	return this->sq_distance_to_point(robot->x, robot->y);
 }
 
 double Robot::distance_to_point(pair<double,double> &input){

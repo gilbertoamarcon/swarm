@@ -4,9 +4,10 @@
 #include "Robot.hpp"
 
 Textured cursor;
-Textured flag;
+vector<Textured> flags;
 vector<Robot> flock;
 vector<Mlp> mlps;
+vector<pair<int, int>> goals;
 
 // Steps
 int num_steps			= 0;
@@ -23,8 +24,8 @@ double mouse_gnd_x		= 0;
 double mouse_gnd_y		= 0;
 
 // Screen Resolution
-int window_w			= 1000;
-int window_h			= 1000;
+int window_w			= 2000;
+int window_h			= 2000;
 
 // Camera position/motion
 double view_x			= 0;
@@ -88,7 +89,7 @@ void mouseMove(int x, int y);
 
 void mouseAction(int x, int y);
 
-void set_goal(int x, int y);
+void set_goals(vector<pair<int, int>> &points);
 
 void glutMouseFunc(int button, int state, int x, int y);
 
@@ -122,7 +123,11 @@ int main(int argc, char **argv){
 
 	// Cursor and goal objects
 	if(cursor.init(0,0,64,64,0,"img/cursor.png")) return 0;
-	if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
+	for (int i = 0; i < NUM_GOALS; i++){
+		Textured flag;
+		if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
+		flags.push_back(flag);
+	}
 
 	// Initializing mlps
 	for(int i = 0; i < POP_SIZE; i++){
@@ -134,9 +139,15 @@ int main(int argc, char **argv){
 	// Initializing robots
 	for(int i = 0; i < NUM_ROBOTS; i++){
 		bool leader = false;
-		if(i < NUM_LEADERS)
+		int group = i % NUM_GOALS;
+		float velocity = ROBOT_VEL;
+
+		if(i < NUM_LEADERS){
 			leader = true;
-		Robot robot(0.0,0.0,2,2,0,ROBOT_VEL,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader);
+			velocity = LEADER_VEL;
+		}
+
+		Robot robot(0.0,0.0,2,2,0,velocity,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader, group);
 		flock.push_back(robot);
 	}
 
@@ -164,24 +175,28 @@ void spawn_world(){
 	// New Goal Rally Point
 	double gx = origin_x;
 	double gy = origin_y;
-	int spawn_location = rand()%4;
-	if(spawn_location == 0){
-		gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+	goals.clear();
+	for (int i = 0; i < NUM_GOALS; i++){
+		int spawn_location = rand()%4;
+		if(spawn_location == 0){
+			gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		if(spawn_location == 1){
+			gx -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		if(spawn_location == 2){
+			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		if(spawn_location == 3){
+			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+			gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
+		}
+		goals.push_back(pair<int, int>(gx, gy));
 	}
-	if(spawn_location == 1){
-		gx -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-	}
-	if(spawn_location == 2){
-		gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-	}
-	if(spawn_location == 3){
-		gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-	}
-	set_goal(gx, gy);
+	set_goals(goals);
 
 }
 
@@ -304,9 +319,11 @@ void mouseButton(int b,int s,int x,int y){
 				mouse_m = 0;
 			break;
 		case GLUT_RIGHT_BUTTON:
-			if(s == GLUT_DOWN){
+			if(s == GLUT_DOWN && NUM_GOALS == 1){
 				mouse_r = 1;
-				set_goal(mouse_gnd_x, mouse_gnd_y);
+				vector<pair<int, int>> points;
+				points.push_back(pair<int, int>(mouse_gnd_x, mouse_gnd_y));
+				set_goals(points);
 			}
 			else
 				mouse_r = 0;
@@ -337,12 +354,15 @@ void mouseAction(int x,int y){
 }
 
 // Set rally goal position
-void set_goal(int x, int y){
+void set_goals(vector<pair<int, int>> &points){
+	for (int i = 0; i < NUM_GOALS; i++){
+		flags[i].x = points[i].first;
+		flags[i].y = points[i].second;
+	}
+
 	for(auto &r : flock)
-		if(r.selected)
-			r.set_goal_target_pos(x,y);
-	flag.x = x;
-	flag.y = y;
+		if (r.selected)
+			r.set_goal_target_pos(flags[r.goal_group].x, flags[r.goal_group].y);
 }
 
 // When keyboard pressed
@@ -526,7 +546,7 @@ void updateValues(int n){
 	// Updating flock status
 	double weight = 1-cos(PI*((double)num_steps/EPOCH_STEPS));
 	for(auto &r : flock)
-		r.update(weight);
+		r.update(weight, goals);
 
 	// String printed in the screen corner
 	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
@@ -577,7 +597,8 @@ void RenderScene(){
 			r.render_robot();
 
 		// Goal flag
-		flag.render(1,0);
+		for (auto const f : flags)
+			f.render(1,0);
 
 		// Mouse selection
 		if(mouse_l){

@@ -39,6 +39,7 @@ class Robot: public Wired{
 		bool leader;
 		double acc_dist;
 		vector<pair<double, double>> prevCoords;
+		int goal_group;
 		Robot(
 				double x,
 				double y,
@@ -52,12 +53,13 @@ class Robot: public Wired{
 				double radius_rep,
 				double radius_ori,
 				double radius_att,
-				bool leader
+				bool leader,
+				int goal_group
 			);
 		virtual ~Robot();
 		void respawn(double x,double y,double t,Mlp *mlp);
 		void set_goal_target_pos(double gx,double gy);
-		void update(double weight);
+		void update(double weight, vector<pair<int, int>> &goals);
 		void update_neighbors();
 		set<Robot*> get_neighbors_M(double radiusMax, double radiusMin = 0.0);
 		set<Robot*> get_neighbors_V(double radiusMax, double radiusMin = 0.0);
@@ -71,9 +73,14 @@ class Robot: public Wired{
 		void update_trail();
 		// Distances
 		double angle_to_point(pair<double,double> &input);
+		double Robot::angle_to_point(double x, double y);
 		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);
+		double sq_distance_to_point(pair<double,double> &input);
+		double sq_distance_to_point(double x, double y);
+		double sq_distance_to_robot(Robot *robot);
+		double sq_distance_to_closest_goal(vector<pair<int,int>> &input);
 
 		bool check_col();
 		void render_robot();

@@ -45,7 +45,7 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		300
+#define EPOCH_STEPS		700
 
 // Reward Function			// Choose one
 #define CLASSIC_REW		1 	// Distance to goal weighted by time
@@ -61,21 +61,27 @@ using namespace std;
 #define NUM_LEADERS		16//16
 #define NUM_ROBOTS		40//40
 #define ROBOT_SPAWN_RNG	100
-#define GOAL_SPAWN_RNG	300
+#define GOAL_SPAWN_RNG	800
 #define ROBOT_VEL		1.00
+#define LEADER_VEL		1.20
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	200
-#define WORLD_SIZE_Y	200
+#define WORLD_SIZE_X	1000
+#define WORLD_SIZE_Y	1000
+#define NUM_GOALS		1
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
 #define VIS_ANGLE 		2*PI/3
 
+
 // Flock Parameters
-#define REP_RADIUS 		20
-#define ORI_RADIUS 		50
-#define ATR_RADIUS 		100
+#define VISUAL			// change this to METRIC or TOPOLOGICAL to change communication model
+#define REP_RADIUS 		400
+#define ORI_RADIUS 		2500
+#define ATR_RADIUS 		10000
+#define VIS_ANGLE		(2 * PI / 3)
+#define SWARM_PULL		0 // amount of influence agents have on leaders on [0, 1] scale
 
 // File Parameters
 #define BUFFER_SIZE		256
