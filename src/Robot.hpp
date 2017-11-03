@@ -68,7 +68,7 @@ class Robot: public Wired{
 		double swarm();
 		pair<double,double> compute_force(set<Robot*> &neighbors);
 		pair<double,double> compute_centroid(set<Robot*> &neighbors, pair<double,double> prev);
-		double leader_reasoning();
+		double leader_reasoning(vector<Textured> &obstacles);
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
 		void update_trail();
@@ -81,7 +81,8 @@ class Robot: public Wired{
 		double sq_distance_to_point(pair<double,double> &input);
 		double sq_distance_to_point(double x, double y);
 		double sq_distance_to_robot(Robot *robot);
-		double sq_distance_to_closest_goal(vector<Textured> &goals);
+		double sq_distance_to_closest_object(vector<Textured> &goals);
+		Textured* closest_object(vector<Textured> &objects);
 
 		bool check_col();
 		bool check_col(vector<Textured> &obstacles, float dx, float dy);

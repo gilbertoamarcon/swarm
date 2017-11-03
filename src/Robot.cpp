@@ -1,4 +1,8 @@
 #include "Robot.hpp"
+#include <float.h>
+#include <cmath>
+#include <iostream>
+using namespace std;
 
 Robot::Robot(
 				double x,
@@ -61,7 +65,7 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 		update_trail();
 	#endif
 	#if CLASSIC_REW
-		acc_dist += weight*(sq_distance_to_closest_goal(goals));
+		acc_dist += weight*sq_distance_to_closest_object(goals);
 	#endif
 	#if ALTERNATE_REW
 		double d = distance_to_point(goal);
@@ -70,7 +74,7 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 
 	double goal_t = this->t;
 	if(leader)
-		goal_t = (1 - SWARM_PULL)*leader_reasoning() + SWARM_PULL*swarm();
+		goal_t = (1 - SWARM_PULL)*leader_reasoning(obstacles) + SWARM_PULL*swarm();
 	else
 		goal_t = swarm();
 
