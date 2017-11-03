@@ -3,6 +3,7 @@
 #include "includes.hpp"
 #include "Wired.hpp"
 #include "mlp.hpp"
+#include "Textured.hpp"
 
 /*
 Robot representation.
@@ -59,7 +60,7 @@ class Robot: public Wired{
 		virtual ~Robot();
 		void respawn(double x,double y,double t,Mlp *mlp);
 		void set_goal_target_pos(double gx,double gy);
-		void update(double weight, vector<pair<int, int>> &goals);
+		void update(double weight, vector<Textured> &goals, vector<Textured> &obstacles);
 		void update_neighbors();
 		set<Robot*> get_neighbors_M(double radiusMax, double radiusMin = 0.0);
 		set<Robot*> get_neighbors_V(double radiusMax, double radiusMin = 0.0);
@@ -73,16 +74,17 @@ class Robot: public Wired{
 		void update_trail();
 		// Distances
 		double angle_to_point(pair<double,double> &input);
-		double Robot::angle_to_point(double x, double y);
+		double angle_to_point(double x, double y);
 		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);
 		double sq_distance_to_point(pair<double,double> &input);
 		double sq_distance_to_point(double x, double y);
 		double sq_distance_to_robot(Robot *robot);
-		double sq_distance_to_closest_goal(vector<pair<int,int>> &input);
+		double sq_distance_to_closest_goal(vector<Textured> &goals);
 
 		bool check_col();
+		bool check_col(vector<Textured> &obstacles, float dx, float dy);
 		void render_robot();
 };
 

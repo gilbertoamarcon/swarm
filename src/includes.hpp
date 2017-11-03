@@ -58,8 +58,8 @@ using namespace std;
 #define MUTATION_RANGE	0.0 // Set to zero when testing
 
 // Sim Parameters
-#define NUM_LEADERS		16//16
-#define NUM_ROBOTS		40//40
+#define NUM_LEADERS		2//16
+#define NUM_ROBOTS		100//40
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	800
 #define ROBOT_VEL		1.00
@@ -67,9 +67,10 @@ using namespace std;
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	1000
-#define WORLD_SIZE_Y	1000
+#define WORLD_SIZE_X	500
+#define WORLD_SIZE_Y	500
 #define NUM_GOALS		1
+#define NUM_OBSTACLES	10
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
 

@@ -5,9 +5,11 @@
 
 Textured cursor;
 vector<Textured> flags;
+vector<Textured> blocks;
 vector<Robot> flock;
 vector<Mlp> mlps;
 vector<pair<int, int>> goals;
+vector<pair<int, int>> obstacles;
 
 // Steps
 int num_steps			= 0;
@@ -91,6 +93,8 @@ void mouseAction(int x, int y);
 
 void set_goals(vector<pair<int, int>> &points);
 
+void set_obstacles(vector<pair<int, int>> &points);
+
 void glutMouseFunc(int button, int state, int x, int y);
 
 void keyPressed(unsigned char key, int x, int y);
@@ -127,6 +131,11 @@ int main(int argc, char **argv){
 		Textured flag;
 		if(flag.init(0,0,16,16,0,"img/flag.png")) return 0;
 		flags.push_back(flag);
+	}
+	for (int i = 0; i < NUM_OBSTACLES; i++){
+		Textured block;
+		if(block.init(0,0,16,16,0,"img/block.png")) return 0;
+		blocks.push_back(block);
 	}
 
 	// Initializing mlps
@@ -173,11 +182,13 @@ void spawn_world(){
 	}
 
 	// New Goal Rally Point
-	double gx = origin_x;
-	double gy = origin_y;
 	goals.clear();
+	obstacles.clear();
 	for (int i = 0; i < NUM_GOALS; i++){
 		int spawn_location = rand()%4;
+		double gx = origin_x;
+		double gy = origin_y;
+
 		if(spawn_location == 0){
 			gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
 			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
@@ -196,7 +207,13 @@ void spawn_world(){
 		}
 		goals.push_back(pair<int, int>(gx, gy));
 	}
+	for (int i = 0; i < NUM_OBSTACLES; i++){
+		double x = gen_rand_range(-WORLD_SIZE_X/2, WORLD_SIZE_X/2);
+		double y = gen_rand_range(-WORLD_SIZE_Y/2, WORLD_SIZE_Y/2);
+		obstacles.push_back(pair<int, int>(x, y));
+	}
 	set_goals(goals);
+	set_obstacles(obstacles);
 
 }
 
@@ -363,6 +380,14 @@ void set_goals(vector<pair<int, int>> &points){
 	for(auto &r : flock)
 		if (r.selected)
 			r.set_goal_target_pos(flags[r.goal_group].x, flags[r.goal_group].y);
+}
+
+// Set rally goal position
+void set_obstacles(vector<pair<int, int>> &points){
+	for (int i = 0; i < NUM_OBSTACLES; i++){
+		blocks[i].x = points[i].first;
+		blocks[i].y = points[i].second;
+	}
 }
 
 // When keyboard pressed
@@ -546,7 +571,7 @@ void updateValues(int n){
 	// Updating flock status
 	double weight = 1-cos(PI*((double)num_steps/EPOCH_STEPS));
 	for(auto &r : flock)
-		r.update(weight, goals);
+		r.update(weight, flags, blocks);
 
 	// String printed in the screen corner
 	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
@@ -599,6 +624,10 @@ void RenderScene(){
 		// Goal flag
 		for (auto const f : flags)
 			f.render(1,0);
+
+		// obstacles
+		for (auto const b : blocks)
+			b.render(1,0);
 
 		// Mouse selection
 		if(mouse_l){

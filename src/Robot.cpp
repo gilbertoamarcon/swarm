@@ -60,7 +60,7 @@ void Robot::set_goal_target_pos(double gx,double gy){
 	this->goal.second	= gy;
 }
 
-void Robot::update(double weight, vector<pair<int, int>> &goals){
+void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obstacles){
 	#if ENABLE_TRAIL 
 		update_trail();
 	#endif
@@ -86,8 +86,12 @@ void Robot::update(double weight, vector<pair<int, int>> &goals){
 	angle_wrap(this->t);
 
 	// Send velocity commands
-	this->x += v*cos(deg_to_rad(this->t));
-	this->y += v*sin(deg_to_rad(this->t));
+	float dx = v*cos(deg_to_rad(this->t));
+	float dy = v*sin(deg_to_rad(this->t));
+	if (!this->check_col(obstacles, dx, dy)){
+		this->x += dx;
+		this->y += dy;
+	}
 
 };
 
@@ -299,12 +303,12 @@ double Robot::sq_distance_to_point(pair<double,double> &input){
 	return pow(this->x-input.first, 2) + pow(this->y-input.second, 2);
 }
 
-double Robot::sq_distance_to_closest_goal(vector<pair<int,int>> &input){
+double Robot::sq_distance_to_closest_goal(vector<Textured> &goals){
 	
 	double min_distance = DBL_MAX;
-	for (auto &goal : input)
+	for (auto &goal : goals)
 	{
-		double distance = pow(this->x-goal.first, 2) + pow(this->y-goal.second, 2);
+		double distance = pow(this->x-goal.x, 2) + pow(this->y-goal.y, 2);
 		if (distance < min_distance)
 			min_distance = distance;
 	}
@@ -340,6 +344,17 @@ double Robot::distance_to_robot(Robot *robot){
 			if(this->y-this->h/2 > r.y+r.h/2) continue;
 			return true;
 		}	
+	return false;
+}
+
+bool Robot::check_col(vector<Textured> &obstacles, float dx, float dy){
+	for(auto const &o : obstacles){
+			if(this->x+this->w/2+dx < o.x-o.w/2) continue;
+			if(this->x-this->w/2+dx > o.x+o.w/2) continue;
+			if(this->y+this->h/2+dy < o.y-o.h/2) continue;
+			if(this->y-this->h/2+dy > o.y+o.h/2) continue;
+			return true;
+	}
 	return false;
 }
 
