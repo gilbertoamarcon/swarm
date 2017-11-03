@@ -65,7 +65,7 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 		update_trail();
 	#endif
 	#if CLASSIC_REW
-		acc_dist += weight*sq_distance_to_closest_goal(goals);
+		acc_dist += weight*sq_distance_to_closest_object(goals);
 	#endif
 	#if ALTERNATE_REW
 		double d = distance_to_point(goal);
@@ -74,7 +74,7 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 
 	double goal_t = this->t;
 	if(leader)
-		goal_t = (1 - SWARM_PULL)*leader_reasoning() + SWARM_PULL*swarm();
+		goal_t = (1 - SWARM_PULL)*leader_reasoning(obstacles) + SWARM_PULL*swarm();
 	else
 		goal_t = swarm();
 
@@ -216,7 +216,7 @@ pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors, pair<double
 	return centroid;
 }
 
-double Robot::leader_reasoning(){
+double Robot::leader_reasoning(vector<Textured> &obstacles){
 	#if LEARNING
 		// Leader neighbors
 		set<Robot*> neighbor_leader;
@@ -227,21 +227,34 @@ double Robot::leader_reasoning(){
 		// Neighbor centroid
 		neighbor_centroid	= compute_centroid(neighbor_leader,pair<double,double>(this->x,this->y));
 
+		// Closest obstacle
+		Textured *obstacle = closest_object(obstacles);
+
 		// Distance to centroids
 		double distance_to_neighbor_centroid	= distance_to_point(neighbor_centroid);
 		double distance_to_goal					= distance_to_point(goal);
+		double distance_to_obstacle				= 0;
+		if (obstacle)
+			distance_to_obstacle				= distance_to_point(obstacle->x, obstacle->y);
 
 		// Angle to centroids
 		double angle_to_neighbor_centroid		= rad_to_deg(angle_to_point(neighbor_centroid))	- this->t;
 		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
+		double angle_to_obstacle				= 0;
+		if (obstacle){
+			angle_to_obstacle 					= rad_to_deg(angle_to_point(obstacle->x, obstacle->y)) - this->t;
+			angle_wrap(angle_to_obstacle);
+		}
 		angle_wrap(angle_to_neighbor_centroid);
 		angle_wrap(angle_to_goal);
 
 		// Loading inputs
 		mlp->x[0] = deg_to_rad(angle_to_goal);
 		mlp->x[1] = deg_to_rad(angle_to_neighbor_centroid);
-		mlp->x[2] = distance_to_goal/WORLD_SIZE_X;
-		mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+		mlp->x[2] = deg_to_rad(angle_to_obstacle);
+		mlp->x[3] = distance_to_goal/WORLD_SIZE_X;
+		mlp->x[4] = distance_to_neighbor_centroid/WORLD_SIZE_X;
+		mlp->x[5] = distance_to_obstacle/WORLD_SIZE_X;
 		mlp->eval();
 		double goal_direction = rad_to_deg(2*mlp->o[0]);
 	#else
@@ -303,16 +316,31 @@ double Robot::sq_distance_to_point(pair<double,double> &input){
 	return pow(this->x-input.first, 2) + pow(this->y-input.second, 2);
 }
 
-double Robot::sq_distance_to_closest_goal(vector<Textured> &goals){
+double Robot::sq_distance_to_closest_object(vector<Textured> &objects){
 	
 	double min_distance = DBL_MAX;
-	for (auto &goal : goals)
+	for (auto &o : objects)
 	{
-		double distance = pow(this->x-goal.x, 2) + pow(this->y-goal.y, 2);
+		double distance = pow(this->x-o.x, 2) + pow(this->y-o.y, 2);
 		if (distance < min_distance)
 			min_distance = distance;
 	}
 	return min_distance;
+}
+
+Textured* Robot::closest_object(vector<Textured> &objects){
+	
+	double min_distance = DBL_MAX;
+	Textured* closest = NULL;
+	for (auto &o : objects)
+	{
+		double distance = pow(this->x-o.x, 2) + pow(this->y-o.y, 2);
+		if (distance < min_distance){
+			min_distance = distance;
+			closest = &o;
+		}
+	}
+	return closest;
 }
 
 double Robot::sq_distance_to_point(double x, double y){

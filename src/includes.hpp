@@ -39,8 +39,8 @@ using namespace std;
 #define DATA_FILE		"data/MLP_BASE_12R_8L_M.txt"
 
 // MLP Parameters
-#define MLP_I			4 // Number of inputs
-#define MLP_J			5 // Number of HL units
+#define MLP_I			6 // Number of inputs
+#define MLP_J			7 // Number of HL units
 #define MLP_K			1 // Number of outputs
 #define MLP_INIT_RANGES	1.0
 
@@ -59,7 +59,7 @@ using namespace std;
 
 // Sim Parameters
 #define NUM_LEADERS		2//16
-#define NUM_ROBOTS		100//40
+#define NUM_ROBOTS		8//40
 #define ROBOT_SPAWN_RNG	100
 #define GOAL_SPAWN_RNG	800
 #define ROBOT_VEL		1.00
