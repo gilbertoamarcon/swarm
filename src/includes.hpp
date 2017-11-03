@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <string>
-#include <float.h>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
@@ -73,6 +72,7 @@ using namespace std;
 #define WORLD_SIZE_X	1000
 #define WORLD_SIZE_Y	1000
 #define NUM_GOALS		1
+#define NUM_OBSTACLES	10
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
 
