@@ -65,6 +65,14 @@ double selY1			= 0;
 double selX2			= 0;
 double selY2			= 0;
 
+// Parameters as global variables
+string weights_file = WEIGHTS_FILE;
+string data_file = DATA_FILE;
+int num_leaders = NUM_LEADERS;
+int num_robots = NUM_ROBOTS;
+int num_epochs = NUM_EPOCHS;
+char comm_model = COMM_MODEL;
+
 // I/O
 ofstream datafile;
 char statusBuffer[BUFFER_SIZE];
@@ -101,12 +109,12 @@ void updateValues(int n);
 
 void RenderScene();
 
-void codeTestOvunc();
+void cl_arguments(int argc, char **argv);
 
 int main(int argc, char **argv){
-
 	srand(clock());
-
+	// Get command line arguments
+	cl_arguments(argc, argv);
 	// Initializing graphics
 	getScreenResolution(window_w,window_h);
 	glutInit(&argc, argv);
@@ -137,12 +145,12 @@ int main(int argc, char **argv){
 	}
 
 	// Initializing robots
-	for(int i = 0; i < NUM_ROBOTS; i++){
+	for(int i = 0; i < num_robots; i++){
 		bool leader = false;
 		int group = i % NUM_GOALS;
 		float velocity = ROBOT_VEL;
 
-		if(i < NUM_LEADERS){
+		if(i < num_leaders){
 			leader = true;
 			velocity = LEADER_VEL;
 		}
@@ -152,7 +160,7 @@ int main(int argc, char **argv){
 	}
 
 	// Open data file
-  	datafile.open(DATA_FILE);
+  	datafile.open(data_file.c_str());
 
 	spawn_world();
 
@@ -160,6 +168,25 @@ int main(int argc, char **argv){
 	glutMainLoop();
 
 	return 0;
+}
+
+void cl_arguments(int argc, char **argv){
+
+	if (weights_file == "")
+		weights_file = "data/WEIGHTS_R" + to_string(num_robots) + "_L" + to_string(num_leaders) + "_E" + to_string(num_epochs) + ".txt"; 
+	if (data_file == "")
+	 	data_file = "data/DATA_R" + to_string(num_robots) + "_L" + to_string(num_leaders) + "_E" + to_string(num_epochs) + ".txt"; 
+	
+	if (argc < 3)
+		return;
+	if (argc >= 3) {
+		num_leaders = atoi(argv[1]);
+		num_robots = atoi(argv[2]);
+	}
+	if (argc >= 4) 
+		num_epochs = atoi(argv[3]);
+	if (argc >= 5) 
+		comm_model = *argv[4];
 }
 
 void spawn_world(){
@@ -205,7 +232,7 @@ double compute_error(){
 	for(auto const &r : flock)
 		if(!(r.leader))
 			error += r.acc_dist;
-	error /= (NUM_ROBOTS-NUM_LEADERS);
+	error /= (num_robots-num_leaders);
 	error /= EPOCH_STEPS;
 	return error;
 }
@@ -439,7 +466,7 @@ void keyReleased(unsigned char key, int x, int y){
 void updateValues(int n){
 
 	// Frame limiter
-	if(current_epoch < NUM_EPOCHS)
+	if(current_epoch < num_epochs)
 		glutTimerFunc(0.001,updateValues,0);
 	else
 		glutTimerFunc(SIM_STEP_TIME,updateValues,0);
@@ -526,14 +553,14 @@ void updateValues(int n){
 		scn_scale *= 1.05;
 
 	// Save NN weights
-	if(saveWeights || (AUTOSAVE && current_epoch == NUM_EPOCHS && current_mlp == 0 &&  num_steps == 1)){
-		mlps.at(current_mlp).store(WEIGHTS_FILE);
+	if(saveWeights || (AUTOSAVE && current_epoch == num_epochs && current_mlp == 0 &&  num_steps == 1)){
+		mlps.at(current_mlp).store(weights_file.c_str());
 		saveWeights = 0;
 	}
 
 	if(loadWeights || (AUTOLOAD && current_epoch == 0 && current_mlp == 0 &&  num_steps == 1)){
 		for(auto &mlp: mlps)
-			mlp.load(WEIGHTS_FILE);
+			mlp.load(weights_file.c_str());
 		loadWeights = 0;
 	}
 
@@ -549,7 +576,7 @@ void updateValues(int n){
 		r.update(weight, goals);
 
 	// String printed in the screen corner
-	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,NUM_EPOCHS,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
+	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,num_epochs,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
 
 }
 

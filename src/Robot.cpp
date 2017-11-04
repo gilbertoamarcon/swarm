@@ -1,8 +1,4 @@
 #include "Robot.hpp"
-#include <float.h>
-#include <cmath>
-#include <iostream>
-using namespace std;
 
 Robot::Robot(
 				double x,

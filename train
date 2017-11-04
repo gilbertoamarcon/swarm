@@ -1,0 +1,8 @@
+#!/bin/bash
+if  [ $# -gt 2 ]; then
+    ./bin/main $1 $2 $3 
+elif [ $# -gt 1 ]; then
+	./bin/main $1 $2
+else
+    ./bin/main
+fi

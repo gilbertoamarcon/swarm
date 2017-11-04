@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <string>
+#include <float.h>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
@@ -35,8 +36,8 @@ using namespace std;
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
 
 // I/O Parameters
-#define WEIGHTS_FILE	"data/MLP_weights_BASE_24R_16L_M.txt"
-#define DATA_FILE		"data/MLP_BASE_12R_8L_M.txt"
+#define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
+#define DATA_FILE		""
 
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
@@ -58,25 +59,25 @@ using namespace std;
 #define MUTATION_RANGE	0.0 // Set to zero when testing
 
 // Sim Parameters
-#define NUM_LEADERS		16//16
-#define NUM_ROBOTS		40//40
+#define NUM_LEADERS		5 //16
+#define NUM_ROBOTS		10 //40
 #define ROBOT_SPAWN_RNG	100
-#define GOAL_SPAWN_RNG	800
+#define GOAL_SPAWN_RNG	300
 #define ROBOT_VEL		1.00
 #define LEADER_VEL		1.20
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	1000
-#define WORLD_SIZE_Y	1000
+#define WORLD_SIZE_X	400
+#define WORLD_SIZE_Y	400
 #define NUM_GOALS		1
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
 
 // Flock Parameters
-#define REP_RADIUS 		400
+#define REP_RADIUS 		1600
 #define ORI_RADIUS 		2500
-#define ATR_RADIUS 		10000
+#define ATR_RADIUS 		6400
 #define VIS_ANGLE		(2 * PI / 3)
 #define SWARM_PULL		0 // amount of influence agents have on leaders on [0, 1] scale
 
@@ -89,7 +90,7 @@ using namespace std;
 #define SIM_STEP_TIME	1.000
 
 // Light trail for the lulz
-#define ENABLE_TRAIL 	0
+#define ENABLE_TRAIL 	1
 #define SWARM_TRAIL 	1
 #define TRAIL_LENGTH	100.0
 
