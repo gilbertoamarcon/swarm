@@ -72,6 +72,9 @@ int num_leaders = NUM_LEADERS;
 int num_robots = NUM_ROBOTS;
 int num_epochs = NUM_EPOCHS;
 char comm_model = COMM_MODEL;
+// ------------------------------
+bool autosave = AUTOSAVE;
+bool autoload = AUTOLOAD;
 
 // I/O
 ofstream datafile;
@@ -177,16 +180,26 @@ void cl_arguments(int argc, char **argv){
 	if (data_file == "")
 	 	data_file = "data/DATA_R" + to_string(num_robots) + "_L" + to_string(num_leaders) + "_E" + to_string(num_epochs) + ".txt"; 
 	
-	if (argc < 3)
+	if (argc < 4)
 		return;
-	if (argc >= 3) {
-		num_leaders = atoi(argv[1]);
-		num_robots = atoi(argv[2]);
+	if (argc >= 4) {
+		num_leaders = atoi(argv[2]);
+		num_robots = atoi(argv[3]);
 	}
-	if (argc >= 4) 
-		num_epochs = atoi(argv[3]);
 	if (argc >= 5) 
-		comm_model = *argv[4];
+		num_epochs = atoi(argv[4]);
+	if (argc >= 6) 
+		comm_model = *argv[5];
+
+	if (strcmp(argv[1], "TRAIN")==0){
+		autosave = 1;
+		autoload = 0;
+	}
+	else if (strcmp(argv[1], "TEST")==0){
+		autosave = 0;
+		autoload = 1;
+	}
+
 }
 
 void spawn_world(){
@@ -468,8 +481,12 @@ void updateValues(int n){
 	// Frame limiter
 	if(current_epoch < num_epochs)
 		glutTimerFunc(0.001,updateValues,0);
-	else
+	else{
+		if (AUTO_EXIT)
+			exit(0);
 		glutTimerFunc(SIM_STEP_TIME,updateValues,0);
+	}
+
 
 	num_steps++;
 	if(num_steps == EPOCH_STEPS){
@@ -553,12 +570,12 @@ void updateValues(int n){
 		scn_scale *= 1.05;
 
 	// Save NN weights
-	if(saveWeights || (AUTOSAVE && current_epoch == num_epochs && current_mlp == 0 &&  num_steps == 1)){
+	if(saveWeights || (autosave && current_epoch == num_epochs && current_mlp == 0 &&  num_steps == 1)){
 		mlps.at(current_mlp).store(weights_file.c_str());
 		saveWeights = 0;
 	}
 
-	if(loadWeights || (AUTOLOAD && current_epoch == 0 && current_mlp == 0 &&  num_steps == 1)){
+	if(loadWeights || (autoload && current_epoch == 0 && current_mlp == 0 &&  num_steps == 1)){
 		for(auto &mlp: mlps)
 			mlp.load(weights_file.c_str());
 		loadWeights = 0;

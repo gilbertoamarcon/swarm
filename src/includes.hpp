@@ -30,10 +30,11 @@ using namespace std;
 #define LEARNING 		1
 
 // Data Collection
-#define COLLECT_DATA 	0
+#define COLLECT_DATA 	1
 #define NUM_SAMPLES 	20 // Number of epochs data is collected (-1 for infinity)
 #define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
+#define AUTO_EXIT 		1 // Automatically exit program ofter num_epocs
 
 // I/O Parameters
 #define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
@@ -55,7 +56,7 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		500
+#define NUM_EPOCHS		200
 #define MUTATION_RANGE	0.0 // Set to zero when testing
 
 // Sim Parameters
@@ -68,8 +69,8 @@ using namespace std;
 #define ROBOT_STEERING 	0.05
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	400
-#define WORLD_SIZE_Y	400
+#define WORLD_SIZE_X	1000
+#define WORLD_SIZE_Y	1000
 #define NUM_GOALS		1
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
