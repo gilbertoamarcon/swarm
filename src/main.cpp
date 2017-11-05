@@ -175,10 +175,14 @@ int main(int argc, char **argv){
 
 void cl_arguments(int argc, char **argv){
 
-	if (weights_file == "")
-		weights_file = "data/WEIGHTS_R" + to_string(num_robots) + "_L" + to_string(num_leaders) + "_E" + to_string(num_epochs) + ".txt"; 
-	if (data_file == "")
-	 	data_file = "data/DATA_R" + to_string(num_robots) + "_L" + to_string(num_leaders) + "_E" + to_string(num_epochs) + ".txt"; 
+	if (weights_file == ""){
+		char buffer [50];
+		weights_file = sprintf (buffer, "data/WEIGHTS_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+	}
+	if (data_file == ""){
+		char buffer [50];
+		data_file = sprintf (buffer, "data/DATA_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+	}
 	
 	if (argc < 4)
 		return;

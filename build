@@ -1,3 +1,3 @@
 #g++ src/includes.cpp src/mlp.cpp src/main.cpp src/Wired.cpp src/Textured.cpp src/Robot.cpp -O3 -o bin/main -Wno-unused-result -Wno-write-strings -fpermissive -lm -w -lGL -lGLU -lglut -lX11 -lpng -std=c++11
-g++ src/includes.cpp src/mlp.cpp src/main.cpp src/Wired.cpp src/Textured.cpp src/Robot.cpp -o bin/main -Wno-unused-result -Wno-write-strings -fpermissive -lm -w -lGL -lGLU -lglut -lX11 -lpng -std=c++11
+g++ src/includes.cpp src/mlp.cpp src/main.cpp src/Wired.cpp src/Textured.cpp src/Robot.cpp -o bin/main -O3 -Wno-unused-result -Wno-write-strings -fpermissive -lm -w -lGL -lGLU -lglut -lX11 -lpng -std=c++11
 ./bin/main
