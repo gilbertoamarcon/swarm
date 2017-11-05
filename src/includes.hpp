@@ -57,7 +57,7 @@ using namespace std;
 #define POP_SIZE		15
 #define NUM_PARENTS		5
 #define NUM_EPOCHS		200
-#define MUTATION_RANGE	0.0 // Set to zero when testing
+#define MUTATION_RANGE	0.1 // Set to zero when testing
 
 // Sim Parameters
 #define NUM_LEADERS		5 //16

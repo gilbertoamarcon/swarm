@@ -1,0 +1,12 @@
+#!/bin/bash
+echo Batch Training Initialized...
+
+for i in {6..30..4}; do
+	echo TRAINING $i robots, 4 leaders
+    ./bin/main "TRAIN" 4 $i 300 
+done
+
+for i in {10..30..4}; do
+	echo TRAINING $i robots, 8 leaders
+    ./bin/main "TRAIN" 8 $i 300 
+done

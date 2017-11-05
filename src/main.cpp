@@ -75,6 +75,7 @@ char comm_model = COMM_MODEL;
 // ------------------------------
 bool autosave = AUTOSAVE;
 bool autoload = AUTOLOAD;
+double mutation_range = MUTATION_RANGE;
 
 // I/O
 ofstream datafile;
@@ -174,18 +175,19 @@ int main(int argc, char **argv){
 }
 
 void cl_arguments(int argc, char **argv){
-
-	if (weights_file == ""){
-		char buffer [50];
-		weights_file = sprintf (buffer, "data/WEIGHTS_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
-	}
-	if (data_file == ""){
-		char buffer [50];
-		data_file = sprintf (buffer, "data/DATA_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
-	}
-	
-	if (argc < 4)
+	if (argc < 2)
 		return;
+
+	if (strcmp(argv[1], "TRAIN")==0){
+		autosave = 1;
+		autoload = 0;
+	}
+	else if (strcmp(argv[1], "TEST")==0){
+		mutation_range = 0;
+		autosave = 0;
+		autoload = 1;
+	}
+
 	if (argc >= 4) {
 		num_leaders = atoi(argv[2]);
 		num_robots = atoi(argv[3]);
@@ -195,14 +197,23 @@ void cl_arguments(int argc, char **argv){
 	if (argc >= 6) 
 		comm_model = *argv[5];
 
-	if (strcmp(argv[1], "TRAIN")==0){
-		autosave = 1;
-		autoload = 0;
+	if (weights_file == ""){
+		char buffer [100];
+		sprintf(buffer, "data/Weights/WEIGHTS_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+		weights_file = buffer;
 	}
-	else if (strcmp(argv[1], "TEST")==0){
-		autosave = 0;
-		autoload = 1;
+	if (data_file == ""){
+		char buffer [100];
+		if (strcmp(argv[1], "TRAIN") == 0)
+			sprintf(buffer, "data/Performances/TRAINING_DATA_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+		else	
+			sprintf(buffer, "data/PerformancesTEST_DATA_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+		data_file = buffer;
 	}
+
+
+
+
 
 }
 
@@ -486,7 +497,7 @@ void updateValues(int n){
 	if(current_epoch < num_epochs)
 		glutTimerFunc(0.001,updateValues,0);
 	else{
-		if (AUTO_EXIT)
+		if (AUTO_EXIT && num_steps > 1)
 			exit(0);
 		glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 	}
@@ -535,7 +546,7 @@ void updateValues(int n){
 				Mlp mlp(&mlps.at(rand()%NUM_PARENTS));
 
 				// Mutation
-				mlp.mutate(MUTATION_RANGE);
+				mlp.mutate(mutation_range);
 
 				// Inserting into population
 				mlps.insert(mlps.end(), mlp);
