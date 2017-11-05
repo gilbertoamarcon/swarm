@@ -31,7 +31,6 @@ using namespace std;
 
 // Data Collection
 #define COLLECT_DATA 	1
-#define NUM_SAMPLES 	20 // Number of epochs data is collected (-1 for infinity)
 #define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
 #define AUTO_EXIT 		1 // Automatically exit program ofter num_epocs

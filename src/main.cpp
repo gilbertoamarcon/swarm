@@ -512,8 +512,7 @@ void updateValues(int n){
 
 		// Write error to data file
 		#if COLLECT_DATA
-			if (NUM_SAMPLES == -1 || current_epoch < NUM_SAMPLES)
-				datafile << mlps.at(current_mlp).error << ",";
+			datafile << mlps.at(current_mlp).error << ",";
 		#endif
 
 		// Swapping MLP
