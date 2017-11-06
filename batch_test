@@ -10,14 +10,14 @@
 # Compiling and running code is separate now! 
 # Don't forget to run ./compile before running this code, if you make changes to the code.
 
-echo Batch Training Initialized...
+echo Batch Testing Initialized...
 
 for i in {6..30..4}; do
 	echo TRAINING $i robots, 4 leaders
-    ./bin/main "TRAIN" 4 $i 100 
+    ./bin/main "TEST" 4 $i 20 
 done
 
 for i in {10..30..4}; do
 	echo TRAINING $i robots, 8 leaders
-    ./bin/main "TRAIN" 8 $i 100 
+    ./bin/main "TEST" 8 $i 20 
 done
