@@ -194,20 +194,20 @@ void cl_arguments(int argc, char **argv){
 	}
 	if (argc >= 5) 
 		num_epochs = atoi(argv[4]);
-	if (argc >= 6) 
-		comm_model = *argv[5];
+	if (argc >= 7) 
+		comm_model = *argv[6];
 
 	if (weights_file == ""){
 		char buffer [100];
-		sprintf(buffer, "data/Weights/WEIGHTS_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+		sprintf(buffer, "data/Weights/%d_WEIGHTS_R%d_L%d_E%d.txt", atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		weights_file = buffer;
 	}
 	if (data_file == ""){
 		char buffer [100];
 		if (strcmp(argv[1], "TRAIN") == 0)
-			sprintf(buffer, "data/Performances/TRAINING_DATA_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+			sprintf(buffer, "data/Performances/%d_TRAINING_DATA_R%d_L%d_E%d.txt", atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		else	
-			sprintf(buffer, "data/PerformancesTEST_DATA_R%d_L%d_E%d.txt", num_robots, num_leaders, num_epochs);
+			sprintf(buffer, "data/Performances/%d_TEST_DATA_R%d_L%d_E%d.txt", atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		data_file = buffer;
 	}
 
@@ -223,7 +223,7 @@ void spawn_world(){
 	for(auto const &r : flock){
 		double rx = origin_x + ((double)rand()/RAND_MAX-0.5)*ROBOT_SPAWN_RNG;
 		double ry = origin_y + ((double)rand()/RAND_MAX-0.5)*ROBOT_SPAWN_RNG;
-		double rt = ((double)rand()/RAND_MAX-0.5)*360.0;
+		double rt = 0;//((double)rand()/RAND_MAX-0.5)*360.0;
 		r.respawn(rx, ry, rt, &(mlps.at(current_mlp)));
 	}
 
@@ -530,10 +530,10 @@ void updateValues(int n){
   				strcpy (str,"");
 				// mlps.at(i).print_weights(str);
 				sum += mlps.at(i).error;
-				printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
+				//printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
 			}
-			printf("\nAVG: %f", sum/NUM_PARENTS);
-			printf("\n");
+			//printf("\nAVG: %f", sum/NUM_PARENTS);
+			//printf("\n");
 
 			// Erasing the worst mlps
 			mlps.erase(mlps.begin()+NUM_PARENTS,mlps.end());
