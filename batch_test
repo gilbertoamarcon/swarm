@@ -1,0 +1,23 @@
+#!/bin/bash
+# Use this script for training NNs in batch
+# Passing arguments to main: 
+#$1: Test or Train
+#$2: # Leaders
+#$3: # Robots
+#$4: # Epocs
+#$5: Communication Model (Not Supported)
+
+# Compiling and running code is separate now! 
+# Don't forget to run ./compile before running this code, if you make changes to the code.
+
+echo Batch Testing Initialized...
+
+for i in {6..30..4}; do
+	echo TRAINING $i robots, 4 leaders
+    ./bin/main "TEST" 4 $i 20 
+done
+
+for i in {10..30..4}; do
+	echo TRAINING $i robots, 8 leaders
+    ./bin/main "TEST" 8 $i 20 
+done

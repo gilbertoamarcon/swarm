@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <string>
+#include <float.h>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
@@ -29,14 +30,14 @@ using namespace std;
 #define LEARNING 		1
 
 // Data Collection
-#define COLLECT_DATA 	0
-#define NUM_SAMPLES 	20 // Number of epochs data is collected (-1 for infinity)
+#define COLLECT_DATA 	1
 #define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
+#define AUTO_EXIT 		1 // Automatically exit program ofter num_epocs
 
 // I/O Parameters
-#define WEIGHTS_FILE	"data/MLP_weights_BASE_24R_16L_M.txt"
-#define DATA_FILE		"data/MLP_BASE_12R_8L_M.txt"
+#define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
+#define DATA_FILE		""
 
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
@@ -45,7 +46,8 @@ using namespace std;
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
-#define EPOCH_STEPS		700
+#define TIME_SCALE 		5
+#define EPOCH_STEPS		(700/TIME_SCALE)
 
 // Reward Function			// Choose one
 #define CLASSIC_REW		1 	// Distance to goal weighted by time
@@ -54,17 +56,17 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		500
-#define MUTATION_RANGE	0.0 // Set to zero when testing
+#define NUM_EPOCHS		200
+#define MUTATION_RANGE	0.1 // Set to zero when testing
 
 // Sim Parameters
-#define NUM_LEADERS		16//16
-#define NUM_ROBOTS		40//40
-#define ROBOT_SPAWN_RNG	100
-#define GOAL_SPAWN_RNG	800
-#define ROBOT_VEL		1.00
-#define LEADER_VEL		1.20
-#define ROBOT_STEERING 	0.05
+#define NUM_LEADERS		5 //16
+#define NUM_ROBOTS		10 //40
+#define ROBOT_SPAWN_RNG	300
+#define GOAL_SPAWN_RNG	500
+#define ROBOT_VEL		(1.00*TIME_SCALE)
+#define LEADER_VEL		(1.20*TIME_SCALE)
+#define ROBOT_STEERING 	(0.05*TIME_SCALE)
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
 #define WORLD_SIZE_X	1000
@@ -74,9 +76,9 @@ using namespace std;
 #define N_TOP 			6
 
 // Flock Parameters
-#define REP_RADIUS 		400
+#define REP_RADIUS 		1600
 #define ORI_RADIUS 		2500
-#define ATR_RADIUS 		10000
+#define ATR_RADIUS 		6400
 #define VIS_ANGLE		(2 * PI / 3)
 #define SWARM_PULL		0 // amount of influence agents have on leaders on [0, 1] scale
 
@@ -90,7 +92,7 @@ using namespace std;
 
 // Light trail for the lulz
 #define ENABLE_TRAIL 	0
-#define SWARM_TRAIL 	1
+#define SWARM_TRAIL 	0
 #define TRAIL_LENGTH	100.0
 
 // #define SIM_STEP_TIME	0.001

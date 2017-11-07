@@ -1,22 +1,26 @@
 means = [];
 errs = [];
 
-results = {'MLP_errors_12R_8L_M.txt', ...
-           'MLP_errors_12R_8L_T.txt', ...
-           'MLP_errors_12R_8L_V.txt'};
-linestyle = {'.', '*', 'd'};
+results = {'TRAINING_DATA_R6_L4_E100.txt', ...
+           'TRAINING_DATA_R10_L4_E100.txt', ...
+           'TRAINING_DATA_R14_L4_E100.txt', ...
+           'TRAINING_DATA_R18_L4_E100.txt', ...
+           'TRAINING_DATA_R22_L4_E100.txt', ...
+           'TRAINING_DATA_R26_L4_E100.txt', ...
+           'TRAINING_DATA_R30_L4_E100.txt'};
+% linestyle = {'.', '*', 'd', '*', 'd', '*'};
 hold on
 for i=1:length(results)
     errors = csvread(results{i});
-    errors = errors(1:50,1:size(errors,2)-1);
+    errors = errors(1:100,1:size(errors,2)-1);
     m = mean(errors');
     e = std(errors')/sqrt(size(errors,2));
-    plot(m, 'Marker', linestyle{i})
+    plot(m)
 end
 
 title('Distance to Goal by Communication Model (Learning Process)');
 ylabel('Distance to Goal')
-legend('Metric', 'Topological', 'Visual');
+% legend('Metric', 'Topological', 'Visual');
 
 
 

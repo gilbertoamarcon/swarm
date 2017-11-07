@@ -1,0 +1,9 @@
+#!/bin/bash
+echo Don\'t forget to compile!
+if  [ $# -gt 3 ]; then
+    ./bin/main "TEST" $1 $2 $3 $4 
+elif [ $# -gt 2 ]; then
+	./bin/main "TEST" $1 $2 $3
+else
+    ./bin/main
+fi
