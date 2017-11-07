@@ -15,8 +15,8 @@ echo Batch Training Initialized...
 
 for i in {1..$3}; do
 	echo TRAINING $i out of $3 networks...
-	echo 4 leaders, 10 robots
-    ./bin/main "TRAIN" $1 $2 100 $i
+	echo $1 leaders, $2 robots
+    ./bin/main "TRAIN" $1 $2 50 $i
 done
 
 #for i in {6..30..4}; do

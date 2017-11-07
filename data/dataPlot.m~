@@ -2,6 +2,7 @@ avgs = [];
 bests = [];
 mins = [];
 
+
 R = 10;     % # Robots
 L = 4;      % # Leaders
 E = 100;    % # Epochs
@@ -11,7 +12,7 @@ for i=1:S
     files = [files, [num2str(i) '_TRAINING_DATA_R' num2str(R) '_L' num2str(L) '_E' num2str(E) '.txt']];
 end
 
-% Get averages, bests, worsts
+% linestyle = {'.', '*', 'd', '*', 'd', '*'};
 for i=1:length(files)
     errors = csvread(files{i});
     errors = errors(:,1:size(errors,2)-1)';
@@ -21,20 +22,30 @@ for i=1:length(files)
 end
 
 hold on
-errorBars(avgs);
-errorBars(bests);
-errorBars(mins);
 
-title('Learning Curves for Best, Average, Worst MLPs');
-xlabel('Time')
+
+title('Distance to Goal by Communication Model (Learning Process)');
 ylabel('Distance to Goal')
-legend('Average Mlp', 'Best Mlp', 'Worst Mlp');
+% legend('Metric', 'Topological', 'Visual');
+
 
 function errorBars(data)
 % Plot errorbar plot
 % Rows of data are performances over time, columns are statistical runs
-m = mean(data');                         % Means 
-e = std(data')/sqrt(size(data',2));       % Std Error
+m = mean(data);                         % Means 
+e = std(data)/sqrt(size(errors,2));     % Std Error
 plot(m)
-% h = errorbar(e, m);
+h = errorbar(mean(errors'), std(errors') * sqrt(size(errors,2)-1), 'k.');
+
 end
+
+% f = figure();
+% plot(min(errors'), 'Color', [0.2 0.6 0.5]);
+% saveas(f,'plot.svg');
+
+
+% plot(mean(errors'), 'Color', [0.2 0.6 0.5])
+% hold on
+% h = errorbar(mean(errors'), std(errors') * sqrt(size(errors,2)-1), 'k.'); % 0.6198 = 1.96 * sqrt(10), where 10 is sample size
+
+% exit;
