@@ -26,6 +26,7 @@
 
 using namespace std;
 
+#define VISUALIZATION	0
 // Learning Switch
 #define LEARNING 		1
 

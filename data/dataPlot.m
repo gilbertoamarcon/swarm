@@ -2,10 +2,10 @@ avgs = [];
 bests = [];
 mins = [];
 
-R = 10;     % # Robots
-L = 4;      % # Leaders
-E = 100;    % # Epochs
-S = 9;      % # Statistical Runs
+R = 5;     % # Robots
+L = 3;      % # Leaders
+E = 50;    % # Epochs
+S = 99;      % # Statistical Runs
 files = {};
 for i=1:S
     files = [files, [num2str(i) '_TRAINING_DATA_R' num2str(R) '_L' num2str(L) '_E' num2str(E) '.txt']];
@@ -13,11 +13,12 @@ end
 
 % Get averages, bests, worsts
 for i=1:length(files)
+    files{i}
     errors = csvread(files{i});
     errors = errors(:,1:size(errors,2)-1)';
     avgs = [avgs mean(errors)'];
-    bests = [bests max(errors)'];
-    mins = [mins min(errors)'];
+%     bests = [bests max(errors)'];
+%     mins = [mins min(errors)'];
 end
 
 hold on

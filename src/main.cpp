@@ -297,6 +297,8 @@ void iniGl(){
 	gluOrtho2D(x_min,x_max,y_min,y_max);
 	if(FULL_SCREEN)
 		glutFullScreen();
+	if(!VISUALIZATION)
+		glutHideWindow();
 	glutSetCursor(GLUT_CURSOR_NONE);
 }
 
