@@ -1,37 +1,41 @@
-means = [];
-errs = [];
+avgs = [];
+bests = [];
+mins = [];
 
-results = {'TRAINING_DATA_R6_L4_E100.txt', ...
-           'TRAINING_DATA_R10_L4_E100.txt', ...
-           'TRAINING_DATA_R14_L4_E100.txt', ...
-           'TRAINING_DATA_R18_L4_E100.txt', ...
-           'TRAINING_DATA_R22_L4_E100.txt', ...
-           'TRAINING_DATA_R26_L4_E100.txt', ...
-           'TRAINING_DATA_R30_L4_E100.txt'};
-% linestyle = {'.', '*', 'd', '*', 'd', '*'};
-hold on
-for i=1:length(results)
-    errors = csvread(results{i});
-    errors = errors(1:100,1:size(errors,2)-1);
-    m = mean(errors');
-    e = std(errors')/sqrt(size(errors,2));
-    plot(m)
+R = 5;     % # Robots
+L = 3;      % # Leaders
+E = 50;    % # Epochs
+S = 99;      % # Statistical Runs
+files = {};
+for i=1:S
+    files = [files, [num2str(i) '_TRAINING_DATA_R' num2str(R) '_L' num2str(L) '_E' num2str(E) '.txt']];
 end
 
-title('Distance to Goal by Communication Model (Learning Process)');
+% Get averages, bests, worsts
+for i=1:length(files)
+    files{i}
+    errors = csvread(files{i});
+    errors = errors(:,1:size(errors,2)-1)';
+    avgs = [avgs mean(errors)'];
+%     bests = [bests max(errors)'];
+%     mins = [mins min(errors)'];
+end
+
+hold on
+errorBars(avgs);
+errorBars(bests);
+errorBars(mins);
+
+title('Learning Curves for Best, Average, Worst MLPs');
+xlabel('Time')
 ylabel('Distance to Goal')
-% legend('Metric', 'Topological', 'Visual');
+legend('Average Mlp', 'Best Mlp', 'Worst Mlp');
 
-
-
-% 
-% f = figure();
-% plot(min(errors'), 'Color', [0.2 0.6 0.5]);
-% saveas(f,'plot.svg');
-
-
-% plot(mean(errors'), 'Color', [0.2 0.6 0.5])
-% hold on
-% h = errorbar(mean(errors'), std(errors') * sqrt(size(errors,2)-1), 'k.'); % 0.6198 = 1.96 * sqrt(10), where 10 is sample size
-
-% exit;
+function errorBars(data)
+% Plot errorbar plot
+% Rows of data are performances over time, columns are statistical runs
+m = mean(data');                         % Means 
+e = std(data')/sqrt(size(data',2));       % Std Error
+plot(m)
+% h = errorbar(e, m);
+end
