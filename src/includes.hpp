@@ -26,7 +26,7 @@
 
 using namespace std;
 
-#define VISUALIZATION	0
+#define VISUALIZATION	1
 // Learning Switch
 #define LEARNING 		1
 
@@ -80,7 +80,7 @@ using namespace std;
 #define REP_RADIUS 		1600
 #define ORI_RADIUS 		2500
 #define ATR_RADIUS 		6400
-#define VIS_ANGLE		(2 * PI / 3)
+#define VIS_ANGLE		(2*PI/3)
 #define SWARM_PULL		0 // amount of influence agents have on leaders on [0, 1] scale
 
 // File Parameters

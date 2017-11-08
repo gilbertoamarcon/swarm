@@ -120,9 +120,12 @@ int main(int argc, char **argv){
 	// Get command line arguments
 	cl_arguments(argc, argv);
 	// Initializing graphics
-	getScreenResolution(window_w,window_h);
-	glutInit(&argc, argv);
-	iniGl();
+	if (VISUALIZATION){
+		getScreenResolution(window_w,window_h);
+		glutInit(&argc, argv);
+		iniGl();
+	}
+
 
 	// Agent Shape
 	vector<pair<double, double>> shape;
@@ -169,7 +172,12 @@ int main(int argc, char **argv){
 	spawn_world();
 
 	// Main loop
-	glutMainLoop();
+	
+	if (VISUALIZATION)
+		glutMainLoop();
+	else
+		while(current_epoch < NUM_EPOCHS)
+			updateValues(0);
 
 	return 0;
 }
@@ -497,11 +505,11 @@ void updateValues(int n){
 
 	// Frame limiter
 	if(current_epoch < num_epochs)
-		glutTimerFunc(0.001,updateValues,0);
+		if (VISUALIZATION) glutTimerFunc(0.001,updateValues,0);
 	else{
 		if (AUTO_EXIT && num_steps > 1)
 			exit(0);
-		glutTimerFunc(SIM_STEP_TIME,updateValues,0);
+		if (VISUALIZATION) glutTimerFunc(SIM_STEP_TIME,updateValues,0);
 	}
 
 
