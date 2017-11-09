@@ -175,9 +175,10 @@ int main(int argc, char **argv){
 	
 	if (VISUALIZATION)
 		glutMainLoop();
-	else
+	else{
 		while(current_epoch < NUM_EPOCHS)
 			updateValues(0);
+	}
 
 	return 0;
 }
@@ -305,8 +306,6 @@ void iniGl(){
 	gluOrtho2D(x_min,x_max,y_min,y_max);
 	if(FULL_SCREEN)
 		glutFullScreen();
-	if(!VISUALIZATION)
-		glutHideWindow();
 	glutSetCursor(GLUT_CURSOR_NONE);
 }
 
@@ -502,10 +501,10 @@ void keyReleased(unsigned char key, int x, int y){
 }
 
 void updateValues(int n){
-
 	// Frame limiter
-	if(current_epoch < num_epochs)
+	if(current_epoch < num_epochs){
 		if (VISUALIZATION) glutTimerFunc(0.001,updateValues,0);
+	}
 	else{
 		if (AUTO_EXIT && num_steps > 1)
 			exit(0);

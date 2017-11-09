@@ -6,15 +6,15 @@
 
 echo Batch Training Initialized...
 
-R=20
-for ((l=0;l<=20;l+=4)) do 			# Varying leader count
-	echo $l leaders, $R robots
-	for ((i=0;i<$1;i++)) do 		# Statistical Runs
-		echo TRAINING $i out of $1 networks...
-	    ./bin/main "TRAIN" $l 20 75 $i
-	done
+for ((i=0;i<$1;i++)) do 		# Statistical Runs
+	echo TRAINING $i out of $1 networks...
+    ./bin/main "TRAIN" 0 20 50 $i
+    ./bin/main "TRAIN" 4 20 50 $i
+    ./bin/main "TRAIN" 8 20 50 $i
+    ./bin/main "TRAIN" 12 20 50 $i
+    ./bin/main "TRAIN" 16 20 50 $i
 done
-
+echo Done!
 #for i in {6..30..4}; do
 #	echo TRAINING $i robots, 4 leaders
 #    ./bin/main "TRAIN" 4 $i 100 

@@ -61,7 +61,7 @@ void Robot::update(double weight, vector<pair<int, int>> &goals){
 		update_trail();
 	#endif
 	#if CLASSIC_REW
-		acc_dist += weight*sqrt(sq_distance_to_closest_goal(goals));
+		acc_dist += weight*(sq_distance_to_closest_goal(goals));
 	#endif
 	#if ALTERNATE_REW
 		double d = distance_to_point(goal);
