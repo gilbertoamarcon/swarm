@@ -43,7 +43,7 @@ using namespace std;
 // MLP Parameters
 #define MLP_I			4 // Number of inputs
 #define MLP_J			5 // Number of HL units
-#define MLP_K			1 // Number of outputs
+#define MLP_K			2 // Number of outputs
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters

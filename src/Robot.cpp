@@ -164,17 +164,17 @@ set<Robot*> Robot::get_k_nearest(set<Robot*> nbors, int k){
  void Robot::update_neighbors(){
  	if (COMM_MODEL == 'T' || COMM_MODEL == 'M'){
 		this->neighbor_rep = this->get_neighbors_M(this->radius_rep);
-		this->neighbor_ori = this->get_neighbors_M(this->radius_ori);
+		this->neighbor_ori = this->get_neighbors_M(this->radius_ori, this->radius_rep);
 		this->neighbor_att = this->get_neighbors_M(this->radius_att, this->radius_rep);
 		if (COMM_MODEL == 'T'){
 			this->neighbor_rep = get_k_nearest(this->neighbor_rep, N_TOP);
-			this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP);
+			this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP-this->neighbor_rep.size());
 			this->neighbor_att = get_k_nearest(this->neighbor_att, N_TOP-this->neighbor_rep.size());
 		}
 	}
 	else if (COMM_MODEL == 'V'){
 		this->neighbor_rep = this->get_neighbors_V(this->radius_rep);
-		this->neighbor_ori = this->get_neighbors_V(this->radius_ori);
+		this->neighbor_ori = this->get_neighbors_V(this->radius_ori, this->radius_rep);
 		this->neighbor_att = this->get_neighbors_V(this->radius_att, this->radius_rep);
 	}
 }
@@ -241,6 +241,12 @@ double Robot::leader_reasoning(){
 		mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 		mlp->eval();
 		double goal_direction = rad_to_deg(2*mlp->o[0]);
+		// New R_ori between 20-100
+ 	double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
+ 	// cout << new_rad_ori << endl;
+ 	// Make everyone adhere to the leaders decision, very crude implementation
+ 	for(auto &r : *this->flock)
+ 		r.radius_ori = new_rad_ori;
 	#else
 		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
 		double goal_direction = angle_to_goal;
