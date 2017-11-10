@@ -2,10 +2,13 @@ avgs = [];
 bests = [];
 mins = [];
 plots = [];
-linestyles = {'-o','-s','--','.-','-^'}
+linestyles = {'-o','-s','--','.-','-^','-o','-s','--','.-','-^'}
 R = 20;      % # Robots
 L = 16;      % # Leaders
-for L=0:4:16
+for L=0:2:18
+    avgs = [];
+    bests = [];
+    mins = [];
     E = 50;     % # Epochs
     S = 50;     % # Statistical Runs
     files = {};
@@ -15,16 +18,17 @@ for L=0:4:16
 
     % Get averages, bests, worsts
     for i=1:length(files)
-        files{i}
+%         files{i}
         errors = csvread(files{i});
         errors = errors(:,1:size(errors,2)-1)';
+        length(avgs)
         avgs = [avgs mean(errors)'];
     %     bests = [bests max(errors)'];
     %     mins = [mins min(errors)'];
     end
 
     hold on
-    h(L/4+1) = errorBars(avgs, linestyles{L/4+1});
+    h(L/2+1) = errorBars(avgs, linestyles{L/2+1});
     
     % errorBars(bests);
     % errorBars(mins);

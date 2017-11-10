@@ -6,14 +6,29 @@
 
 echo Batch Training Initialized...
 
+# for ((i=0;i<$1;i++)) do 		# Statistical Runs
+# 	echo TRAINING $i out of $1 networks...
+#     ./bin/main "TRAIN" 0 20 50 $i
+#     ./bin/main "TRAIN" 4 20 50 $i
+#     ./bin/main "TRAIN" 8 20 50 $i
+#     ./bin/main "TRAIN" 12 20 50 $i
+#     ./bin/main "TRAIN" 16 20 50 $i
+# done
+
 for ((i=0;i<$1;i++)) do 		# Statistical Runs
 	echo TRAINING $i out of $1 networks...
-    ./bin/main "TRAIN" 0 20 50 $i
-    ./bin/main "TRAIN" 4 20 50 $i
-    ./bin/main "TRAIN" 8 20 50 $i
-    ./bin/main "TRAIN" 12 20 50 $i
-    ./bin/main "TRAIN" 16 20 50 $i
+    ./bin/main "TRAIN" 0 20 50 $i &
+    ./bin/main "TRAIN" 2 20 50 $i &
+    ./bin/main "TRAIN" 4 20 50 $i &
+    ./bin/main "TRAIN" 6 20 50 $i &
+    ./bin/main "TRAIN" 8 20 50 $i &
+    ./bin/main "TRAIN" 10 20 50 $i &
+    ./bin/main "TRAIN" 12 20 50 $i &
+    ./bin/main "TRAIN" 14 20 50 $i &
+    ./bin/main "TRAIN" 16 20 50 $i & 
+    ./bin/main "TRAIN" 18 20 50 $i
 done
+
 echo Done!
 #for i in {6..30..4}; do
 #	echo TRAINING $i robots, 4 leaders
