@@ -68,12 +68,13 @@ class Robot: public Wired{
 		pair<double,double> compute_force(set<Robot*> &neighbors);
 		pair<double,double> compute_centroid(set<Robot*> &neighbors, pair<double,double> prev);
 		double leader_reasoning();
+		void propagateRadii(double rep, double ori, double att, double w);	
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
 		void update_trail();
 		// Distances
 		double angle_to_point(pair<double,double> &input);
-		double Robot::angle_to_point(double x, double y);
+		double angle_to_point(double x, double y);
 		double distance_to_point(pair<double,double> &input);
 		double distance_to_point(double x, double y);
 		double distance_to_robot(Robot *robot);

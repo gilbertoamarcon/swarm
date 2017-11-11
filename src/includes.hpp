@@ -26,7 +26,7 @@
 
 using namespace std;
 
-#define VISUALIZATION	0
+#define VISUALIZATION	1
 // Learning Switch
 #define LEARNING 		1
 
@@ -48,7 +48,7 @@ using namespace std;
 
 // Simulation Parameters
 #define TIME_SCALE 		5
-#define EPOCH_STEPS		(700/TIME_SCALE)
+#define EPOCH_STEPS		(1000/TIME_SCALE)
 
 // Reward Function			// Choose one
 #define CLASSIC_REW		1 	// Distance to goal weighted by time
@@ -57,7 +57,7 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		200
+#define NUM_EPOCHS		2000
 #define MUTATION_RANGE	0.1 // Set to zero when testing
 
 // Sim Parameters

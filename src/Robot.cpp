@@ -245,14 +245,21 @@ double Robot::leader_reasoning(){
  	double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
  	// cout << new_rad_ori << endl;
  	// Make everyone adhere to the leaders decision, very crude implementation
- 	for(auto &r : *this->flock)
- 		r.radius_ori = new_rad_ori;
+ 	propagateRadii(0, new_rad_ori, 0, 0.5); //Rrep and Rori currently not propagated
 	#else
 		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
 		double goal_direction = angle_to_goal;
 	#endif
 
 	return goal_direction + this->t;
+}
+
+void Robot::propagateRadii(double rRep, double rOri, double rAtt, double w){
+ 	for(auto &r : this->get_neighbors_M(radius_att)){
+		// r->radius_rep = w*rRep + (1-w)*r->radius_rep;
+		r->radius_ori = w*rOri + (1-w)*r->radius_ori;
+		// r->radius_att = w*rAtt + (1-w)*r->radius_att;
+	}
 }
 
 // Returns desired heading based on swarming rules
