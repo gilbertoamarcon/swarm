@@ -241,11 +241,12 @@ double Robot::leader_reasoning(){
 		mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 		mlp->eval();
 		double goal_direction = rad_to_deg(2*mlp->o[0]);
-		// New R_ori between 20-100
- 	double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
- 	// cout << new_rad_ori << endl;
- 	// Make everyone adhere to the leaders decision, very crude implementation
- 	propagateRadii(0, new_rad_ori, 0, 0.5); //Rrep and Rori currently not propagated
+
+ 	if (RADII_MANIP){
+ 		// New R_ori between 20-100
+		double new_rad_ori = (mlp->o[1]/PI + 0.5)*80.0 + 20.0;
+ 		propagateRadii(0, new_rad_ori, 0, 0.5); //Rrep and Rori currently not propagated
+ 	}
 	#else
 		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
 		double goal_direction = angle_to_goal;
