@@ -33,14 +33,13 @@ using namespace std;
 #define COLLECT_DATA 	1
 #define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
-#define AUTO_EXIT 		1 // Automatically exit program ofter num_epocs
 
 // I/O Parameters
 #define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
 #define DATA_FILE		""
 
 // MLP Parameters
-#define MLP_I			4 // Number of inputs
+#define MLP_I			((NUM_OBSTACLES == 0) ? 4 : 6) // Number of inputs
 #define MLP_J			5 // Number of HL units
 #define MLP_K			1 // Number of outputs
 #define MLP_INIT_RANGES	1.0
