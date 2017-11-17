@@ -224,9 +224,9 @@ void cl_arguments(int argc, char **argv){
 	if (data_file == ""){
 		char buffer [100];
 		if (strcmp(argv[1], "TRAIN") == 0)
-			sprintf(buffer, "data/Performances/%s%d_TRAINING_DATA_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
+			sprintf(buffer, "data/Performances/%s%d_TRAINING_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
 		else	
-			sprintf(buffer, "data/Performances/%s%d_TEST_DATA_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
+			sprintf(buffer, "data/Performances/%s%d_TEST_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
 		data_file = buffer;
 	}
 

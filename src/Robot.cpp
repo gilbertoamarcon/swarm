@@ -65,7 +65,7 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 		update_trail();
 	#endif
 	#if CLASSIC_REW
-		acc_dist += weight*sq_distance_to_closest_object(goals);
+		acc_dist += weight*sqrt(sq_distance_to_closest_object(goals));
 	#endif
 	#if ALTERNATE_REW
 		double d = distance_to_point(goal);

@@ -36,7 +36,7 @@ using namespace std;
 #define AUTO_EXIT		1 // Automatically exit program after num_epocs
 
 // I/O Parameters
-#define EXP_FOLDER 	 	"Test/" // Optional - Folder to store results
+#define EXP_FOLDER 	 	"" // Optional - Folder to store results
 #define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
 #define DATA_FILE		""
 
