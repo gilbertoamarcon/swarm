@@ -4,23 +4,29 @@
 # Compiling and running code is separate now! 
 # Don't forget to run ./compile before running this code, if you make changes to the code.
 
+#./bin/main arguments:
+# "TRAIN"/"TEST"
+# #Leaders
+# #Robots
+# #Epochs
+# #Nametag
+# #Comm model <optional>
 echo Batch Training Initialized...
+
+# for ((i=0;i<$1;i++)) do 		# Statistical Runs
+# 	echo TRAINING $i out of $1 networks...
+#     ./bin/main "TRAIN" 0 20 50 $i
+#     ./bin/main "TRAIN" 4 20 50 $i
+#     ./bin/main "TRAIN" 8 20 50 $i
+#     ./bin/main "TRAIN" 12 20 50 $i
+#     ./bin/main "TRAIN" 16 20 50 $i
+# done
+# echo Done!
+
 
 for ((i=0;i<$1;i++)) do 		# Statistical Runs
 	echo TRAINING $i out of $1 networks...
-    ./bin/main "TRAIN" 0 20 50 $i
-    ./bin/main "TRAIN" 4 20 50 $i
-    ./bin/main "TRAIN" 8 20 50 $i
-    ./bin/main "TRAIN" 12 20 50 $i
-    ./bin/main "TRAIN" 16 20 50 $i
+    ./bin/main "TRAIN" 4 20 1 $i 'V'
 done
+wait
 echo Done!
-#for i in {6..30..4}; do
-#	echo TRAINING $i robots, 4 leaders
-#    ./bin/main "TRAIN" 4 $i 100 
-#done
-
-#for i in {10..30..4}; do
-#	echo TRAINING $i robots, 8 leaders
-#    ./bin/main "TRAIN" 8 $i 100 
-#done

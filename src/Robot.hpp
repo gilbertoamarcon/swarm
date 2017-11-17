@@ -40,6 +40,7 @@ class Robot: public Wired{
 		bool leader;
 		double acc_dist;
 		vector<pair<double, double>> prevCoords;
+		char comm_model;
 		int goal_group;
 		Robot(
 				double x,

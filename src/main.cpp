@@ -172,6 +172,7 @@ int main(int argc, char **argv){
 		}
 
 		Robot robot(0.0,0.0,2,2,0,velocity,ROBOT_STEERING,shape,&flock, REP_RADIUS, ORI_RADIUS, ATR_RADIUS, leader, group);
+		robot.comm_model = comm_model;
 		flock.push_back(robot);
 	}
 
@@ -185,7 +186,7 @@ int main(int argc, char **argv){
 	if (VISUALIZATION)
 		glutMainLoop();
 	else{
-		while(current_epoch < NUM_EPOCHS)
+		while(current_epoch < num_epochs)
 			updateValues(0);
 	}
 
@@ -217,15 +218,15 @@ void cl_arguments(int argc, char **argv){
 
 	if (weights_file == ""){
 		char buffer [100];
-		sprintf(buffer, "data/Weights/%d_WEIGHTS_R%d_L%d_E%d.txt", atoi(argv[5]), num_robots, num_leaders, num_epochs);
+		sprintf(buffer, "data/Weights/%s%d_WEIGHTS_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		weights_file = buffer;
 	}
 	if (data_file == ""){
 		char buffer [100];
 		if (strcmp(argv[1], "TRAIN") == 0)
-			sprintf(buffer, "data/Performances/%d_TRAINING_DATA_R%d_L%d_E%d.txt", atoi(argv[5]), num_robots, num_leaders, num_epochs);
+			sprintf(buffer, "data/Performances/%s%d_TRAINING_DATA_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		else	
-			sprintf(buffer, "data/Performances/%d_TEST_DATA_R%d_L%d_E%d.txt", atoi(argv[5]), num_robots, num_leaders, num_epochs);
+			sprintf(buffer, "data/Performances/%s%d_TEST_DATA_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		data_file = buffer;
 	}
 

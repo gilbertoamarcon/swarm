@@ -25,7 +25,7 @@
 
 using namespace std;
 
-#define VISUALIZATION	0
+#define VISUALIZATION	1
 // Learning Switch
 #define LEARNING 		1
 
@@ -36,6 +36,7 @@ using namespace std;
 #define AUTO_EXIT		1 // Automatically exit program after num_epocs
 
 // I/O Parameters
+#define EXP_FOLDER 	 	"Test/" // Optional - Folder to store results
 #define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
 #define DATA_FILE		""
 
@@ -56,12 +57,14 @@ using namespace std;
 // Evolution Parameters
 #define POP_SIZE		15
 #define NUM_PARENTS		5
-#define NUM_EPOCHS		200
+#define NUM_EPOCHS		1
 #define MUTATION_RANGE	0.1 // Set to zero when testing
 
 // Sim Parameters
 #define NUM_LEADERS		5 //16
 #define NUM_ROBOTS		10 //40
+#define NUM_GOALS		1
+#define NUM_OBSTACLES	10
 #define ROBOT_SPAWN_RNG	300
 #define GOAL_SPAWN_RNG	500
 #define ROBOT_VEL		(1.00*TIME_SCALE)
@@ -71,8 +74,6 @@ using namespace std;
 #define PI				3.14159265
 #define WORLD_SIZE_X	1000
 #define WORLD_SIZE_Y	1000
-#define NUM_GOALS		1
-#define NUM_OBSTACLES	10
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
 
@@ -81,7 +82,7 @@ using namespace std;
 #define ORI_RADIUS 		2500
 #define ATR_RADIUS 		6400
 #define VIS_ANGLE		(2*PI/3)
-#define SWARM_PULL		0 // amount of influence agents have on leaders on [0, 1] scale
+#define SWARM_PULL		0.25 // amount of influence agents have on leaders on [0, 1] scale
 
 // File Parameters
 #define BUFFER_SIZE		256

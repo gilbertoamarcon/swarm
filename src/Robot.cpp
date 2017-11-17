@@ -165,17 +165,17 @@ set<Robot*> Robot::get_k_nearest(set<Robot*> nbors, int k){
 
 // Update flocking neighbors
  void Robot::update_neighbors(){
- 	if (COMM_MODEL == 'T' || COMM_MODEL == 'M'){
+ 	if (comm_model == 'T' || comm_model == 'M'){
 		this->neighbor_rep = this->get_neighbors_M(this->radius_rep);
 		this->neighbor_ori = this->get_neighbors_M(this->radius_ori);
 		this->neighbor_att = this->get_neighbors_M(this->radius_att, this->radius_rep);
-		if (COMM_MODEL == 'T'){
+		if (comm_model == 'T'){
 			this->neighbor_rep = get_k_nearest(this->neighbor_rep, N_TOP);
 			this->neighbor_ori = get_k_nearest(this->neighbor_ori, N_TOP);
 			this->neighbor_att = get_k_nearest(this->neighbor_att, N_TOP-this->neighbor_rep.size());
 		}
 	}
-	else if (COMM_MODEL == 'V'){
+	else if (comm_model == 'V'){
 		this->neighbor_rep = this->get_neighbors_V(this->radius_rep);
 		this->neighbor_ori = this->get_neighbors_V(this->radius_ori);
 		this->neighbor_att = this->get_neighbors_V(this->radius_att, this->radius_rep);
