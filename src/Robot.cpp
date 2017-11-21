@@ -60,6 +60,13 @@ void Robot::set_goal_target_pos(double gx,double gy){
 	this->goal.second	= gy;
 }
 
+bool Robot::is_within_goal_radius(vector<Textured> &goals){
+	if (sq_distance_to_closest_object(goals) < GOAL_RADIUS_SQ)
+		return true;
+	else
+		return false;
+}
+
 void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obstacles){
 	#if ENABLE_TRAIL 
 		update_trail();
@@ -119,17 +126,52 @@ set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
 
 set<Robot*> Robot::get_neighbors_V(double radiusMax, double radiusMin = 0.0){
 	set<Robot*> nbors;
+	vector<pair<Robot*, pair<double, double>>> candidates;
+	// assume that all agents are the same size and take maximum dimension as "diameter"
+	double agent_radius = max(this->h, this->w) / 2;
 	for(auto &r : *flock){
-		double d = distance_to_robot(&r);
+		double d = sq_distance_to_robot(&r);
 		if(this != &r && d <= radiusMax && d >= radiusMin){
 			pair<double, double> rxy(r.x, r.y);
 			double angle = rad_to_deg(angle_to_point(rxy)) - this->t;
  			angle_wrap(angle);
  			angle = deg_to_rad(angle);
- 			if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE)
-				nbors.insert(&r);
+ 			d = sqrt(d); // need actual distance (not squared distance) for trig
+ 			if (angle > -1*VIS_ANGLE && angle < VIS_ANGLE) {
+ 				// check other candidate neighbors to figure out whether this agent occludes/is occluded
+ 				bool occluded = false;
+ 				for (int i = 0; i < candidates.size(); i++){
+ 					double other_angle = candidates[i].second.second;
+ 					double other_d = candidates[i].second.first;
+ 					if (other_d > d){ // other is farther away
+ 						double occ_angle = atan2(agent_radius, d);
+ 						if (abs(other_angle - angle) < 2*abs(occ_angle)){
+ 							// other is occluded by this one, so remove other
+ 							candidates.erase(candidates.begin()+i);
+ 						}
+ 					}
+ 					else { // this one is farther away
+ 					 	double occ_angle = atan2(agent_radius, other_d);
+ 						if (abs(other_angle - angle) < 2*abs(occ_angle)){
+ 							// this one is occluded by another, so don't add it
+ 							occluded = true;
+ 							break;
+ 						}	
+ 					}
+ 				}
+ 				if (!occluded){
+ 					pair<double, double> loc(d, angle);
+					pair<Robot*, pair<double, double>> agent(&r, loc);
+					candidates.push_back(agent);
+ 				}
+			}
 		}
 	}
+	// add all remaining candidates to the set
+	for (auto &agent : candidates){
+		nbors.insert(agent.first);
+	}
+
 	return nbors;
 }
 
@@ -398,5 +440,5 @@ void Robot::render_robot(){
 	if(leader)
 		render(1,selected,1.0,0.0,0.0);
 	else
-		render(1,selected);
+		render(1,selected,0.0,0.0,1.0);
 };
