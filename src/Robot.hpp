@@ -61,6 +61,7 @@ class Robot: public Wired{
 		virtual ~Robot();
 		void respawn(double x,double y,double t,Mlp *mlp);
 		void set_goal_target_pos(double gx,double gy);
+		bool is_within_goal_radius(vector<Textured> &goals);
 		void update(double weight, vector<Textured> &goals, vector<Textured> &obstacles);
 		void update_neighbors();
 		set<Robot*> get_neighbors_M(double radiusMax, double radiusMin = 0.0);

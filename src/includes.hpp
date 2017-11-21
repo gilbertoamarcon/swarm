@@ -38,7 +38,8 @@ using namespace std;
 // I/O Parameters
 #define EXP_FOLDER 	 	"" // Optional - Folder to store results
 #define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
-#define DATA_FILE		""
+#define DISTANCE_FILE	""
+#define COUNT_FILE		""
 
 // MLP Parameters
 #define MLP_I			((NUM_OBSTACLES == 0) ? 4 : 6) // Number of inputs
@@ -64,6 +65,7 @@ using namespace std;
 #define NUM_LEADERS		5 //16
 #define NUM_ROBOTS		10 //40
 #define NUM_GOALS		1
+#define GOAL_RADIUS_SQ  6400 // need to determine whether this is reasonable?
 #define NUM_OBSTACLES	10
 #define ROBOT_SPAWN_RNG	300
 #define GOAL_SPAWN_RNG	500

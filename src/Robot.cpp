@@ -60,6 +60,13 @@ void Robot::set_goal_target_pos(double gx,double gy){
 	this->goal.second	= gy;
 }
 
+bool Robot::is_within_goal_radius(vector<Textured> &goals){
+	if (sq_distance_to_closest_object(goals) < GOAL_RADIUS_SQ)
+		return true;
+	else
+		return false;
+}
+
 void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obstacles){
 	#if ENABLE_TRAIL 
 		update_trail();

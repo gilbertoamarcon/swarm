@@ -69,7 +69,8 @@ double selY2			= 0;
 
 // Parameters as global variables
 string weights_file = WEIGHTS_FILE;
-string data_file = DATA_FILE;
+string distance_file_name = DISTANCE_FILE;
+string count_file_name = COUNT_FILE;
 int num_leaders = NUM_LEADERS;
 int num_robots = NUM_ROBOTS;
 int num_epochs = NUM_EPOCHS;
@@ -80,7 +81,8 @@ bool autoload = AUTOLOAD;
 double mutation_range = MUTATION_RANGE;
 
 // I/O
-ofstream datafile;
+ofstream distance_file_stream;
+ofstream count_file_stream;
 char statusBuffer[BUFFER_SIZE];
 
 void spawn_world();
@@ -177,7 +179,8 @@ int main(int argc, char **argv){
 	}
 
 	// Open data file
-  	datafile.open(data_file.c_str());
+  	distance_file_stream.open(distance_file_name.c_str());
+  	count_file_stream.open(count_file_name.c_str());
 
 	spawn_world();
 
@@ -221,15 +224,22 @@ void cl_arguments(int argc, char **argv){
 		sprintf(buffer, "data/Weights/%s%d_WEIGHTS_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		weights_file = buffer;
 	}
-	if (data_file == ""){
+	if (distance_file_name == ""){
 		char buffer [100];
 		if (strcmp(argv[1], "TRAIN") == 0)
 			sprintf(buffer, "data/Performances/%s%d_TRAINING_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
 		else	
 			sprintf(buffer, "data/Performances/%s%d_TEST_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
-		data_file = buffer;
+		distance_file_name = buffer;
 	}
-
+	if (count_file_name == ""){
+		char buffer [100];
+		if (strcmp(argv[1], "TRAIN") == 0)
+			sprintf(buffer, "data/Performances/%s%d_TRAINING_COUNT_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
+		else	
+			sprintf(buffer, "data/Performances/%s%d_TEST_COUNT_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
+		count_file_name = buffer;
+	}
 
 
 
@@ -290,6 +300,15 @@ double compute_error(){
 	error /= (num_robots-num_leaders);
 	error /= EPOCH_STEPS;
 	return error;
+}
+
+double count_robots_at_goal(){
+	int count = 0;
+	for(auto const &r : flock)
+		if(!(r.leader) && r.is_within_goal_radius(flags)) 
+			count++;
+
+	return ((double)count) / (num_robots - num_leaders);
 }
 
 // Get the horizontal and vertical screen sizes in pixel
@@ -547,7 +566,8 @@ void updateValues(int n){
 
 		// Write error to data file
 		#if COLLECT_DATA
-			datafile << mlps.at(current_mlp).error << ",";
+			distance_file_stream << mlps.at(current_mlp).error << ",";
+			count_file_stream << count_robots_at_goal() << ",";
 		#endif
 
 		// Swapping MLP
@@ -587,7 +607,8 @@ void updateValues(int n){
 
 			}
 			#if COLLECT_DATA
-				datafile << endl;
+				distance_file_stream << endl;
+				count_file_stream << endl;
 			#endif
 			current_epoch++;
 		}
@@ -730,7 +751,7 @@ void RenderScene(){
 	glPopMatrix();
 
 	// Status display
-	glColor4f(0,0,0,0.75);
+	glColor4f(0,0,0,0);
 	glPushMatrix();
 		glScalef(350,24,1);
 		glBegin(GL_QUADS);
@@ -741,8 +762,8 @@ void RenderScene(){
 		glEnd();
 	glPopMatrix();
 
-	glColor3f(1,1,1);
-	glRasterPos2i(3,15);
+	glColor3f(0,0,0);
+	glRasterPos2i(20,20);
 	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 	glutBitmapString(GLUT_BITMAP_8_BY_13,statusBuffer);
 
