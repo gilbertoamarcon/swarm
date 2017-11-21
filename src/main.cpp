@@ -650,7 +650,7 @@ void updateValues(int n){
 void RenderScene(){
 
 	// Clearing screen
-	glClearColor(0,0,0,0);
+	glClearColor(1,1,1,0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Space coordinates
