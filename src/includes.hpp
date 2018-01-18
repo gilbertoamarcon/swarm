@@ -103,7 +103,7 @@ using namespace std;
 
 // Camera Parameters
 #define CAM_SPEED		10
-#define SCN_SCALE		0.50
+#define SCN_SCALE		2.00
 
 // Keyboard Commands
 #define EXIT			27

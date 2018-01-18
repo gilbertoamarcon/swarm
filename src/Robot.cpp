@@ -440,5 +440,5 @@ void Robot::render_robot(){
 	if(leader)
 		render(1,selected,1.0,0.0,0.0);
 	else
-		render(1,selected,0.0,0.0,1.0);
+		render(1,selected,1.0,1.0,1.0);
 };

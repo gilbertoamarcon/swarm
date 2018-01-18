@@ -26,8 +26,8 @@ double mouse_gnd_x		= 0;
 double mouse_gnd_y		= 0;
 
 // Screen Resolution
-int window_w			= 2000;
-int window_h			= 2000;
+int window_w			= 800;
+int window_h			= 600;
 
 // Camera position/motion
 double view_x			= 0;
@@ -671,7 +671,7 @@ void updateValues(int n){
 void RenderScene(){
 
 	// Clearing screen
-	glClearColor(1,1,1,0);
+	glClearColor(0,0,0,0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Space coordinates
@@ -706,15 +706,22 @@ void RenderScene(){
 			}
 		#endif 
 
+		// Goal flag
+		for (auto const f : flags){
+			int radius = sqrt(ATR_RADIUS);
+			glColor3f(0.0, 0.1, 0.25);
+			glBegin(GL_POLYGON);
+			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
+					glVertex3f(cos(i) * radius - f.x, sin(i) * radius - f.y, 0.0);
+			glEnd();
+			f.render(1,0);
+		}
+
 		// Drawing robots
 		for(auto const &r : flock)
 			r.render_robot();
 
-		// Goal flag
-		for (auto const f : flags)
-			f.render(1,0);
-
-		// obstacles
+		// Obstacles
 		for (auto const b : blocks)
 			b.render(1,0);
 
