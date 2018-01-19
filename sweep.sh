@@ -1,2 +1,2 @@
-./bin/sweep 30 1 3 -4.0 4.0 0.0 20.0 data/Legacy/MLP_weights.txt data/Legacy/sweep.txt 1.0 0.0 20.0 100.0
+./bin/sweep 30 0 1 -4.0 4.0 -4.0 4.0 data/Weights/1_WEIGHTS_R10_L5_E50.txt data/Legacy/sweep.txt 0.0 0.0 0.750 0.750
 python scripts/countourplot.py data/Legacy/sweep.txt data/Legacy/sweep.svg

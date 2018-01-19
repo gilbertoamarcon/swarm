@@ -68,7 +68,7 @@ using namespace std;
 #define NUM_ROBOTS		10 //40
 #define NUM_GOALS		1
 #define GOAL_RADIUS_SQ  6400 // need to determine whether this is reasonable?
-#define NUM_OBSTACLES	10
+#define NUM_OBSTACLES	0
 #define ROBOT_SPAWN_RNG	300
 #define GOAL_SPAWN_RNG	500
 #define ROBOT_VEL		(1.00*TIME_SCALE)
