@@ -262,16 +262,9 @@ double Robot::leader_reasoning(vector<Textured> &obstacles){
 	#if LEARNING
 		// Non-Leader neighbors
 		set<Robot*> neighbor_leader;
-		cout << "LEADER" << endl;
 		for(auto &r : *flock)
 			if(!(r.leader) && find(neighbor_att.begin(), neighbor_att.end(), &r) != neighbor_att.end())
 				neighbor_leader.insert(&r);
-
-		cout << endl;
-		for(auto &r : neighbor_att)
-			cout << "Nbor ";
-		cout << endl;
-
 
 		// Centroid of non-leaders
 		neighbor_centroid	= compute_centroid(neighbor_leader,pair<double,double>(this->x,this->y));

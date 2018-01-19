@@ -260,27 +260,8 @@ void spawn_world(){
 	goals.clear();
 	obstacles.clear();
 	for (int i = 0; i < NUM_GOALS; i++){
-		int spawn_location = rand()%4;
-		double gx = origin_x;
-		double gy = origin_y;
-
-		if(spawn_location == 0){
-			gx += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		}
-		if(spawn_location == 1){
-			gx -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-			gy += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		}
-		if(spawn_location == 2){
-			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-			gy += gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		}
-		if(spawn_location == 3){
-			gx += gen_rand_range(-GOAL_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-			gy -= gen_rand_range(ROBOT_SPAWN_RNG/2,GOAL_SPAWN_RNG/2);
-		}
-		goals.push_back(pair<int, int>(gx, gy));
+		double th = rand() % 360 * PI/180;
+		goals.push_back(pair<int, int>(sin(th) * GOAL_SPAWN_RNG, cos(th) * GOAL_SPAWN_RNG));
 	}
 	for (int i = 0; i < NUM_OBSTACLES; i++){
 		double x = gen_rand_range(-WORLD_SIZE_X/2, WORLD_SIZE_X/2);
@@ -683,6 +664,7 @@ void RenderScene(){
 		glMatrixMode(GL_MODELVIEW);
 
 		// World bounds
+		glColor3f(0.0, 0.1, 0.25);
 		glBegin(GL_LINE_LOOP);
 			glVertex2f(-WORLD_SIZE_X,-WORLD_SIZE_Y);
 			glVertex2f( WORLD_SIZE_X,-WORLD_SIZE_Y);
@@ -722,23 +704,27 @@ void RenderScene(){
 			r.render_robot();
 
 		// Visualize radii
-		for (auto const r : flock){	
-			glBegin(GL_LINE_LOOP);
-			glColor3f(0.0, 0.1, 0.25);
-			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
-					glVertex3f(cos(i) * sqrt(ATR_RADIUS) - r.x, sin(i) * sqrt(ATR_RADIUS) - r.y, 0.0);
-			glEnd();
-			glBegin(GL_LINE_LOOP);
-			glColor3f(0.1, 0.2, 0.4);
-			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value	
-					glVertex3f(cos(i) * sqrt(ORI_RADIUS) - r.x, sin(i) * sqrt(ORI_RADIUS) - r.y, 0.0);
-			glEnd();
-			glBegin(GL_LINE_LOOP);
-			glColor3f(0.3, 0.3, 0.1);
-			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
-					glVertex3f(cos(i) * sqrt(REP_RADIUS) - r.x, sin(i) * sqrt(REP_RADIUS) - r.y, 0.0);
-			glEnd();
-		}
+		#if VISUALIZE_RADII
+			for (auto const r : flock){	
+					if (r.leader){
+					glBegin(GL_LINE_LOOP);
+					glColor3f(0.0, 0.1, 0.25);
+					for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
+							glVertex3f(cos(i) * sqrt(ATR_RADIUS) - r.x, sin(i) * sqrt(ATR_RADIUS) - r.y, 0.0);
+					glEnd();
+					glBegin(GL_LINE_LOOP);
+					glColor3f(0.1, 0.2, 0.4);
+					for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value	
+							glVertex3f(cos(i) * sqrt(ORI_RADIUS) - r.x, sin(i) * sqrt(ORI_RADIUS) - r.y, 0.0);
+					glEnd();
+					glBegin(GL_LINE_LOOP);
+					glColor3f(0.3, 0.3, 0.1);
+					for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
+							glVertex3f(cos(i) * sqrt(REP_RADIUS) - r.x, sin(i) * sqrt(REP_RADIUS) - r.y, 0.0);
+					glEnd();
+				}
+			}
+		#endif 
 
 		// Obstacles
 		for (auto const b : blocks){
@@ -795,9 +781,9 @@ void RenderScene(){
 		glEnd();
 	glPopMatrix();
 
-	glColor3f(0,0,0);
+	glColor3f(1,1,1);
 	glRasterPos2i(20,20);
-	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glutBitmapString(GLUT_BITMAP_8_BY_13,statusBuffer);
 
 	glutSwapBuffers();

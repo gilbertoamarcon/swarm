@@ -49,7 +49,7 @@ using namespace std;
 
 // Simulation Parameters
 #define TIME_SCALE 		5
-#define EPOCH_STEPS		(700/TIME_SCALE)
+#define EPOCH_STEPS		(2000/TIME_SCALE)
 
 // Reward Function			// Choose one
 #define CLASSIC_REW		1 	// Distance to goal weighted by time
@@ -74,8 +74,8 @@ using namespace std;
 #define ROBOT_STEERING 	(0.05*TIME_SCALE)
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
-#define WORLD_SIZE_X	1000
-#define WORLD_SIZE_Y	1000
+#define WORLD_SIZE_X	2000
+#define WORLD_SIZE_Y	2000
 #define COMM_MODEL 		'M'
 #define N_TOP 			6
 
