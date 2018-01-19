@@ -70,7 +70,7 @@ class Robot: public Wired{
 		double swarm();
 		pair<double,double> compute_force(set<Robot*> &neighbors);
 		pair<double,double> compute_centroid(set<Robot*> &neighbors, pair<double,double> prev);
-		double leader_reasoning(vector<Textured> &obstacles);
+		pair<double,double> leader_reasoning(vector<Textured> &obstacles);
 		double reynolds_rules();
 		double wall_repulsion(double xlim, double ylim);
 		void update_trail();

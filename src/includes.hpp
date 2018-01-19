@@ -44,7 +44,7 @@ using namespace std;
 // MLP Parameters
 #define MLP_I			((NUM_OBSTACLES == 0) ? 4 : 6) // Number of inputs
 #define MLP_J			5 // Number of HL units
-#define MLP_K			1 // Number of outputs
+#define MLP_K			2 // Number of outputs
 #define MLP_INIT_RANGES	1.0
 
 // Simulation Parameters
@@ -122,10 +122,11 @@ using namespace std;
 #define SAVE_WEIGHTS	'c'
 #define LOAD_WEIGHTS	'v'
 
-// Angle Operations
+// Mathematical Operations
 void angle_wrap(double &input);
 double deg_to_rad(double input);
 double rad_to_deg(double input);
+double map_range(double val, double min1, double max1, double min2, double max2);
 
 // Random number generation
 double gen_rand_range(double begin_range, double end_range);

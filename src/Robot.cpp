@@ -80,8 +80,12 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 	#endif
 
 	double goal_t = this->t;
-	if(leader)
-		goal_t = (1 - SWARM_PULL)*leader_reasoning(obstacles) + SWARM_PULL*swarm();
+	if(leader){
+		// Get desired vel and dir
+		pair <double, double> command = leader_reasoning(obstacles);
+		this-> v += 0.1*(command.first - this->v);
+		goal_t = (1 - SWARM_PULL)*command.second + SWARM_PULL*swarm();
+	}
 	else
 		goal_t = swarm();
 
@@ -99,7 +103,6 @@ void Robot::update(double weight, vector<Textured> &goals, vector<Textured> &obs
 		this->x += dx;
 		this->y += dy;
 	}
-
 };
 
 void Robot::update_trail(){
@@ -258,7 +261,7 @@ pair<double, double> Robot::compute_centroid(set<Robot*> &neighbors, pair<double
 	return centroid;
 }
 
-double Robot::leader_reasoning(vector<Textured> &obstacles){
+pair<double, double> Robot::leader_reasoning(vector<Textured> &obstacles){
 	#if LEARNING
 		// Non-Leader neighbors
 		set<Robot*> neighbor_leader;
@@ -306,13 +309,16 @@ double Robot::leader_reasoning(vector<Textured> &obstacles){
 			mlp->x[3] = distance_to_neighbor_centroid/WORLD_SIZE_X;
 		}
 		mlp->eval();
-		double goal_direction = rad_to_deg(2*mlp->o[0]);
+		// 1st MLP output denotes direction
+		double desired_dir = rad_to_deg(2*mlp->o[0]);
+		// 2nd MLP output denotes speed
+		double desired_vel = map_range((mlp->o[1]), -PI/2, PI/2, 0, ROBOT_VEL*2);
 	#else
 		double angle_to_goal					= rad_to_deg(angle_to_point(goal))				- this->t;
-		double goal_direction = angle_to_goal;
+		double desired_dir = angle_to_goal;
 	#endif
-
-	return goal_direction + this->t;
+		pair<double,double> command = make_pair(desired_vel, desired_dir + this->t);
+	return command;
 }
 
 // Returns desired heading based on swarming rules
