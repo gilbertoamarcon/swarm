@@ -33,7 +33,7 @@ using namespace std;
 #define COLLECT_DATA 	1
 #define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
-#define AUTO_EXIT		1 // Automatically exit program after num_epocs
+#define AUTO_EXIT		0 // Automatically exit program after num_epocs
 
 // I/O Parameters
 #define EXP_FOLDER 	 	"" // Optional - Folder to store results
@@ -66,11 +66,11 @@ using namespace std;
 #define NUM_ROBOTS		10 //40
 #define NUM_GOALS		1
 #define GOAL_RADIUS_SQ  6400 // need to determine whether this is reasonable?
-#define NUM_OBSTACLES	10
+#define NUM_OBSTACLES	0
 #define ROBOT_SPAWN_RNG	300
 #define GOAL_SPAWN_RNG	500
 #define ROBOT_VEL		(1.00*TIME_SCALE)
-#define LEADER_VEL		(1.20*TIME_SCALE)
+#define LEADER_VEL		(1.00*TIME_SCALE)
 #define ROBOT_STEERING 	(0.05*TIME_SCALE)
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
@@ -80,11 +80,11 @@ using namespace std;
 #define N_TOP 			6
 
 // Flock Parameters
-#define REP_RADIUS 		1600
+#define REP_RADIUS 		900
 #define ORI_RADIUS 		2500
 #define ATR_RADIUS 		6400
 #define VIS_ANGLE		(2*PI/3)
-#define SWARM_PULL		0.25 // amount of influence agents have on leaders on [0, 1] scale
+#define SWARM_PULL		0.00 // amount of influence agents have on leaders on [0, 1] scale
 
 // File Parameters
 #define BUFFER_SIZE		256
@@ -98,6 +98,9 @@ using namespace std;
 #define ENABLE_TRAIL 	0
 #define SWARM_TRAIL 	0
 #define TRAIL_LENGTH	100.0
+
+// Debugging Tools
+#define VISUALIZE_RADII	1
 
 // #define SIM_STEP_TIME	0.001
 

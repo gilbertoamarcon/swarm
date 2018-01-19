@@ -466,7 +466,7 @@ void set_goals(vector<pair<int, int>> &points){
 			r.set_goal_target_pos(flags[r.goal_group].x, flags[r.goal_group].y);
 }
 
-// Set rally goal position
+// Set obstacle positions
 void set_obstacles(vector<pair<int, int>> &points){
 	for (int i = 0; i < NUM_OBSTACLES; i++){
 		blocks[i].x = points[i].first;
@@ -714,16 +714,42 @@ void RenderScene(){
 			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
 					glVertex3f(cos(i) * radius - f.x, sin(i) * radius - f.y, 0.0);
 			glEnd();
-			f.render(1,0);
+			// f.render(1,0);
 		}
 
 		// Drawing robots
 		for(auto const &r : flock)
 			r.render_robot();
 
+		// Visualize radii
+		for (auto const r : flock){	
+			glBegin(GL_LINE_LOOP);
+			glColor3f(0.0, 0.1, 0.25);
+			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
+					glVertex3f(cos(i) * sqrt(ATR_RADIUS) - r.x, sin(i) * sqrt(ATR_RADIUS) - r.y, 0.0);
+			glEnd();
+			glBegin(GL_LINE_LOOP);
+			glColor3f(0.1, 0.2, 0.4);
+			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value	
+					glVertex3f(cos(i) * sqrt(ORI_RADIUS) - r.x, sin(i) * sqrt(ORI_RADIUS) - r.y, 0.0);
+			glEnd();
+			glBegin(GL_LINE_LOOP);
+			glColor3f(0.3, 0.3, 0.1);
+			for(double i = 0; i < 2 * PI; i += PI / 24) //<-- Change this Value
+					glVertex3f(cos(i) * sqrt(REP_RADIUS) - r.x, sin(i) * sqrt(REP_RADIUS) - r.y, 0.0);
+			glEnd();
+		}
+
 		// Obstacles
-		for (auto const b : blocks)
-			b.render(1,0);
+		for (auto const b : blocks){
+			int radius = 16; // Obstacle Size
+			glColor3f(0.8, 0.8, 1.0);
+			glBegin(GL_POLYGON);
+			for(double i = PI / 4; i < 2 * PI; i += PI / 2) //<-- Change this Value
+				glVertex3f(cos(i) * radius - b.x, sin(i) * radius - b.y, 0.0);
+			glEnd();
+			// b.render(1,0);
+		}
 
 		// Mouse selection
 		if(mouse_l){
