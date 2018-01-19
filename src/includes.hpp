@@ -22,6 +22,8 @@
 #include <cstdio>
 #include <random>
 #include <chrono>
+#include <stdlib.h>
+
 
 using namespace std;
 

@@ -1,5 +1,9 @@
 #include "mlp.hpp"
 
+Mlp::Mlp(char *mlp_weights){
+	this->load(mlp_weights);
+}
+
 Mlp::Mlp(int I,int J,int K,double iniRange){
 	this->init(I,J,K,iniRange);
 }
@@ -16,6 +20,34 @@ void Mlp::print_weights(char* str){
 		sprintf(str,"%s%6.3f ", str, this->weights->V[i]);
 	for(int i = 0; i < K*(J+1); i++)
 		sprintf(str,"%s%6.3f ", str, this->weights->W[i]);
+}
+
+void Mlp::sweep(char* str, double *defs, int steps, int vx, int vy, pair<double,double> lx, pair<double,double> ly){
+
+	// 2D Sweep loops
+	double x_step = (lx.second - lx.first)/steps;
+	double y_step = (ly.second - ly.first)/steps;
+	for(int ix = 0; ix <= steps; ix++){
+		for(int iy = 0; iy <= steps; iy++){
+
+			// Initializing inputs with zero
+			for(int i = 0; i < this->I; i++)
+				this->x[i] = defs[i];
+
+			// Current sweep step
+			this->x[vx] = lx.first + x_step*ix;
+			this->x[vy] = ly.first + y_step*iy;
+
+			// Evalutating the MLP response
+			this->eval();
+
+			// Printing the sample
+			sprintf(str,"%s%12.6f,%12.6f,%12.6f\n", str, this->x[vx], this->x[vy], this->o[0]);
+
+			
+		}
+	}
+
 }
 
 void Mlp::init(int I,int J,int K,double iniRange){

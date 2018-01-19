@@ -23,9 +23,7 @@ struct Weights{
 class Mlp{
 
 	private:
-		int I;		// Number of inputs
 		int J;		// Number of HL units
-		int K;		// Number of outputs
 		double iniRange;
 
 		// Internal variables
@@ -34,6 +32,9 @@ class Mlp{
 		double *y;
 
 	public:
+
+		int I;		// Number of inputs
+		int K;		// Number of outputs
 
 		// Weights
 		Weights *weights;	// weights
@@ -47,12 +48,15 @@ class Mlp{
 		double *o;
 
 		// Constructors
+		Mlp(char *mlp_weights);
 		Mlp(int I,int J,int K,double iniRange);
 		Mlp(Mlp* mlp);
 
 		void init(int I,int J,int K,double iniRange);
 
 		void print_weights(char* str);
+
+		void sweep(char* str, double *defs, int steps, int ix, int iy, pair<double,double> rx, pair<double,double> ry);
 
 		// Weight initialization
 		void randomize();
