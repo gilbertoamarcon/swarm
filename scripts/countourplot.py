@@ -23,8 +23,12 @@ z = np.rot90(z.values.reshape([ncols,ncols]))
 x = np.linspace(x[-1],x[0],ncols)
 y = np.linspace(y[-1],y[0],ncols)
 
-cp = plt.contourf(x, y, z, cmap=plt.cm.coolwarm)
+
+v = np.linspace(-1.6, 1.6, 9, endpoint=True)
+cmap=plt.cm.coolwarm
+cp = plt.contourf(x, y, z, v, cmap=cmap)
 plt.colorbar(cp)
 plt.xlabel('x')
 plt.ylabel('y')
+plt.grid(which='major', axis='both')
 plt.savefig(output_filename)
