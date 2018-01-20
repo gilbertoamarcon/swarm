@@ -21,3 +21,7 @@ double gen_rand_range(double begin_range, double end_range){
 double map_range(double val, double min1, double max1, double min2, double max2){
 	return (val-min1) / (max1-min1) * (max2-min2) + min2;
 }
+
+double clamp_val(double val, double minval, double maxval){
+	return max(minval, min(maxval, val));
+}

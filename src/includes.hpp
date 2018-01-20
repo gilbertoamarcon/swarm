@@ -80,7 +80,7 @@ using namespace std;
 #define N_TOP 			6
 
 // Flock Parameters
-#define REP_RADIUS 		900
+#define REP_RADIUS 		400
 #define ORI_RADIUS 		2500
 #define ATR_RADIUS 		6400
 #define VIS_ANGLE		(2*PI/3)
@@ -102,8 +102,6 @@ using namespace std;
 // Debugging Tools
 #define VISUALIZE_RADII	1
 
-// #define SIM_STEP_TIME	0.001
-
 // Camera Parameters
 #define CAM_SPEED		10
 #define SCN_SCALE		2.00
@@ -116,6 +114,8 @@ using namespace std;
 #define KEY_RIGHT		'd'
 #define KEY_ZOON_IN		'e'
 #define KEY_ZOON_OUT	'q'
+#define SIM_SPEED_UP	'o'
+#define SIM_SLOW_DOWN	'p'
 #define RESET_ZOOM		'z'
 #define RESET_VIEW_POS	'h'
 #define LOCK_VIEW_ROBOT	'l'
@@ -127,7 +127,7 @@ void angle_wrap(double &input);
 double deg_to_rad(double input);
 double rad_to_deg(double input);
 double map_range(double val, double min1, double max1, double min2, double max2);
-
+double clamp_val(double val, double min, double max);
 // Random number generation
 double gen_rand_range(double begin_range, double end_range);
 

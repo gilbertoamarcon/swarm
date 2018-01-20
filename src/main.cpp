@@ -54,6 +54,8 @@ bool keyZoomIn			= 0;
 bool keyZoomOut			= 0;
 bool saveWeights		= 0;
 bool loadWeights		= 0;
+bool keySpeedUp 		= 0;
+bool keySlowDown 		= 0;
 
 // Mouse mov flags
 bool mouseLeft			= 0;
@@ -75,6 +77,7 @@ int num_leaders = NUM_LEADERS;
 int num_robots = NUM_ROBOTS;
 int num_epochs = NUM_EPOCHS;
 char comm_model = COMM_MODEL;
+double simSpeed = SIM_STEP_TIME;
 // ------------------------------
 bool autosave = AUTOSAVE;
 bool autoload = AUTOLOAD;
@@ -495,6 +498,12 @@ void keyPressed(unsigned char key, int x, int y){
 		case LOAD_WEIGHTS:
 			loadWeights = 1;
 			break;
+		case SIM_SPEED_UP:
+			keySpeedUp = 1;
+			break;
+		case SIM_SLOW_DOWN:
+			keySlowDown = 1;
+			break;
 		default:
 			break;
 	}
@@ -521,6 +530,12 @@ void keyReleased(unsigned char key, int x, int y){
 		case KEY_ZOON_OUT:
 			keyZoomOut = 0;
 			break;
+		case SIM_SPEED_UP:
+			keySpeedUp = 0;
+			break;
+		case SIM_SLOW_DOWN:
+			keySlowDown = 0;
+			break;
 		default:
 			break;
 	}
@@ -529,12 +544,12 @@ void keyReleased(unsigned char key, int x, int y){
 void updateValues(int n){
 	// Frame limiter
 	if(current_epoch < num_epochs){
-		if (VISUALIZATION) glutTimerFunc(0.001,updateValues,0);
+		if (VISUALIZATION) glutTimerFunc(simSpeed, updateValues, 0);
 	}
 	else{
 		if (AUTO_EXIT && num_steps > 1)
 			exit(0);
-		if (VISUALIZATION) glutTimerFunc(SIM_STEP_TIME,updateValues,0);
+		if (VISUALIZATION) glutTimerFunc(simSpeed, updateValues, 0);
 	}
 
 
@@ -620,6 +635,13 @@ void updateValues(int n){
 	if(keyZoomOut)
 		scn_scale *= 1.05;
 
+	// SimSpeed
+	if(keySpeedUp)
+		simSpeed /= 1.05;
+	if(keySlowDown)
+		simSpeed *= 1.05;
+	simSpeed = clamp_val(simSpeed, 0.001, 300);
+
 	// Save NN weights
 	if(saveWeights || (autosave && current_epoch == num_epochs && current_mlp == 0 &&  num_steps == 1)){
 		mlps.at(current_mlp).store(weights_file.c_str());
@@ -644,7 +666,7 @@ void updateValues(int n){
 		r.update(weight, flags, blocks);
 
 	// String printed in the screen corner
-	sprintf(statusBuffer,"Number of robots: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f",flock.size(),current_epoch,num_epochs,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight);
+	sprintf(statusBuffer,"Robot Count: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f, Sim Speed: %4.2f",flock.size(),current_epoch,num_epochs,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight,1/simSpeed);
 
 }
 
