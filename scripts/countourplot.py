@@ -1,7 +1,5 @@
-import pandas
 import matplotlib.pyplot as plt
 import numpy as np
-import csv
 import sys
 
 # Input Handling 
@@ -12,21 +10,12 @@ else:
 	input_filename	= sys.argv[1]
 	output_filename	= sys.argv[2]
 
-data = pandas.read_csv(input_filename, header=None)
-
-# Data extraction
-x = list(data[0])
-y = list(data[1])
-z = data[2]
-ncols = int(len(z)**0.5)
-z = np.rot90(z.values.reshape([ncols,ncols]))
-x = np.linspace(x[-1],x[0],ncols)
-y = np.linspace(y[-1],y[0],ncols)
-
+x,y,z = np.loadtxt(input_filename, delimiter=',', unpack=True)
+n = int(len(x)**0.5)
 
 v = np.linspace(-1.6, 1.6, 9, endpoint=True)
 cmap=plt.cm.coolwarm
-cp = plt.contourf(x, y, z, v, cmap=cmap)
+cp = plt.contourf(x.reshape(n,n), y.reshape(n,n), z.reshape(n,n), v, cmap=cmap)
 plt.colorbar(cp)
 plt.xlabel('x')
 plt.ylabel('y')
