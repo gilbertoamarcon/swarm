@@ -229,11 +229,15 @@ set<Robot*> Robot::get_k_nearest(set<Robot*> nbors, int k){
 
 // Returns next heading (in radians) based on local interactions
 double Robot::swarm(){
-	double w_rep = this->wall_repulsion(WORLD_SIZE_X, WORLD_SIZE_Y);
-	if(w_rep == w_rep)
-		return w_rep;
-	else
+	#ifdef BOUNDED_WORLD
 		return this->reynolds_rules();
+	#else
+		double w_rep = this->wall_repulsion(WORLD_SIZE_X, WORLD_SIZE_Y);
+		if(w_rep == w_rep)
+			return w_rep;
+		else
+			return this->reynolds_rules();
+	#endif
 }
 
 pair<double, double> Robot::compute_force(set<Robot*> &neighbors){
@@ -266,7 +270,8 @@ pair<double, double> Robot::leader_reasoning(vector<Textured> &obstacles){
 		// Non-Leader neighbors
 		set<Robot*> neighbor_leader;
 		for(auto &r : *flock)
-			if(!(r.leader) && find(neighbor_att.begin(), neighbor_att.end(), &r) != neighbor_att.end())
+			// if(!(r.leader) && find(neighbor_att.begin(), neighbor_att.end(), &r) != neighbor_att.end())
+			if(find(neighbor_att.begin(), neighbor_att.end(), &r) != neighbor_att.end())
 				neighbor_leader.insert(&r);
 
 		// Centroid of non-leaders
@@ -341,6 +346,19 @@ double Robot::reynolds_rules(){
 		ori.first  += cos(th)/d;
 		ori.second += sin(th)/d;
 	}
+
+	// Velocity Matching
+	double vel = this->v;
+	if (neighbor_ori.size()){
+		double sum = 0;
+		for(auto &r : neighbor_ori){
+			// double d = distance_to_robot(r);
+			sum += r->v;
+		}
+		// cout << sum/neighbor_ori.size() << endl;
+		this->v = sum/neighbor_ori.size();
+	}
+	
 
 	// Add up all velocities, normalized and weighted by distance
 	double x = -rep.first  +att.first  +ori.first;

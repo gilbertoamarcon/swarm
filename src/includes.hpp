@@ -49,7 +49,7 @@ using namespace std;
 
 // Simulation Parameters
 #define TIME_SCALE 		5
-#define EPOCH_STEPS		(2000/TIME_SCALE)
+#define EPOCH_STEPS		(15000/TIME_SCALE)
 
 // Reward Function			// Choose one
 #define CLASSIC_REW		1 	// Distance to goal weighted by time
@@ -74,6 +74,7 @@ using namespace std;
 #define ROBOT_STEERING 	(0.05*TIME_SCALE)
 #define DEFAULT_TOL		0.05
 #define PI				3.14159265
+#define BOUNDED_WORLD 	0
 #define WORLD_SIZE_X	2000
 #define WORLD_SIZE_Y	2000
 #define COMM_MODEL 		'M'
@@ -82,7 +83,7 @@ using namespace std;
 // Flock Parameters
 #define REP_RADIUS 		400
 #define ORI_RADIUS 		2500
-#define ATR_RADIUS 		6400
+#define ATR_RADIUS 		10000
 #define VIS_ANGLE		(2*PI/3)
 #define SWARM_PULL		0.00 // amount of influence agents have on leaders on [0, 1] scale
 
