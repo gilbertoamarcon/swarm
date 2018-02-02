@@ -22,7 +22,7 @@ void Mlp::print_weights(char* str){
 		sprintf(str,"%s%6.3f ", str, this->weights->W[i]);
 }
 
-void Mlp::sweep(char* str, double *defs, int steps, int vx, int vy, pair<double,double> lx, pair<double,double> ly){
+void Mlp::sweep(char* buffer, double *defs, int steps, int vx, int vy, int out, pair<double,double> lx, pair<double,double> ly){
 
 	// 2D Sweep loops
 	double x_step = (lx.second - lx.first)/steps;
@@ -30,7 +30,7 @@ void Mlp::sweep(char* str, double *defs, int steps, int vx, int vy, pair<double,
 	for(int ix = 0; ix <= steps; ix++){
 		for(int iy = 0; iy <= steps; iy++){
 
-			// Initializing inputs with zero
+			// Initializing inputs with default values
 			for(int i = 0; i < this->I; i++)
 				this->x[i] = defs[i];
 
@@ -42,7 +42,7 @@ void Mlp::sweep(char* str, double *defs, int steps, int vx, int vy, pair<double,
 			this->eval();
 
 			// Printing the sample
-			sprintf(str,"%s%12.6f,%12.6f,%12.6f\n", str, this->x[vx], this->x[vy], this->o[0]);
+			sprintf(buffer,"%s%12.6f,%12.6f,%12.6f\n", buffer, this->x[vx], this->x[vy], this->o[out]);
 
 			
 		}

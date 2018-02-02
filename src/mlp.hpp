@@ -56,7 +56,7 @@ class Mlp{
 
 		void print_weights(char* str);
 
-		void sweep(char* str, double *defs, int steps, int ix, int iy, pair<double,double> rx, pair<double,double> ry);
+		void sweep(char* buffer, double *defs, int steps, int vx, int vy, int out, pair<double,double> lx, pair<double,double> ly);
 
 		// Weight initialization
 		void randomize();
