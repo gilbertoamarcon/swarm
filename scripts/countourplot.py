@@ -20,8 +20,8 @@ else:
 		output_filename += '_' + sys.argv[i]
 	output_filename += '.svg'
 
-	d_ag = float(sys.argv[2])
-	d_as = float(sys.argv[3])
+	d_ag = 180*float(sys.argv[2])/np.pi
+	d_as = 180*float(sys.argv[3])/np.pi
 	d_dg = float(sys.argv[4])
 	d_ds = float(sys.argv[5])
 	
@@ -54,10 +54,22 @@ def outs(axarr,ranges,map,out,steps,cmap,label):
 	axarr[2*out+1,0].set(ylabel=axis_name_as)
 	axarr[2*out+0,0].set(ylabel=axis_name_dg)
 
+	axarr[2*out+1, 0].axvline(x=d_ag, color='r', linestyle='-', linewidth=0.5)
+	axarr[2*out+1, 0].axhline(y=d_as, color='r', linestyle='-', linewidth=0.5)
 	cp = sub(input_filename+'_ag_as'+'_%d'%out, axarr, 2*out+1, 0, v, cmap, ranges, map, 1, 1)
-	cp = sub(input_filename+'_ag_ds'+'_%d'%out, axarr, 2*out+0, 0, v, cmap, ranges, map, 1, 0)
-	cp = sub(input_filename+'_dg_as'+'_%d'%out, axarr, 2*out+1, 1, v, cmap, ranges, map, 0, 1)
-	cp = sub(input_filename+'_dg_ds'+'_%d'%out, axarr, 2*out+0, 1, v, cmap, ranges, map, 0, 0)
+
+	axarr[2*out+0, 0].axvline(x=d_ag, color='r', linestyle='-', linewidth=0.5)
+	axarr[2*out+0, 0].axhline(y=d_dg, color='r', linestyle='-', linewidth=0.5)
+	cp = sub(input_filename+'_ag_dg'+'_%d'%out, axarr, 2*out+0, 0, v, cmap, ranges, map, 1, 0)
+
+	axarr[2*out+1, 1].axvline(x=d_ds, color='r', linestyle='-', linewidth=0.5)
+	axarr[2*out+1, 1].axhline(y=d_as, color='r', linestyle='-', linewidth=0.5)
+	cp = sub(input_filename+'_ds_as'+'_%d'%out, axarr, 2*out+1, 1, v, cmap, ranges, map, 0, 1)
+
+	axarr[2*out+0, 1].axvline(x=d_ds, color='r', linestyle='-', linewidth=0.5)
+	axarr[2*out+0, 1].axhline(y=d_dg, color='r', linestyle='-', linewidth=0.5)
+	cp = sub(input_filename+'_ds_dg'+'_%d'%out, axarr, 2*out+0, 1, v, cmap, ranges, map, 0, 0)
+
 	plt.subplots_adjust(hspace=0.065, wspace=0.065, bottom=0.05, top=0.95, left=0.1, right=0.9)
 	cax = plt.axes([0.92, 0.05+(1-out)*0.46, 0.02, 0.1])
 	plt.colorbar(cp, cax=cax, label=label)
