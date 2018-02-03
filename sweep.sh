@@ -1,6 +1,6 @@
 
 # Ranges
-steps=+50
+steps=+100
 a_min=-3.14
 a_max=+3.14
 d_min=+0.0
@@ -8,11 +8,11 @@ d_max=+1.0
 
 d_ag=0.00
 d_as=0.00
-d_dg=0.05
-d_ds=0.30
+d_dg=0.10
+d_ds=0.01
 
 # Input weights file
-w_file=data/Weights/2_WEIGHTS_R100_L8_E100.txt
+w_file=data/Weights/2_WEIGHTS_R50_L4_E100.txt
 
 # Internal Files
 viz_dir=data/viz
