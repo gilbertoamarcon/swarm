@@ -11,7 +11,7 @@ Wired::Wired(double x,double y,double w,double h,double t,vector<pair<double, do
 
 Wired::~Wired(){};
 
-void Wired::render(bool global,bool highlight, float r=1.0, float g=1.0, float b=1.0){
+void Wired::render(bool global,bool highlight, float r/*=1.0*/, float g/*=1.0*/, float b/*=1.0*/){
 	glPushMatrix();
 		if(highlight)
 			glLineWidth(3);

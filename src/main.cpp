@@ -79,6 +79,7 @@ int num_epochs = NUM_EPOCHS;
 char comm_model = COMM_MODEL;
 double simSpeed = SIM_STEP_TIME;
 // ------------------------------
+int focus_nn = -1;
 bool autosave = AUTOSAVE;
 bool autoload = AUTOLOAD;
 double mutation_range = MUTATION_RANGE;
@@ -188,7 +189,7 @@ int main(int argc, char **argv){
 	spawn_world();
 
 	// Main loop
-	
+
 	if (VISUALIZATION)
 		glutMainLoop();
 	else{
@@ -221,10 +222,15 @@ void cl_arguments(int argc, char **argv){
 		num_epochs = atoi(argv[4]);
 	if (argc >= 7) 
 		comm_model = *argv[6];
+	if (argc >= 8) {
+		focus_nn = atoi(argv[7]);
+		current_mlp = focus_nn;
+	}
+
 
 	if (weights_file == ""){
 		char buffer [100];
-		sprintf(buffer, "data/Weights/%s%d_WEIGHTS_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
+		sprintf(buffer, "data/Weights/%s%d_WEIGHTS_R%d_L%d_E%d___.txt", EXP_FOLDER, atoi(argv[5]), num_robots, num_leaders, num_epochs);
 		weights_file = buffer;
 	}
 	if (distance_file_name == ""){
@@ -243,10 +249,6 @@ void cl_arguments(int argc, char **argv){
 			sprintf(buffer, "data/Performances/%s%d_TEST_COUNT_DATA_%c_R%d_L%d_E%d.txt", EXP_FOLDER, atoi(argv[5]), comm_model, num_robots, num_leaders, num_epochs);
 		count_file_name = buffer;
 	}
-
-
-
-
 }
 
 void spawn_world(){
@@ -559,49 +561,54 @@ void updateValues(int n){
 
 		// Error evaluation
 		mlps.at(current_mlp).error = compute_error();
-
 		// Write error to data file
 		#if COLLECT_DATA
 			distance_file_stream << mlps.at(current_mlp).error << ",";
 			count_file_stream << count_robots_at_goal() << ",";
 		#endif
 
-		// Swapping MLP
-		current_mlp++;
+		// Focus on a single NN
+		if (focus_nn == -1)
+			current_mlp++;
+
 
 		// All MLPs evaluated, mutation and selection
 		if(current_mlp == POP_SIZE){
 			current_mlp = 0;
 
-			sort(mlps.begin(),mlps.end());
+			if (mutation_range != 0){
+				// EVOLUTIONARY ALGORITHM ====================================
+				sort(mlps.begin(),mlps.end());
 
-			char str[BUFFER_SIZE];
-			double sum = 0;
-			for(int i = 0; i < NUM_PARENTS; i++){
-  				strcpy (str,"");
-				// mlps.at(i).print_weights(str);
-				sum += mlps.at(i).error;
-				//printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
+				char str[BUFFER_SIZE];
+				double sum = 0;
+				for(int i = 0; i < NUM_PARENTS; i++){
+	  				strcpy (str,"");
+					// mlps.at(i).print_weights(str);
+					sum += mlps.at(i).error;
+					//printf("R%d[%08.3f]: %s",i,mlps.at(i).error,str);
+				}
+				//printf("\nAVG: %f", sum/NUM_PARENTS);
+				//printf("\n");
+
+				// Erasing the worst mlps
+				mlps.erase(mlps.begin()+NUM_PARENTS,mlps.end());
+
+				// Reproducing the best mlps
+				for(int i = 0; i < POP_SIZE-NUM_PARENTS; i++){
+
+					// Parent selection
+					Mlp mlp(&mlps.at(rand()%NUM_PARENTS));
+
+					// Mutation
+					mlp.mutate(mutation_range);
+
+					// Inserting into population
+					mlps.insert(mlps.end(), mlp);
+				// ============================================================
+				}
 			}
-			//printf("\nAVG: %f", sum/NUM_PARENTS);
-			//printf("\n");
 
-			// Erasing the worst mlps
-			mlps.erase(mlps.begin()+NUM_PARENTS,mlps.end());
-
-			// Reproducing the best mlps
-			for(int i = 0; i < POP_SIZE-NUM_PARENTS; i++){
-
-				// Parent selection
-				Mlp mlp(&mlps.at(rand()%NUM_PARENTS));
-
-				// Mutation
-				mlp.mutate(mutation_range);
-
-				// Inserting into population
-				mlps.insert(mlps.end(), mlp);
-
-			}
 			#if COLLECT_DATA
 				distance_file_stream << endl;
 				count_file_stream << endl;
@@ -643,14 +650,32 @@ void updateValues(int n){
 	simSpeed = clamp_val(simSpeed, 0.001, 300);
 
 	// Save NN weights
-	if(saveWeights || (autosave && current_epoch == num_epochs && current_mlp == 0 &&  num_steps == 1)){
-		mlps.at(current_mlp).store(weights_file.c_str());
+	if(saveWeights || (autosave && current_epoch == num_epochs && current_mlp == 0 &&  num_steps == 0)){
+
+
+
+		// cout << substr(1, 5) << endl;
+		//# TODO HERE
+		// sprintf(buffer, "%s%d", weights_file.c_str(), current_mlp);
+		// cout << buffer << endl;
+		for (int i = 0; i < POP_SIZE; i++){
+			weights_file[weights_file.find('.')-2] = i/10+48;
+			weights_file[weights_file.find('.')-1] = i%10+48;
+			cout << weights_file << endl;
+			mlps.at(i).store(weights_file.c_str());
+		}
 		saveWeights = 0;
 	}
 
-	if(loadWeights || (autoload && current_epoch == 0 && current_mlp == 0 &&  num_steps == 1)){
-		for(auto &mlp: mlps)
-			mlp.load(weights_file.c_str());
+	if(loadWeights || (autoload && current_epoch == 0 &&  num_steps == 1)){
+		autoload = 0;
+		cout << "Loading Weigths ======================" << endl;
+		for (int i = 0; i < POP_SIZE; i++){
+			weights_file[weights_file.find('.')-2] = i/10+48;
+			weights_file[weights_file.find('.')-1] = i%10+48;
+			cout << weights_file << endl;
+			mlps.at(i).load(weights_file.c_str());
+		}
 		loadWeights = 0;
 	}
 
@@ -666,7 +691,7 @@ void updateValues(int n){
 		r.update(weight, flags, blocks);
 
 	// String printed in the screen corner
-	sprintf(statusBuffer,"Robot Count: %02d Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f, Sim Speed: %4.2f",flock.size(),current_epoch,num_epochs,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight,1/simSpeed);
+	sprintf(statusBuffer,"Robots: %02d Leaders: %02d Model: %c Epoch: %06d/%06d MLP: %02d/%02d Steps: %03d/%03d Weight: %4.2f, Sim Speed: %4.2f",num_robots, num_leaders, comm_model, current_epoch,num_epochs,current_mlp,POP_SIZE,num_steps,EPOCH_STEPS,weight,1/simSpeed);
 
 }
 
@@ -806,7 +831,7 @@ void RenderScene(){
 	glColor3f(1,1,1);
 	glRasterPos2i(20,20);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glutBitmapString(GLUT_BITMAP_8_BY_13,statusBuffer);
+	glutBitmapString(GLUT_BITMAP_8_BY_13, statusBuffer);
 
 	glutSwapBuffers();
 }

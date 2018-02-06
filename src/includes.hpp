@@ -22,21 +22,23 @@
 #include <cstdio>
 #include <random>
 #include <chrono>
+#include <stdio.h>
+#include <sstream>
 
 using namespace std;
 
-#define VISUALIZATION	1
+#define VISUALIZATION	0
 // Learning Switch
 #define LEARNING 		1
 
 // Data Collection
-#define COLLECT_DATA 	1
+#define COLLECT_DATA 	0
 #define AUTOSAVE 		1 // For training, save weights to file when num_epocs reached
 #define AUTOLOAD		0 // For evaluation of a trained network, start with loaded weights
-#define AUTO_EXIT		0 // Automatically exit program after num_epocs
+#define AUTO_EXIT		1 // Automatically exit program after num_epocs
 
 // I/O Parameters
-#define EXP_FOLDER 	 	"" // Optional - Folder to store results
+#define EXP_FOLDER 	 	"Feb5Experiments/" // Optional - Folder to store results
 #define WEIGHTS_FILE	"" // Leave these as empty strings for automatic assignment
 #define DISTANCE_FILE	""
 #define COUNT_FILE		""
@@ -49,7 +51,7 @@ using namespace std;
 
 // Simulation Parameters
 #define TIME_SCALE 		5
-#define EPOCH_STEPS		(15000/TIME_SCALE)
+#define EPOCH_STEPS		(25000/TIME_SCALE)
 
 // Reward Function			// Choose one
 #define CLASSIC_REW		1 	// Distance to goal weighted by time
@@ -65,9 +67,9 @@ using namespace std;
 #define NUM_LEADERS		5 //16
 #define NUM_ROBOTS		10 //40
 #define NUM_GOALS		1
-#define GOAL_RADIUS_SQ  6400 // need to determine whether this is reasonable?
+#define GOAL_RADIUS_SQ  20000 // need to determine whether this is reasonable?
 #define NUM_OBSTACLES	0
-#define ROBOT_SPAWN_RNG	300
+#define ROBOT_SPAWN_RNG	50
 #define GOAL_SPAWN_RNG	500
 #define ROBOT_VEL		(1.00*TIME_SCALE)
 #define LEADER_VEL		(1.00*TIME_SCALE)
@@ -81,9 +83,9 @@ using namespace std;
 #define N_TOP 			6
 
 // Flock Parameters
-#define REP_RADIUS 		400
-#define ORI_RADIUS 		2500
-#define ATR_RADIUS 		10000
+#define REP_RADIUS 		400		// 20
+#define ORI_RADIUS 		900		// 30
+#define ATR_RADIUS 		2500	// 50			
 #define VIS_ANGLE		(2*PI/3)
 #define SWARM_PULL		0.00 // amount of influence agents have on leaders on [0, 1] scale
 
@@ -93,7 +95,7 @@ using namespace std;
 // Video Parameters
 #define WINDOW_TITLE	"Video"
 #define FULL_SCREEN		0
-#define SIM_STEP_TIME	1.000
+#define SIM_STEP_TIME	0.001
 
 // Light trail for the lulz
 #define ENABLE_TRAIL 	0

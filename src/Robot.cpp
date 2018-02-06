@@ -114,7 +114,7 @@ void Robot::update_trail(){
 }
 
 // Get agents between radii
-set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
+set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin /*= 0.0*/){
 	set<Robot*> nbors;
 	for(auto &r : *flock){
 		if(this != &r){
@@ -127,7 +127,7 @@ set<Robot*> Robot::get_neighbors_M(double radiusMax, double radiusMin = 0.0){
 	return nbors;
 }
 
-set<Robot*> Robot::get_neighbors_V(double radiusMax, double radiusMin = 0.0){
+set<Robot*> Robot::get_neighbors_V(double radiusMax, double radiusMin /*= 0.0*/){
 	set<Robot*> nbors;
 	vector<pair<Robot*, pair<double, double>>> candidates;
 	// assume that all agents are the same size and take maximum dimension as "diameter"
@@ -348,17 +348,18 @@ double Robot::reynolds_rules(){
 	}
 
 	// Velocity Matching
-	double vel = this->v;
-	if (neighbor_ori.size()){
-		double sum = 0;
-		for(auto &r : neighbor_ori){
-			// double d = distance_to_robot(r);
-			sum += r->v;
+	if (!leader){
+		double vel = this->v;
+		if (neighbor_ori.size()){
+			double sum = 0;
+			for(auto &r : neighbor_ori){
+				// double d = distance_to_robot(r);
+				sum += r->v;
+			}
+			// cout << sum/neighbor_ori.size() << endl;
+			this->v = min(ROBOT_VEL*1.5, sum/neighbor_ori.size());
 		}
-		// cout << sum/neighbor_ori.size() << endl;
-		this->v = sum/neighbor_ori.size();
 	}
-	
 
 	// Add up all velocities, normalized and weighted by distance
 	double x = -rep.first  +att.first  +ori.first;
